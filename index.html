@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#07111F">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PilotAssistante">
+  <title>PilotAssistante</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- ══ HEADER ══ -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">✈</span>
+        <span class="logo-text">PilotAssistante</span>
+      </div>
+      <span class="header-badge">LOGBOOK</span>
+    </div>
+  </header>
+
+  <!-- ══ MAIN ══ -->
+  <main class="main">
+
+    <!-- Painel de instrumentos -->
+    <section class="stats-section">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">TOTAL HRS</span>
+          <span class="stat-value" id="stat-total">0:00</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">PIC HRS</span>
+          <span class="stat-value green" id="stat-pic">0:00</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">IFR HRS</span>
+          <span class="stat-value red" id="stat-ifr">0:00</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">NIGHT HRS</span>
+          <span class="stat-value amber" id="stat-night">0:00</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">SIMULATOR</span>
+          <span class="stat-value" id="stat-sim">0:00</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">THIS MONTH</span>
+          <span class="stat-value" id="stat-month">0:00</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Logbook -->
+    <section class="logbook-section">
+      <div class="section-header">
+        <h2 class="section-title">Logbook</h2>
+        <button class="btn-primary" id="btn-add-flight">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+            <path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          Add Entry
+        </button>
+      </div>
+
+      <div class="empty-state" id="empty-state">
+        <div class="empty-icon">✈</div>
+        <p class="empty-title">No entries in the logbook yet.</p>
+        <p class="empty-sub">Add your first flight to get started.</p>
+      </div>
+
+      <div class="flight-list" id="flight-list"></div>
+    </section>
+
+  </main>
+
+  <!-- ══ MODAL ══ -->
+  <div class="modal-overlay" id="modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal" id="modal-flight">
+
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-title">New Entry</h3>
+        <button class="modal-close" id="modal-close" aria-label="Fechar">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <form id="flight-form" novalidate>
+
+          <!-- ── TIPO DE ENTRADA ── -->
+          <div class="form-group">
+            <label>Entry Type</label>
+            <div class="toggle-group toggle-2">
+              <label class="toggle-option toggle-accent">
+                <input type="radio" name="tipoEntrada" value="flight" checked>
+                <span>✈ Flight</span>
+              </label>
+              <label class="toggle-option toggle-accent">
+                <input type="radio" name="tipoEntrada" value="simulator">
+                <span>🖥 Simulator</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- ── DATA (sempre visível) ── -->
+          <div class="form-group">
+            <label for="f-data">Date</label>
+            <input type="date" id="f-data" name="data" required>
+          </div>
+
+          <!-- ══════════════════════════════════
+               FLIGHT SECTION (hidden for simulator)
+               ══════════════════════════════════ -->
+          <div id="section-voo">
+
+            <div class="form-divider">Route</div>
+
+            <!-- Origem / Destino / Horários -->
+            <div class="form-row cols-2">
+              <div class="form-group">
+                <label for="f-origem">Origin <span class="label-hint">ICAO</span></label>
+                <input type="text" id="f-origem" name="origem" placeholder="LPPT" maxlength="4" class="icao-input" autocomplete="off" spellcheck="false">
+              </div>
+              <div class="form-group">
+                <label for="f-destino">Destination <span class="label-hint">ICAO</span></label>
+                <input type="text" id="f-destino" name="destino" placeholder="EGLL" maxlength="4" class="icao-input" autocomplete="off" spellcheck="false">
+              </div>
+            </div>
+
+            <div class="form-row cols-2">
+              <div class="form-group">
+                <label for="f-off-block">Off-block <span class="label-hint">departure time</span></label>
+                <input type="time" id="f-off-block" name="offBlock">
+              </div>
+              <div class="form-group">
+                <label for="f-on-block">On-block <span class="label-hint">arrival time</span></label>
+                <input type="time" id="f-on-block" name="onBlock">
+              </div>
+            </div>
+
+            <div class="form-divider">Aircraft</div>
+
+            <div class="form-row cols-2">
+              <div class="form-group">
+                <label for="f-aeronave">Type</label>
+                <input type="text" id="f-aeronave" name="aeronave" placeholder="A320" autocomplete="off" spellcheck="false">
+              </div>
+              <div class="form-group">
+                <label for="f-matricula">Registration</label>
+                <input type="text" id="f-matricula" name="matricula" placeholder="CS-TNV" autocomplete="off" spellcheck="false">
+              </div>
+            </div>
+
+            <!-- SE / ME  +  SP / MP -->
+            <div class="form-row cols-2">
+              <div class="form-group">
+                <label>Engines</label>
+                <div class="toggle-group toggle-2">
+                  <label class="toggle-option toggle-accent">
+                    <input type="radio" name="motores" value="se" checked>
+                    <span>SE</span>
+                  </label>
+                  <label class="toggle-option toggle-accent">
+                    <input type="radio" name="motores" value="me">
+                    <span>ME</span>
+                  </label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Operation</label>
+                <div class="toggle-group toggle-2">
+                  <label class="toggle-option toggle-accent">
+                    <input type="radio" name="operacao" value="sp" checked>
+                    <span>SP</span>
+                  </label>
+                  <label class="toggle-option toggle-accent">
+                    <input type="radio" name="operacao" value="mp">
+                    <span>MP</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /section-voo -->
+
+          <!-- ══════════════════════════════════
+               TEMPOS (sempre visível)
+               ══════════════════════════════════ -->
+          <div class="form-divider">Times</div>
+
+          <div class="form-row cols-3" id="section-tempos-voo">
+            <div class="form-group">
+              <label for="f-total" id="label-total">Total <span class="label-hint">e.g. 2:30</span></label>
+              <input type="text" id="f-total" name="total" placeholder="2:30" inputmode="decimal">
+            </div>
+            <div class="form-group">
+              <label for="f-noite">Night <span class="label-hint">optional</span></label>
+              <input type="text" id="f-noite" name="noite" placeholder="0" inputmode="decimal">
+            </div>
+            <div class="form-group">
+              <label for="f-ifr">IFR <span class="label-hint">optional</span></label>
+              <input type="text" id="f-ifr" name="ifr" placeholder="0" inputmode="decimal">
+            </div>
+          </div>
+
+          <!-- Só horas para simulador -->
+          <div class="form-group" id="section-tempos-sim" style="display:none">
+            <label for="f-total-sim">Session Duration <span class="label-hint">e.g. 4:00</span></label>
+            <input type="text" id="f-total-sim" name="totalSim" placeholder="4:00" inputmode="decimal">
+          </div>
+
+          <!-- ══════════════════════════════════
+               FUNÇÃO (sempre visível)
+               ══════════════════════════════════ -->
+          <div class="form-divider">Role</div>
+
+          <div class="form-group">
+            <div class="toggle-group toggle-4">
+              <label class="toggle-option toggle-green">
+                <input type="radio" name="funcao" value="pic" checked>
+                <span>PIC</span>
+              </label>
+              <label class="toggle-option toggle-amber">
+                <input type="radio" name="funcao" value="copilot">
+                <span>Co-Pilot</span>
+              </label>
+              <label class="toggle-option toggle-accent">
+                <input type="radio" name="funcao" value="dual">
+                <span>Dual</span>
+              </label>
+              <label class="toggle-option toggle-purple">
+                <input type="radio" name="funcao" value="instructor">
+                <span>Instr.</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Nomes (contextuais) -->
+          <div class="form-row cols-2" id="section-names">
+            <div class="form-group" id="group-nome-pic">
+              <label for="f-nome-pic">Nome do PIC</label>
+              <input type="text" id="f-nome-pic" name="nomePIC" placeholder="Captain's name…">
+            </div>
+            <div class="form-group" id="group-nome-instr">
+              <label for="f-nome-instr">Instructor Name</label>
+              <input type="text" id="f-nome-instr" name="nomeInstrutor" placeholder="Instructor's name…">
+            </div>
+          </div>
+
+          <!-- ══════════════════════════════════
+               TAKE-OFFS & LANDINGS
+               (flight only)
+               ══════════════════════════════════ -->
+          <div id="section-movimentos">
+            <div class="form-divider">Take-offs &amp; Landings</div>
+
+            <div class="form-row cols-2">
+              <div class="form-group">
+                <label for="f-desc-dia">Take-offs day</label>
+                <input type="number" id="f-desc-dia" name="descolagensDia" placeholder="1" min="0" step="1" inputmode="numeric">
+              </div>
+              <div class="form-group">
+                <label for="f-desc-noite">Take-offs night</label>
+                <input type="number" id="f-desc-noite" name="descolagens_noite" placeholder="0" min="0" step="1" inputmode="numeric">
+              </div>
+            </div>
+            <div class="form-row cols-2">
+              <div class="form-group">
+                <label for="f-at-dia">Landings day</label>
+                <input type="number" id="f-at-dia" name="aterragensDia" placeholder="1" min="0" step="1" inputmode="numeric">
+              </div>
+              <div class="form-group">
+                <label for="f-at-noite">Landings night</label>
+                <input type="number" id="f-at-noite" name="aterragensNoite" placeholder="0" min="0" step="1" inputmode="numeric">
+              </div>
+            </div>
+          </div>
+
+          <!-- ══════════════════════════════════
+               INSTRUMENT APPROACHES
+               (flight only)
+               ══════════════════════════════════ -->
+          <div id="section-abordagens">
+            <div class="form-divider">Instrument Approaches</div>
+
+            <div class="form-row cols-2">
+              <div class="form-group">
+                <label for="f-num-abord">Number of approaches</label>
+                <input type="number" id="f-num-abord" name="numAbordagens" placeholder="0" min="0" step="1" inputmode="numeric">
+              </div>
+              <div class="form-group">
+                <label for="f-tipo-abord">Tipo</label>
+                <select id="f-tipo-abord" name="tipoAbordagem">
+                  <option value="">— none —</option>
+                  <option value="ILS CAT I">ILS CAT I</option>
+                  <option value="ILS CAT II/III">ILS CAT II / III</option>
+                  <option value="RNAV/RNP">RNAV / RNP</option>
+                  <option value="VOR">VOR</option>
+                  <option value="NDB">NDB</option>
+                  <option value="Visual">Visual</option>
+                  <option value="Outra">Outra</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══════════════════════════════════
+               SIMULADOR — FSTD
+               (simulator only)
+               ══════════════════════════════════ -->
+          <div id="section-fstd" style="display:none">
+            <div class="form-divider">FSTD</div>
+            <div class="form-group">
+              <label for="f-fstd-tipo">Simulator Type</label>
+              <select id="f-fstd-tipo" name="fstdTipo">
+                <option value="">— select —</option>
+                <option value="FFS">FFS — Full Flight Simulator</option>
+                <option value="FTD">FTD — Flight Training Device</option>
+                <option value="FNPT II MCC">FNPT II MCC</option>
+                <option value="FNPT II">FNPT II</option>
+                <option value="FNPT I">FNPT I</option>
+                <option value="BITD">BITD — Basic Instrument Training</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- ══════════════════════════════════
+               OBSERVAÇÕES (sempre visível)
+               ══════════════════════════════════ -->
+          <div class="form-divider">Remarks</div>
+
+          <div class="form-group">
+            <textarea id="f-obs" name="observacoes" placeholder="Notes about the flight or session…" rows="2"></textarea>
+          </div>
+
+          <!-- Acções -->
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" id="btn-cancel">Cancel</button>
+            <button type="submit" class="btn-primary">Save</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

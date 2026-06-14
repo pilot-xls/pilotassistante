@@ -1,0 +1,439 @@
+/* ============================================================
+   PilotAssistante — Logbook Styles v0.2
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:         #07111F;
+  --surface:    #0C1826;
+  --card:       #101E30;
+  --card-hover: #152538;
+  --border:     #182840;
+  --border-2:   #1F3352;
+
+  --accent:      #38BFF8;
+  --accent-dim:  rgba(56, 191, 248, 0.12);
+  --green:       #22D3A4;
+  --green-dim:   rgba(34, 211, 164, 0.12);
+  --amber:       #FBBF24;
+  --amber-dim:   rgba(251, 191, 36, 0.10);
+  --red:         #F87171;
+  --red-dim:     rgba(248, 113, 113, 0.10);
+  --purple:      #A78BFA;
+  --purple-dim:  rgba(167, 139, 250, 0.12);
+
+  --text-1: #DCE8F5;
+  --text-2: #5A7A9A;
+  --text-3: #28415A;
+
+  --font-ui:   'Space Grotesk', system-ui, sans-serif;
+  --font-mono: 'Space Mono', 'Courier New', monospace;
+
+  --header-h:  56px;
+  --radius:    12px;
+  --radius-sm: 8px;
+  --radius-lg: 16px;
+  --max-w:     880px;
+}
+
+html {
+  font-family: var(--font-ui);
+  background: var(--bg);
+  color: var(--text-1);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100dvh;
+}
+
+body {
+  min-height: 100dvh;
+  padding-bottom: max(env(safe-area-inset-bottom), 24px);
+}
+
+/* ── HEADER ─────────────────────────────────────────────── */
+.header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  height: var(--header-h);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.header-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 20px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-icon { font-size: 18px; color: var(--accent); transform: rotate(-20deg); display: inline-block; }
+.logo-text  { font-size: 15px; font-weight: 600; letter-spacing: -0.02em; }
+.header-badge {
+  font-family: var(--font-mono);
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.12em; color: var(--text-2);
+  background: var(--border); padding: 4px 10px; border-radius: 4px;
+}
+
+/* ── MAIN ───────────────────────────────────────────────── */
+.main {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: calc(var(--header-h) + 28px) 20px 40px;
+}
+
+/* ── STATS ──────────────────────────────────────────────── */
+.stats-section { margin-bottom: 32px; }
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+@media (min-width: 600px) {
+  .stats-grid { grid-template-columns: repeat(6, 1fr); }
+}
+
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 12px 16px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 8.5px; font-weight: 700;
+  letter-spacing: 0.12em; color: var(--text-2); text-transform: uppercase;
+}
+.stat-value {
+  font-family: var(--font-mono);
+  font-size: 20px; font-weight: 700;
+  color: var(--accent); letter-spacing: -0.03em; line-height: 1;
+}
+.stat-value.green  { color: var(--green); }
+.stat-value.amber  { color: var(--amber); }
+.stat-value.red    { color: var(--red); }
+
+/* ── SECTION HEADER ─────────────────────────────────────── */
+.section-header {
+  display: flex; align-items: center;
+  justify-content: space-between; margin-bottom: 16px;
+}
+.section-title { font-size: 17px; font-weight: 600; letter-spacing: -0.02em; }
+
+/* ── BOTÕES ─────────────────────────────────────────────── */
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--accent); color: #07111F;
+  border: none; border-radius: var(--radius-sm);
+  padding: 10px 16px;
+  font-family: var(--font-ui); font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: opacity 0.15s, transform 0.1s;
+  white-space: nowrap;
+}
+.btn-primary:hover  { opacity: 0.88; }
+.btn-primary:active { transform: scale(0.97); }
+
+.btn-secondary {
+  background: var(--card); color: var(--text-1);
+  border: 1px solid var(--border-2); border-radius: var(--radius-sm);
+  padding: 10px 16px;
+  font-family: var(--font-ui); font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: background 0.15s;
+}
+.btn-secondary:hover { background: var(--card-hover); }
+
+/* ── EMPTY STATE ────────────────────────────────────────── */
+.empty-state {
+  display: flex; flex-direction: column;
+  align-items: center; text-align: center;
+  gap: 8px; padding: 64px 20px;
+}
+.empty-icon  { font-size: 36px; opacity: 0.15; margin-bottom: 8px; }
+.empty-title { font-size: 16px; font-weight: 500; color: var(--text-2); }
+.empty-sub   { font-size: 14px; color: var(--text-3); }
+
+/* ── FLIGHT LIST ────────────────────────────────────────── */
+.flight-list { display: flex; flex-direction: column; gap: 8px; }
+
+/* ── FLIGHT CARD ────────────────────────────────────────── */
+.flight-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  transition: border-color 0.15s;
+}
+.flight-card:hover { border-color: var(--border-2); }
+
+/* Cartão de simulador — ligeiramente diferente */
+.flight-card.is-sim {
+  border-left: 3px solid var(--purple);
+}
+
+.flight-top {
+  display: flex; justify-content: space-between;
+  align-items: flex-start; margin-bottom: 10px;
+}
+.flight-date {
+  font-family: var(--font-mono);
+  font-size: 10.5px; font-weight: 700;
+  letter-spacing: 0.08em; color: var(--text-2);
+}
+.flight-time {
+  font-family: var(--font-mono);
+  font-size: 22px; font-weight: 700;
+  color: var(--text-1); letter-spacing: -0.03em; line-height: 1;
+}
+
+.flight-route {
+  display: flex; align-items: center;
+  gap: 14px; margin-bottom: 12px;
+}
+.icao {
+  font-family: var(--font-mono);
+  font-size: 26px; font-weight: 700;
+  color: var(--accent); letter-spacing: 0.04em; line-height: 1;
+}
+.route-arrow { color: var(--text-3); font-size: 18px; flex-shrink: 0; }
+.route-times {
+  font-family: var(--font-mono);
+  font-size: 11px; color: var(--text-2);
+  display: flex; align-items: center; gap: 4px;
+  margin-left: auto;
+}
+
+/* Simulador - bloco de nome */
+.sim-title {
+  font-size: 16px; font-weight: 600;
+  color: var(--purple); margin-bottom: 6px;
+}
+.sim-type {
+  font-family: var(--font-mono);
+  font-size: 12px; color: var(--text-2);
+  margin-bottom: 12px;
+}
+
+.flight-details {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap; gap: 8px;
+}
+.aircraft {
+  font-family: var(--font-mono);
+  font-size: 11.5px; color: var(--text-2); letter-spacing: 0.02em;
+}
+.flight-badges { display: flex; gap: 5px; flex-wrap: wrap; }
+
+/* ── BADGES ──────────────────────────────────────────────── */
+.badge {
+  font-family: var(--font-mono);
+  font-size: 9.5px; font-weight: 700;
+  letter-spacing: 0.1em; padding: 3px 8px;
+  border-radius: 4px; text-transform: uppercase;
+}
+.badge-pic      { background: var(--green-dim);  color: var(--green); }
+.badge-copilot  { background: var(--amber-dim);  color: var(--amber); }
+.badge-dual     { background: var(--accent-dim); color: var(--accent); }
+.badge-instr    { background: var(--purple-dim); color: var(--purple); }
+.badge-ifr      { background: var(--red-dim);    color: var(--red); }
+.badge-vfr      { background: rgba(255,255,255,0.04); color: var(--text-2); }
+.badge-se       { background: rgba(255,255,255,0.04); color: var(--text-2); }
+.badge-me       { background: var(--green-dim);  color: var(--green); }
+.badge-sp       { background: rgba(255,255,255,0.04); color: var(--text-2); }
+.badge-mp       { background: var(--accent-dim); color: var(--accent); }
+
+/* Sub-info do cartão */
+.flight-sub {
+  margin-top: 10px; padding-top: 10px;
+  border-top: 1px solid var(--border);
+  display: flex; flex-wrap: wrap; gap: 12px;
+}
+.flight-sub-item {
+  font-size: 12px; color: var(--text-2);
+  display: flex; align-items: center; gap: 4px;
+}
+.flight-sub-item strong {
+  color: var(--text-1); font-weight: 600;
+}
+.flight-crew {
+  font-size: 12px; color: var(--text-2);
+  margin-top: 6px;
+}
+.flight-obs {
+  font-size: 12px; color: var(--text-2);
+  font-style: italic; margin-top: 6px;
+}
+
+.flight-actions {
+  display: flex; justify-content: flex-end;
+  margin-top: 12px; padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.btn-delete {
+  background: none; border: none;
+  font-family: var(--font-ui); font-size: 12px;
+  color: var(--text-3); cursor: pointer;
+  padding: 4px 8px; border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+}
+.btn-delete:hover { color: var(--red); background: var(--red-dim); }
+
+/* ── MODAL ───────────────────────────────────────────────── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  align-items: flex-end; justify-content: center;
+}
+.modal-overlay.active { display: flex; }
+@media (min-width: 600px) { .modal-overlay { align-items: center; } }
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  width: 100%; max-width: 580px;
+  max-height: 92dvh; overflow-y: auto;
+  animation: slideUp 0.22s ease;
+  -webkit-overflow-scrolling: touch;
+}
+@media (min-width: 600px) {
+  .modal { border-radius: var(--radius-lg); max-height: 90dvh; }
+}
+@keyframes slideUp {
+  from { transform: translateY(24px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.modal-header {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0;
+  background: var(--surface); z-index: 1;
+}
+.modal-title { font-size: 16px; font-weight: 600; letter-spacing: -0.02em; }
+.modal-close {
+  background: none; border: none;
+  color: var(--text-2); font-size: 20px;
+  cursor: pointer; padding: 4px 8px;
+  border-radius: 4px; transition: color 0.15s; line-height: 1;
+}
+.modal-close:hover { color: var(--text-1); }
+.modal-body { padding: 20px; }
+
+/* ── FORMULÁRIO ─────────────────────────────────────────── */
+.form-divider {
+  font-family: var(--font-mono);
+  font-size: 9.5px; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-3);
+  padding: 14px 0 8px;
+  margin-top: 4px;
+  border-top: 1px solid var(--border);
+}
+/* Primeiro divisor não precisa de borda em cima */
+.form-divider:first-of-type { border-top: none; margin-top: 0; padding-top: 0; }
+
+.form-row {
+  display: grid; grid-template-columns: 1fr;
+  gap: 12px; margin-bottom: 12px;
+}
+@media (min-width: 420px) {
+  .form-row.cols-2 { grid-template-columns: 1fr 1fr; }
+  .form-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+}
+
+.form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.form-group label {
+  font-size: 12px; font-weight: 500; color: var(--text-2);
+  display: flex; align-items: baseline; gap: 6px;
+}
+.label-hint { font-size: 10px; color: var(--text-3); font-weight: 400; }
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  background: var(--card);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-sm);
+  color: var(--text-1);
+  font-family: var(--font-ui); font-size: 15px;
+  padding: 10px 12px; outline: none; width: 100%;
+  transition: border-color 0.15s;
+  -webkit-appearance: none; appearance: none;
+}
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus { border-color: var(--accent); }
+
+/* Select custom arrow */
+.form-group select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235A7A9A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+.form-group select option { background: #101E30; }
+
+.form-group .icao-input {
+  font-family: var(--font-mono);
+  font-size: 16px; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.form-group textarea { resize: vertical; min-height: 72px; }
+
+input[type="date"] { color: var(--text-1); }
+input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.5); cursor: pointer; }
+input[type="time"] { color: var(--text-1); }
+input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(0.5); cursor: pointer; }
+
+/* ── TOGGLE GROUPS ──────────────────────────────────────── */
+.toggle-group {
+  display: grid; gap: 8px;
+}
+.toggle-2 { grid-template-columns: 1fr 1fr; }
+.toggle-4 { grid-template-columns: repeat(4, 1fr); }
+
+.toggle-option { cursor: pointer; }
+.toggle-option input[type="radio"] { position: absolute; opacity: 0; pointer-events: none; }
+.toggle-option span {
+  display: block; text-align: center;
+  padding: 10px 6px;
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono); font-size: 12px; font-weight: 700;
+  color: var(--text-2); background: var(--card);
+  cursor: pointer; user-select: none;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.toggle-green  input[type="radio"]:checked + span { border-color: var(--green);  background: var(--green-dim);  color: var(--green); }
+.toggle-amber  input[type="radio"]:checked + span { border-color: var(--amber);  background: var(--amber-dim);  color: var(--amber); }
+.toggle-accent input[type="radio"]:checked + span { border-color: var(--accent); background: var(--accent-dim); color: var(--accent); }
+.toggle-purple input[type="radio"]:checked + span { border-color: var(--purple); background: var(--purple-dim); color: var(--purple); }
+
+/* ── FORM ACTIONS ───────────────────────────────────────── */
+.form-actions {
+  display: flex; gap: 10px; justify-content: flex-end;
+  padding-top: 16px; margin-top: 4px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── SCROLLBAR ──────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .modal { animation: none; }
+  * { transition: none !important; }
+}
