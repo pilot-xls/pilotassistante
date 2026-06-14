@@ -59,21 +59,35 @@ Uma **Progressive Web App (PWA)** alimentada por IA, desenhada exclusivamente pa
 - Email automático → app detecta e lê roster enviado por email
 - Funciona com qualquer software de qualquer empresa de qualquer país
 
-### Módulo 2 — Logbook Inteligente ⬜ Por fazer
+### Módulo 2 — Logbook Inteligente 🟡 Em progresso
 - Registo de voos (manual ou importação)
-- Totais automáticos: diurnas, noturnas, IFR, VFR, PIC, SIC, Dual, simulador
-- Consulta em linguagem natural: "Quantas horas de voo noturno fiz nos últimos 90 dias?"
+- Totais automáticos: diurnas, noturnas, IFR, VFR, PIC, Co-Pilot, Dual, Instructor, simulador
+- Consulta em linguagem natural: "How many night hours in the last 90 days?"
 - Exportação para PDF oficial
 - Relatórios gerados pela IA
 
-**Formato Universal Interno (campos):**
-Data, Origem (ICAO), Destino (ICAO), Tipo aeronave, Matrícula, Horas totais, Horas diurnas, Horas nocturnas, IFR, VFR, PIC, SIC, Dual, Aterragens dia, Aterragens noite, Tipo simulador, Horas simulador, Observações
+**Formato Universal Interno (campos completos — implementados na Sessão 2):**
+Date, Origin (ICAO), Destination (ICAO), Off-block, On-block, Aircraft Type, Registration, SE/ME, SP/MP, Total Hours, Day Hours, Night Hours, IFR, VFR, Role (PIC/Co-Pilot/Dual/Instructor), PIC Name, Instructor Name, Take-offs Day, Take-offs Night, Landings Day, Landings Night, Instrument Approaches (number + type), FSTD Type, FSTD Hours, Remarks
 
-**Métodos de importação:**
+**Estado actual:**
+- ✅ Formulário completo com todos os campos EASA
+- ✅ Toggle Flight / Simulator (campos mudam automaticamente)
+- ✅ Painel de estatísticas: Total HRS, PIC HRS, IFR HRS, Night HRS, Simulator, This Month
+- ✅ Lista de entradas com cartões detalhados
+- ✅ Armazenamento localStorage (offline, sem servidor)
+- ✅ App em inglês
+- ✅ Deploy no GitHub Pages
+- ⬜ Edição de entradas existentes
+- ⬜ Filtro por mês / pesquisa
+- ⬜ Exportação CSV / PDF
+- ⬜ Importação via IA (foto, PDF, CSV)
+- ⬜ Consulta em linguagem natural (Claude API)
+
+**Métodos de importação (a implementar):**
 - Foto/screenshot de qualquer logbook (papel ou digital) → IA extrai dados
 - Upload de PDF exportado de qualquer app → IA processa
 - CSV de apps como LogTen Pro, MyFlightbook, Safelog → IA mapeia colunas
-- Introdução manual campo a campo
+- Introdução manual campo a campo ✅ (já implementado)
 
 **Templates de exportação (apenas 4):**
 - EASA (formato oficial europeu) — prioritário
@@ -90,7 +104,7 @@ Data, Origem (ICAO), Destino (ICAO), Tipo aeronave, Matrícula, Horas totais, Ho
 - English Language Proficiency — validade
 - Currency nocturna — calculada automaticamente
 - Alertas automáticos: 90 dias, 60 dias, 30 dias, 7 dias antes do vencimento
-- Ex: "O teu Medical expira em 47 dias. Tens de marcar a consulta."
+- Ex: "Your Medical expires in 47 days. Time to book your appointment."
 
 ### Módulo 4 — Centro de Treino ⬜ Por fazer
 - Base de conhecimento ATPL/CPL/PPL
@@ -101,7 +115,7 @@ Data, Origem (ICAO), Destino (ICAO), Tipo aeronave, Matrícula, Horas totais, Ho
 ### Módulo 5 — Memórias & Diário ⬜ Por fazer
 - Álbum de fotos ligado a voos específicos
 - Diário de bordo pessoal
-- Consulta: "Mostra-me fotos do meu primeiro voo solo"
+- Consulta: "Show me photos from my first solo flight"
 
 ### Módulo 6 — Oportunidades de Emprego ⬜ Por fazer
 - Feed de ofertas filtrado por type rating e localização
@@ -118,7 +132,7 @@ Data, Origem (ICAO), Destino (ICAO), Tipo aeronave, Matrícula, Horas totais, Ho
 - Per diem por país/destino configurável
 - Total a receber no mês actual
 - Histórico mensal e anual
-- "Quanto vou receber este mês?" → resposta imediata
+- "How much will I earn this month?" → resposta imediata
 
 ### Módulo 10 — Preparação de Entrevistas ⬜ Por fazer (Fase 2)
 - IA prepara o piloto com perguntas reais por companhia
@@ -129,7 +143,7 @@ Data, Origem (ICAO), Destino (ICAO), Tipo aeronave, Matrícula, Horas totais, Ho
 ### Módulo 11 — Diário de Fadiga ⬜ Por fazer (Fase 2)
 - Registo de fadiga após cada duty (escala simples 1-5)
 - Histórico correlacionado com tipo de duties
-- Insights da IA: "A tua fadiga é maior após standbys nocturnos seguidos de early"
+- Insights da IA: "Your fatigue is higher after night standby followed by early starts"
 - Alinhado com requisitos de reporte EASA
 
 ### Módulo 12 — Widget Ecrã Principal ⬜ Por fazer (Fase 3)
@@ -146,16 +160,16 @@ Data, Origem (ICAO), Destino (ICAO), Tipo aeronave, Matrícula, Horas totais, Ho
 
 ### Módulo 14 — Interface de Voz ⬜ Por fazer (Fase 2) 🔴 CRÍTICO
 - Controlo total da app por voz
-- "PilotAssistante, qual é o meu duty time amanhã?"
-- "PilotAssistante, adiciona um voo Lisboa Londres 4h30"
-- "PilotAssistante, como está o tempo em Heathrow?"
+- "PilotAssistante, what's my duty time tomorrow?"
+- "PilotAssistante, add a flight Lisbon London 4h30"
+- "PilotAssistante, what's the weather at Heathrow?"
 - Perfeito no carro a caminho do aeroporto — sem tocar no telemóvel
 
 ### Módulo 15 — Wellbeing: Sono & Jet Lag ⬜ Por fazer (Fase 2) 🔴 CRÍTICO
 - Análise automática do roster para calcular jet lag previsto
 - Recomendações de sono personalizadas por rota e fuso horário
 - Índice de alerta previsto para cada fase do voo
-- "Vais atravessar 5 fusos — dorme entre as 14h e as 22h hoje"
+- "You're crossing 5 time zones — sleep between 14:00 and 22:00 today"
 - Diferenciador enorme — segurança aérea real, nenhuma app faz isto
 
 ---
@@ -183,7 +197,7 @@ Data, Origem (ICAO), Destino (ICAO), Tipo aeronave, Matrícula, Horas totais, Ho
 
 | Semanas | Objectivo | Estado |
 |---|---|---|
-| 1-2 | Logbook básico | ⬜ Por fazer |
+| 1-2 | Logbook básico | ✅ Concluído |
 | 3-4 | Agenda + cálculo FTL simples | ⬜ Por fazer |
 | 5-6 | Integrar Claude API | ⬜ Por fazer |
 | 7-8 | Meteorologia + NOTAMs | ⬜ Por fazer |
@@ -259,7 +273,7 @@ Data, Origem (ICAO), Destino (ICAO), Tipo aeronave, Matrícula, Horas totais, Ho
 
 ## 🐛 Bugs Conhecidos
 
-*Nenhum ainda — projecto em início.*
+*Nenhum ainda.*
 
 ---
 
@@ -298,6 +312,15 @@ Data, Origem (ICAO), Destino (ICAO), Tipo aeronave, Matrícula, Horas totais, Ho
 | Sessão 1 | Módulo Wellbeing Sono & Jet Lag adicionado (crítico) | Maior dor real do piloto, nenhuma app trata isto seriamente |
 | Sessão 1 | Funcionalidades Ano 3+ definidas e arquivadas | Apple Watch, QRH, fiscal, white-label — fora do âmbito actual |
 | Sessão 1 | Produto considerado completo para início de desenvolvimento | 15 módulos definidos, produto inovador sem equivalente no mercado |
+| Sessão 2 | localStorage na Fase 1 | Sem servidor, custo zero, funciona offline desde o primeiro dia |
+| Sessão 2 | Estrutura de pastas css/ e js/ desde o início | Projecto vai crescer — organização correcta desde já evita reorganização futura |
+| Sessão 2 | App em inglês | Produto para pilotos internacionais — brand name "PilotAssistante" mantido |
+| Sessão 2 | Aceita horas em "2:30" e "2.5" | Flexível para uso real — pilotos usam ambos os formatos |
+| Sessão 2 | Toggle Flight / Simulator no formulário | Formulário não mostra campos irrelevantes — UX mais limpa |
+| Sessão 2 | Campos contextuais PIC Name / Instructor Name | Só aparecem quando a função seleccionada é relevante |
+| Sessão 2 | Horas de simulador separadas do tempo de voo real | Não contamina os totais de voo — correcto para EASA Part-FCL |
+| Sessão 2 | 4 tipos de função: PIC / Co-Pilot / Dual / Instructor | Cobre todos os casos EASA Part-FCL |
+| Sessão 2 | Tema visual: cockpit escuro tipo EFIS | Space Grotesk + Space Mono, paleta navy/cyan — identidade visual definida |
 
 ---
 
@@ -319,22 +342,50 @@ Data, Origem (ICAO), Destino (ICAO), Tipo aeronave, Matrícula, Horas totais, Ho
 - Solução de roster: IA lê screenshot/foto/PDF/iCal/email — funciona com qualquer software de qualquer empresa
 - Solução de logbook: formato universal interno + importação via IA de qualquer fonte + 4 templates de exportação (EASA, FAA, PDF, CSV)
 
+---
+
+### Sessão 2 — 14 Junho 2026
+**O que fizemos:**
+- Construção do Logbook — Módulo 2, Fase 1, Semanas 1-2
+- Criados 4 ficheiros: index.html, css/style.css, js/app.js, manifest.json
+- v0.1 — base funcional:
+  - Painel com 6 estatísticas (Total HRS, PIC HRS, IFR HRS, Night HRS, Simulator, This Month)
+  - Formulário para adicionar voos com campos essenciais
+  - Lista de entradas ordenada do mais recente para o mais antigo
+  - Eliminar entrada com confirmação
+  - Armazenamento em localStorage (offline, sem servidor)
+  - Aceita horas em "2:30" ou "2.5"
+- v0.2 — formulário expandido com todos os campos EASA:
+  - Toggle Flight / Simulator (mostra/oculta campos automaticamente)
+  - Off-block / On-block (departure and arrival times)
+  - SE / ME (Single Engine / Multi Engine)
+  - SP / MP (Single Pilot / Multi-Pilot)
+  - Funções: PIC, Co-Pilot, Dual, Instructor
+  - PIC Name (aparece quando função = Co-Pilot ou Dual)
+  - Instructor Name (aparece quando função = Dual)
+  - Take-offs day e night (separadas das landings)
+  - Instrument Approaches (número + tipo: ILS CAT I/II/III, RNAV, VOR, NDB…)
+  - FSTD Type (FFS, FTD, FNPT II MCC, FNPT II, FNPT I, BITD) + session duration
+  - Horas de simulador separadas do tempo de voo real no painel
+- Tradução completa para inglês (UI, labels, mensagens, datas, cartões)
+- Estrutura de pastas css/ e js/ definida para escalar com o projecto
+- Deploy no GitHub Pages
+
 **Próxima sessão:**
-- Criar conta GitHub e repositório "pilotassistante"
-- Activar GitHub Pages
-- Fazer upload do CLAUDE.md para o repositório
-- Criar Project no claude.ai e carregar o CLAUDE.md
-- Começar o Módulo 2 — Logbook básico (HTML/CSS/JS)
-- Primeira página: adicionar voo + listar voos + ver total de horas
+- Testar com voos reais do logbook pessoal
+- Adicionar edição de entradas (clicar num cartão abre o formulário preenchido)
+- Adicionar filtro por mês / pesquisa por rota ou aeronave
+- Considerar exportação CSV simples
 
 ---
 
 ## 🚀 Próximos Passos Imediatos
 
-1. **Esta semana** → Criar conta GitHub + repositório `pilotassistante` + activar GitHub Pages
-2. **Semana 1-2** → Construir Logbook básico: adicionar voo, listar voos, calcular totais
-3. **Mês 1** → Integrar Claude API: primeira pergunta em linguagem natural ao logbook
-4. **Mês 2-3** → Mostrar a pilotos amigos e recolher feedback honesto
+1. **Agora** → Testar o logbook com voos reais — adicionar os primeiros voos reais
+2. **Semana 2** → Adicionar edição de entradas + filtro por mês
+3. **Semana 3-4** → Agenda + cálculo FTL simples (Módulo 1 básico)
+4. **Mês 2** → Integrar Claude API: primeira pergunta em linguagem natural ao logbook
+5. **Mês 2-3** → Mostrar a pilotos amigos e recolher feedback honesto
 
 ---
 
@@ -347,4 +398,4 @@ Data, Origem (ICAO), Destino (ICAO), Tipo aeronave, Matrícula, Horas totais, Ho
 
 ---
 
-*Última actualização: Sessão 1 — Junho 2026*
+*Última actualização: Sessão 2 — 14 Junho 2026*
