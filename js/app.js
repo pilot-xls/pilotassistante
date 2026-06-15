@@ -10,6 +10,7 @@ const AUTHORITY_KEY = 'pilotassistante_authority';
 
 let currentType      = 'flight'; // 'flight' | 'sim'
 let activeAuthority  = 'EASA';   // default
+let editingId        = null;     // id da entrada em edição, null = nova entrada
 
 /* ── UTILS ──────────────────────────────────────────────────── */
 
@@ -257,9 +258,23 @@ function renderEntries() {
         <div class="entry-route">${routeHtml}</div>
         <span class="entry-duration${isPIC && !isSim ? '' : ' muted'}">${fmtHours(h)}</span>
         <span class="entry-role ${roleClass}">${roleLabel}</span>
-        <button class="entry-delete" data-id="${e.id}" title="Delete" aria-label="Delete">✕</button>
+        <div class="entry-actions">
+          <button class="entry-edit" data-id="${e.id}" title="Edit" aria-label="Edit entry">
+            <i class="ti ti-pencil"></i>
+          </button>
+          <button class="entry-delete" data-id="${e.id}" title="Delete" aria-label="Delete entry">
+            <i class="ti ti-trash"></i>
+          </button>
+        </div>
       </div>`;
   }).join('');
+
+  list.querySelectorAll('.entry-edit').forEach(btn => {
+    btn.addEventListener('click', ev => {
+      ev.stopPropagation();
+      editEntry(btn.dataset.id);
+    });
+  });
 
   list.querySelectorAll('.entry-delete').forEach(btn => {
     btn.addEventListener('click', ev => {
@@ -267,6 +282,70 @@ function renderEntries() {
       deleteEntry(btn.dataset.id);
     });
   });
+
+  // Clicar na linha também abre edição
+  list.querySelectorAll('.entry-row').forEach(row => {
+    row.addEventListener('click', () => editEntry(row.dataset.id));
+  });
+}
+
+/* ── EDIT ENTRY ──────────────────────────────────────────────── */
+
+function editEntry(id) {
+  const entry = getEntries().find(e => e.id === id);
+  if (!entry) return;
+
+  editingId = id;
+
+  // Se a entrada foi criada com outra autoridade, aplicar a dela
+  if (entry.authority && AUTHORITIES[entry.authority]) {
+    applyAuthority(entry.authority);
+  }
+
+  // Abrir drawer e definir tipo
+  openDrawer();
+  setType(entry.type || 'flight');
+
+  // Campos comuns
+  const set = (id, val) => { const e = el(id); if (e) e.value = val || ''; };
+  set('f-date',    entry.date);
+  set('f-total',   entry.totalHours);
+  set('f-remarks', entry.remarks);
+
+  if (entry.type === 'sim') {
+    set('f-fstd-type', entry.fstdType);
+  } else {
+    set('f-origin',        entry.origin);
+    set('f-dest',          entry.dest);
+    set('f-offblock',      entry.offBlock);
+    set('f-onblock',       entry.onBlock);
+    set('f-aircraft-type', entry.aircraftType);
+    set('f-reg',           entry.registration);
+    set('f-ops',           entry.ops    || 'MP');
+    set('f-engine',        entry.engine || 'ME');
+    set('f-day',           entry.dayHours);
+    set('f-night',         entry.nightHours);
+    set('f-ifr',           entry.ifrHours);
+    set('f-vfr',           entry.vfrHours);
+    set('f-xc',            entry.xcHours);
+    set('f-solo',          entry.soloHours);
+    set('f-role',          entry.role || 'PIC');
+    set('f-pic-name',      entry.picName);
+    set('f-instructor',    entry.instructorName);
+    set('f-to-day',        entry.toDay   ?? '1');
+    set('f-to-night',      entry.toNight ?? '0');
+    set('f-ldg-day',       entry.ldgDay  ?? '1');
+    set('f-ldg-night',     entry.ldgNight ?? '0');
+    set('f-appr-num',      entry.apprNum ?? '0');
+    set('f-appr-type',     entry.apprType);
+    updateOpsFields();
+    updateRoleFields();
+  }
+
+  // Actualizar título e botão
+  el('drawer-title').textContent =
+    entry.type === 'sim' ? 'Edit Simulator Session' : 'Edit Flight';
+  document.querySelector('.btn-save').textContent = 'Update Entry';
 }
 
 /* ── DELETE ──────────────────────────────────────────────────── */
@@ -291,6 +370,10 @@ function closeDrawer() {
   el('drawer').classList.remove('open');
   el('drawer-overlay').classList.remove('visible');
   document.body.style.overflow = '';
+  editingId = null;
+  el('drawer-title').textContent = 'New Flight';
+  const saveBtn = document.querySelector('.btn-save');
+  if (saveBtn) saveBtn.textContent = 'Save Entry';
 }
 
 /* ── TYPE TOGGLE ─────────────────────────────────────────────── */
@@ -364,7 +447,21 @@ function saveEntry(ev) {
   }
 
   const entries = getEntries();
-  entries.push(entry);
+
+  if (editingId) {
+    // Actualizar entrada existente
+    const idx = entries.findIndex(e => e.id === editingId);
+    if (idx !== -1) {
+      entry.id = editingId;
+      entries[idx] = entry;
+    }
+    editingId = null;
+  } else {
+    // Nova entrada
+    entry.id = uid();
+    entries.push(entry);
+  }
+
   saveEntries(entries);
 
   el('entry-form').reset();
