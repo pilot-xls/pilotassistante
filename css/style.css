@@ -639,7 +639,7 @@ input, select, textarea { font-family: var(--font-ui); }
 }
 
 /* ── HELPERS ──────────────────────────────────────────────── */
-.hidden { display: none; }
+.hidden { display: none !important; }
 
 .flight-only { display: flex; flex-direction: column; gap: 14px; }
 .sim-only    { display: flex; flex-direction: column; gap: 14px; }
