@@ -4,53 +4,80 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="theme-color" content="#2825A0">
   <title>PilotAssistante — Logbook</title>
   <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Space+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.11.0/dist/tabler-icons.min.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+
+  <!-- ── AUTHORITY SELECTOR OVERLAY ────────────────────────── -->
+  <div class="auth-overlay" id="auth-overlay">
+    <div class="auth-modal">
+      <p class="auth-modal-eyebrow">PilotAssistante</p>
+      <h2 class="auth-modal-title">Select your aviation authority</h2>
+      <p class="auth-modal-sub">Adapts fields, terminology and export formats to your licence.</p>
+      <div class="auth-grid">
+        <button class="auth-card" data-authority="EASA">
+          <span class="auth-flag">🇪🇺</span>
+          <span class="auth-card-name">EASA</span>
+          <span class="auth-card-sub">Europe · ANAC · DGAC · LBA · ENAC</span>
+        </button>
+        <button class="auth-card" data-authority="FAA">
+          <span class="auth-flag">🇺🇸</span>
+          <span class="auth-card-name">FAA</span>
+          <span class="auth-card-sub">United States</span>
+        </button>
+      </div>
+      <p class="auth-modal-note">You can change this at any time from the header.</p>
+    </div>
+  </div>
 
   <!-- ── HEADER ─────────────────────────────────────────────── -->
   <header class="header">
     <span class="logo">PilotAssistante</span>
     <div class="header-sep"></div>
     <nav class="nav">
-      <a href="#" class="nav-link active">Logbook</a>
-      <a href="#" class="nav-link">Schedule</a>
-      <a href="#" class="nav-link">Docs</a>
-      <a href="#" class="nav-link">Briefing</a>
+      <a href="#" class="nav-link active"><i class="ti ti-notebook" aria-hidden="true"></i> Logbook</a>
+      <a href="#" class="nav-link"><i class="ti ti-calendar-event" aria-hidden="true"></i> Schedule</a>
+      <a href="#" class="nav-link"><i class="ti ti-file-text" aria-hidden="true"></i> Docs</a>
+      <a href="#" class="nav-link"><i class="ti ti-map" aria-hidden="true"></i> Briefing</a>
     </nav>
+    <button class="authority-badge" id="auth-badge" aria-label="Change authority">
+      <i class="ti ti-certificate" aria-hidden="true"></i>
+      <span id="authority-name">EASA</span>
+      <i class="ti ti-chevron-down" aria-hidden="true"></i>
+    </button>
   </header>
 
   <!-- ── STATS ──────────────────────────────────────────────── -->
   <section class="stats-section">
     <div class="stat-card">
-      <span class="stat-label">Total</span>
+      <span class="stat-label"><i class="ti ti-clock" aria-hidden="true"></i> Total</span>
       <span class="stat-value" id="stat-total">0:00</span>
     </div>
     <div class="stat-card accent">
-      <span class="stat-label">PIC</span>
+      <span class="stat-label"><i class="ti ti-plane" aria-hidden="true"></i> PIC</span>
       <span class="stat-value" id="stat-pic">0:00</span>
     </div>
     <div class="stat-card">
-      <span class="stat-label">IFR</span>
+      <span class="stat-label"><i class="ti ti-cloud" aria-hidden="true"></i> IFR</span>
       <span class="stat-value" id="stat-ifr">0:00</span>
     </div>
     <div class="stat-card">
-      <span class="stat-label">Night</span>
+      <span class="stat-label"><i class="ti ti-moon" aria-hidden="true"></i> Night</span>
       <span class="stat-value" id="stat-night">0:00</span>
     </div>
     <div class="stat-card">
-      <span class="stat-label">Simulator</span>
+      <span class="stat-label"><i class="ti ti-device-gamepad-2" aria-hidden="true"></i> Simulator</span>
       <span class="stat-value" id="stat-sim">0:00</span>
     </div>
     <div class="stat-card">
-      <span class="stat-label">This Month</span>
+      <span class="stat-label"><i class="ti ti-calendar-month" aria-hidden="true"></i> This Month</span>
       <span class="stat-value" id="stat-month">0:00</span>
     </div>
   </section>
@@ -59,7 +86,9 @@
   <main class="main">
     <div class="list-header">
       <h1 class="list-title">Flight Logbook</h1>
-      <button class="btn-add" id="btn-add-flight">+ Add Entry</button>
+      <button class="btn-add" id="btn-add-flight">
+        <i class="ti ti-plus" aria-hidden="true"></i> Add Entry
+      </button>
     </div>
     <div class="entries-list" id="entries-list"></div>
   </main>
@@ -75,8 +104,12 @@
     </div>
 
     <div class="type-toggle">
-      <button class="type-btn active" id="type-flight">Flight</button>
-      <button class="type-btn" id="type-sim">Simulator</button>
+      <button class="type-btn active" id="type-flight">
+        <i class="ti ti-plane" aria-hidden="true"></i> Flight
+      </button>
+      <button class="type-btn" id="type-sim">
+        <i class="ti ti-device-gamepad-2" aria-hidden="true"></i> Simulator
+      </button>
     </div>
 
     <form class="form" id="entry-form" novalidate>
@@ -87,8 +120,9 @@
         <input class="form-input" type="date" id="f-date" required>
       </div>
 
-      <!-- Flight-only fields -->
+      <!-- ── FLIGHT ONLY ──────────────────────────────────── -->
       <div class="flight-only">
+
         <div class="form-row">
           <div class="form-group">
             <label class="form-label" for="f-origin">Origin (ICAO)</label>
@@ -122,32 +156,39 @@
           </div>
         </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label" for="f-engine">Engine</label>
-            <select class="form-select" id="f-engine">
-              <option value="ME">ME — Multi Engine</option>
-              <option value="SE">SE — Single Engine</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="f-ops">Operations</label>
-            <select class="form-select" id="f-ops">
-              <option value="MP">MP — Multi Pilot</option>
-              <option value="SP">SP — Single Pilot</option>
-            </select>
-          </div>
+        <!-- Operations SP/MP (EASA only — hidden for FAA) -->
+        <div class="form-group" id="ops-group">
+          <label class="form-label" for="f-ops">Operations</label>
+          <select class="form-select" id="f-ops">
+            <option value="MP">MP — Multi Pilot</option>
+            <option value="SP">SP — Single Pilot</option>
+          </select>
         </div>
+
+        <!-- Engine type: always visible for FAA, only when SP for EASA -->
+        <div class="form-group hidden" id="engine-group">
+          <label class="form-label" for="f-engine">
+            Engine type <span class="label-hint">SP only</span>
+          </label>
+          <select class="form-select" id="f-engine">
+            <option value="ME">ME — Multi Engine</option>
+            <option value="SE">SE — Single Engine</option>
+          </select>
+        </div>
+
       </div>
 
-      <!-- Total hours (always visible) -->
+      <!-- Total flight time — auto from block times, editable -->
       <div class="form-group">
-        <label class="form-label" for="f-total">Total Hours</label>
-        <input class="form-input mono" type="text" id="f-total" placeholder="2:30 or 2.5" required autocomplete="off">
+        <label class="form-label" for="f-total">
+          Total Flight Time <span class="label-hint">auto from block times</span>
+        </label>
+        <input class="form-input mono" type="text" id="f-total" placeholder="2:30" required autocomplete="off">
       </div>
 
-      <!-- Flight-only hours & operations -->
+      <!-- ── MORE FLIGHT ONLY ─────────────────────────────── -->
       <div class="flight-only">
+
         <div class="form-row">
           <div class="form-group">
             <label class="form-label" for="f-day">Day Hours</label>
@@ -170,14 +211,29 @@
           </div>
         </div>
 
+        <!-- Cross-Country — FAA only -->
+        <div class="form-row hidden" id="xc-group">
+          <div class="form-group" style="grid-column:1/-1">
+            <label class="form-label" for="f-xc">
+              Cross-Country (XC) <span class="label-hint">FAA requirement</span>
+            </label>
+            <input class="form-input mono" type="text" id="f-xc" placeholder="2.5" autocomplete="off">
+          </div>
+        </div>
+
+        <!-- Solo — FAA only -->
+        <div class="form-row hidden" id="solo-group">
+          <div class="form-group" style="grid-column:1/-1">
+            <label class="form-label" for="f-solo">Solo Hours <span class="label-hint">FAA requirement</span></label>
+            <input class="form-input mono" type="text" id="f-solo" placeholder="1.0" autocomplete="off">
+          </div>
+        </div>
+
         <!-- Role -->
         <div class="form-group">
           <label class="form-label" for="f-role">Role</label>
           <select class="form-select" id="f-role">
-            <option value="PIC">PIC — Pilot in Command</option>
-            <option value="Co-Pilot">Co-Pilot (F/O)</option>
-            <option value="Dual">Dual (Student)</option>
-            <option value="Instructor">Instructor</option>
+            <!-- Populated by applyAuthority() -->
           </select>
         </div>
 
@@ -192,11 +248,11 @@
         </div>
 
         <!-- Takeoffs & Landings -->
-        <div class="form-section-label">Takeoffs & Landings</div>
+        <div class="form-section-label">Takeoffs &amp; Landings</div>
         <div class="form-row four">
           <div class="form-group">
             <label class="form-label" for="f-to-day">T/O Day</label>
-            <input class="form-input mono" type="number" id="f-to-day" min="0" value="0">
+            <input class="form-input mono" type="number" id="f-to-day" min="0" value="1">
           </div>
           <div class="form-group">
             <label class="form-label" for="f-to-night">T/O Night</label>
@@ -204,7 +260,7 @@
           </div>
           <div class="form-group">
             <label class="form-label" for="f-ldg-day">LDG Day</label>
-            <input class="form-input mono" type="number" id="f-ldg-day" min="0" value="0">
+            <input class="form-input mono" type="number" id="f-ldg-day" min="0" value="1">
           </div>
           <div class="form-group">
             <label class="form-label" for="f-ldg-night">LDG Night</label>
@@ -221,35 +277,24 @@
           <div class="form-group">
             <label class="form-label" for="f-appr-type">Approach Type</label>
             <select class="form-select" id="f-appr-type">
-              <option value="">—</option>
-              <option value="ILS CAT I">ILS CAT I</option>
-              <option value="ILS CAT II">ILS CAT II</option>
-              <option value="ILS CAT III">ILS CAT III</option>
-              <option value="RNAV">RNAV (GNSS)</option>
-              <option value="VOR">VOR</option>
-              <option value="NDB">NDB</option>
-              <option value="Visual">Visual</option>
+              <!-- Populated by applyAuthority() -->
             </select>
           </div>
         </div>
+
       </div>
 
-      <!-- Simulator-only fields -->
+      <!-- ── SIMULATOR ONLY ───────────────────────────────── -->
       <div class="sim-only hidden">
         <div class="form-group">
           <label class="form-label" for="f-fstd-type">FSTD Type</label>
           <select class="form-select" id="f-fstd-type">
-            <option value="FFS">FFS — Full Flight Simulator</option>
-            <option value="FTD">FTD — Flight Training Device</option>
-            <option value="FNPT II MCC">FNPT II MCC</option>
-            <option value="FNPT II">FNPT II</option>
-            <option value="FNPT I">FNPT I</option>
-            <option value="BITD">BITD</option>
+            <!-- Populated by applyAuthority() -->
           </select>
         </div>
       </div>
 
-      <!-- Remarks (always visible) -->
+      <!-- Remarks -->
       <div class="form-group">
         <label class="form-label" for="f-remarks">Remarks</label>
         <textarea class="form-textarea" id="f-remarks" rows="2" placeholder="ILS CAT I RWY 27L, night sector…"></textarea>
@@ -263,6 +308,7 @@
     </form>
   </aside>
 
+  <script src="js/authorities.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

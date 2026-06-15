@@ -1,17 +1,18 @@
 /* ─────────────────────────────────────────────────────────────
    PilotAssistante — Logbook Logic
-   v0.3 · Índigo Profundo
+   v0.4 · Authority-aware
    ───────────────────────────────────────────────────────────── */
 
 'use strict';
 
-const STORAGE_KEY = 'pilotassistante_logbook_v1';
+const STORAGE_KEY   = 'pilotassistante_logbook_v1';
+const AUTHORITY_KEY = 'pilotassistante_authority';
 
-let currentType = 'flight'; // 'flight' | 'sim'
+let currentType      = 'flight'; // 'flight' | 'sim'
+let activeAuthority  = 'EASA';   // default
 
 /* ── UTILS ──────────────────────────────────────────────────── */
 
-/** Parse "2:30" or "2.5" → decimal hours */
 function parseHours(val) {
   if (!val || String(val).trim() === '') return 0;
   const s = String(val).trim();
@@ -22,7 +23,6 @@ function parseHours(val) {
   return parseFloat(s) || 0;
 }
 
-/** Decimal hours → "H:MM" */
 function fmtHours(h) {
   if (!h || isNaN(h) || h < 0) return '0:00';
   const hours = Math.floor(h);
@@ -30,23 +30,22 @@ function fmtHours(h) {
   return `${hours}:${String(mins).padStart(2, '0')}`;
 }
 
-/** "2026-06-14" → "14·06·26" */
 function fmtDate(str) {
   if (!str) return '—';
   const [y, m, d] = str.split('-');
   return `${d}·${m}·${y.slice(2)}`;
 }
 
-/** Current year-month "2026-06" */
 function thisMonth() {
   const n = new Date();
   return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}`;
 }
 
-/** Generate unique id */
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 }
+
+function el(id) { return document.getElementById(id); }
 
 /* ── STORAGE ─────────────────────────────────────────────────── */
 
@@ -57,6 +56,120 @@ function getEntries() {
 
 function saveEntries(entries) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+}
+
+/* ── AUTHORITY SYSTEM ────────────────────────────────────────── */
+
+function applyAuthority(key) {
+  const auth = AUTHORITIES[key];
+  if (!auth) return;
+
+  activeAuthority = key;
+  localStorage.setItem(AUTHORITY_KEY, key);
+
+  // Update header badge
+  const badge = el('authority-name');
+  if (badge) badge.textContent = auth.name;
+
+  // Operations group (MP/SP)
+  const opsGroup = el('ops-group');
+  if (opsGroup) opsGroup.classList.toggle('hidden', !auth.form.showOperations);
+
+  // Engine type group
+  const engineGroup = el('engine-group');
+  if (engineGroup) {
+    if (!auth.form.showOperations) {
+      // FAA: always show SE/ME
+      engineGroup.classList.remove('hidden');
+    } else {
+      // EASA: depends on SP/MP
+      updateOpsFields();
+    }
+  }
+
+  // Cross-country (FAA)
+  const xcGroup = el('xc-group');
+  if (xcGroup) xcGroup.classList.toggle('hidden', !auth.form.showCrossCountry);
+
+  // Solo (FAA)
+  const soloGroup = el('solo-group');
+  if (soloGroup) soloGroup.classList.toggle('hidden', !auth.form.showSolo);
+
+  // Populate roles
+  const roleSelect = el('f-role');
+  if (roleSelect) {
+    roleSelect.innerHTML = auth.roles
+      .map(r => `<option value="${r.value}">${r.label}</option>`)
+      .join('');
+  }
+
+  // Populate sim types
+  const simSelect = el('f-fstd-type');
+  if (simSelect) {
+    simSelect.innerHTML = auth.simTypes
+      .map(t => `<option value="${t.value}">${t.label}</option>`)
+      .join('');
+  }
+
+  // Populate approach types
+  const apprSelect = el('f-appr-type');
+  if (apprSelect) {
+    apprSelect.innerHTML = '<option value="">—</option>' +
+      auth.approachTypes
+        .map(t => `<option value="${t}">${t}</option>`)
+        .join('');
+  }
+
+  // Close selector if open
+  closeAuthoritySelector();
+}
+
+function openAuthoritySelector() {
+  el('auth-overlay').classList.add('visible');
+}
+
+function closeAuthoritySelector() {
+  const overlay = el('auth-overlay');
+  if (overlay) overlay.classList.remove('visible');
+}
+
+/* ── BLOCK TIME AUTO-CALCULATE ───────────────────────────────── */
+
+function calculateBlockTime(off, on) {
+  if (!off || !on) return null;
+  const [oh, om] = off.split(':').map(Number);
+  const [nh, nm] = on.split(':').map(Number);
+  let mins = (nh * 60 + nm) - (oh * 60 + om);
+  if (mins < 0) mins += 1440; // overnight
+  if (mins <= 0) return null;
+  return `${Math.floor(mins / 60)}:${String(mins % 60).padStart(2, '0')}`;
+}
+
+function handleBlockTime() {
+  const result = calculateBlockTime(
+    el('f-offblock').value,
+    el('f-onblock').value
+  );
+  if (result) el('f-total').value = result;
+}
+
+/* ── OPS FIELDS (SP/MP → SE/ME) ─────────────────────────────── */
+
+function updateOpsFields() {
+  const auth = AUTHORITIES[activeAuthority];
+  if (!auth || !auth.form.showOperations) return;
+  const isSP = el('f-ops').value === 'SP';
+  el('engine-group').classList.toggle('hidden', !isSP);
+}
+
+/* ── ROLE FIELDS ─────────────────────────────────────────────── */
+
+function updateRoleFields() {
+  const role = el('f-role').value;
+  // PIC name: show for Co-Pilot, SIC, and Dual
+  const showPicName = ['Co-Pilot', 'SIC', 'Dual'].includes(role);
+  el('pic-name-group').classList.toggle('hidden', !showPicName);
+  el('instructor-group').classList.toggle('hidden', role !== 'Dual');
 }
 
 /* ── STATS ───────────────────────────────────────────────────── */
@@ -79,6 +192,7 @@ function updateStats() {
     }
   }
 
+  const set = (id, val) => { const e = el(id); if (e) e.textContent = val; };
   set('stat-total', fmtHours(total));
   set('stat-pic',   fmtHours(pic));
   set('stat-ifr',   fmtHours(ifr));
@@ -87,16 +201,11 @@ function updateStats() {
   set('stat-month', fmtHours(monthHrs));
 }
 
-function set(id, val) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = val;
-}
-
 /* ── RENDER ENTRIES ──────────────────────────────────────────── */
 
 function renderEntries() {
   const entries = getEntries();
-  const list = document.getElementById('entries-list');
+  const list = el('entries-list');
   if (!list) return;
 
   if (entries.length === 0) {
@@ -108,7 +217,6 @@ function renderEntries() {
     return;
   }
 
-  // Sort newest first
   const sorted = [...entries].sort((a, b) =>
     (b.date || '').localeCompare(a.date || ''));
 
@@ -117,10 +225,10 @@ function renderEntries() {
     const isPIC = e.role === 'PIC';
     const h = parseHours(e.totalHours);
 
-    // Route / label
     let routeHtml;
     if (isSim) {
-      routeHtml = `<span class="entry-icao">${e.fstdType || 'FSTD'}</span>
+      routeHtml = `<span class="entry-type-icon"><i class="ti ti-device-gamepad-2"></i></span>
+                   <span class="entry-icao">${e.fstdType || 'FSTD'}</span>
                    <span class="entry-aircraft">Simulator</span>`;
     } else {
       const orig = (e.origin || '—').toUpperCase();
@@ -129,14 +237,17 @@ function renderEntries() {
         ? e.aircraftType + (e.registration ? ' · ' + e.registration : '')
         : '';
       routeHtml = `
+        <span class="entry-type-icon"><i class="ti ti-plane"></i></span>
         <span class="entry-icao">${orig}</span>
         <span class="entry-arrow">→</span>
         <span class="entry-icao">${dest}</span>
         ${acft ? `<span class="entry-aircraft">${acft}</span>` : ''}`;
     }
 
-    // Role label & class
-    const roleMap = { 'PIC': 'PIC', 'Co-Pilot': 'F/O', 'Dual': 'Dual', 'Instructor': 'INST' };
+    const auth   = AUTHORITIES[activeAuthority] || AUTHORITIES.EASA;
+    const roleMap = Object.fromEntries(
+      auth.roles.map(r => [r.value, r.value === 'Co-Pilot' ? 'F/O' : r.value])
+    );
     const roleLabel = isSim ? 'SIM' : (roleMap[e.role] || e.role || 'PIC');
     const roleClass = isPIC && !isSim ? 'pic' : 'other';
 
@@ -146,14 +257,13 @@ function renderEntries() {
         <div class="entry-route">${routeHtml}</div>
         <span class="entry-duration${isPIC && !isSim ? '' : ' muted'}">${fmtHours(h)}</span>
         <span class="entry-role ${roleClass}">${roleLabel}</span>
-        <button class="entry-delete" data-id="${e.id}" title="Delete entry" aria-label="Delete">✕</button>
+        <button class="entry-delete" data-id="${e.id}" title="Delete" aria-label="Delete">✕</button>
       </div>`;
   }).join('');
 
-  // Attach delete listeners
   list.querySelectorAll('.entry-delete').forEach(btn => {
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
+    btn.addEventListener('click', ev => {
+      ev.stopPropagation();
       deleteEntry(btn.dataset.id);
     });
   });
@@ -163,8 +273,7 @@ function renderEntries() {
 
 function deleteEntry(id) {
   if (!confirm('Delete this entry? This cannot be undone.')) return;
-  const entries = getEntries().filter(e => e.id !== id);
-  saveEntries(entries);
+  saveEntries(getEntries().filter(e => e.id !== id));
   renderEntries();
   updateStats();
 }
@@ -172,19 +281,15 @@ function deleteEntry(id) {
 /* ── DRAWER ──────────────────────────────────────────────────── */
 
 function openDrawer() {
-  document.getElementById('drawer').classList.add('open');
-  document.getElementById('drawer-overlay').classList.add('visible');
+  el('drawer').classList.add('open');
+  el('drawer-overlay').classList.add('visible');
   document.body.style.overflow = 'hidden';
-  // Default to today
-  const dateField = document.getElementById('f-date');
-  if (!dateField.value) {
-    dateField.valueAsDate = new Date();
-  }
+  if (!el('f-date').value) el('f-date').valueAsDate = new Date();
 }
 
 function closeDrawer() {
-  document.getElementById('drawer').classList.remove('open');
-  document.getElementById('drawer-overlay').classList.remove('visible');
+  el('drawer').classList.remove('open');
+  el('drawer-overlay').classList.remove('visible');
   document.body.style.overflow = '';
 }
 
@@ -192,86 +297,79 @@ function closeDrawer() {
 
 function setType(type) {
   currentType = type;
-  document.getElementById('type-flight').classList.toggle('active', type === 'flight');
-  document.getElementById('type-sim').classList.toggle('active', type === 'sim');
+  el('type-flight').classList.toggle('active', type === 'flight');
+  el('type-sim').classList.toggle('active', type === 'sim');
 
-  document.querySelectorAll('.flight-only').forEach(el =>
-    el.classList.toggle('hidden', type !== 'flight'));
-  document.querySelectorAll('.sim-only').forEach(el =>
-    el.classList.toggle('hidden', type !== 'sim'));
+  document.querySelectorAll('.flight-only').forEach(e =>
+    e.classList.toggle('hidden', type !== 'flight'));
+  document.querySelectorAll('.sim-only').forEach(e =>
+    e.classList.toggle('hidden', type !== 'sim'));
 
-  document.getElementById('drawer-title').textContent =
+  el('drawer-title').textContent =
     type === 'sim' ? 'New Simulator Session' : 'New Flight';
-}
 
-/* ── ROLE FIELDS ─────────────────────────────────────────────── */
-
-function updateRoleFields() {
-  const role = document.getElementById('f-role').value;
-  const picGroup  = document.getElementById('pic-name-group');
-  const instGroup = document.getElementById('instructor-group');
-  picGroup.classList.toggle('hidden',  role !== 'Co-Pilot' && role !== 'Dual');
-  instGroup.classList.toggle('hidden', role !== 'Dual');
+  // Re-apply authority rules when switching to flight
+  if (type === 'flight') applyAuthority(activeAuthority);
 }
 
 /* ── SAVE ENTRY ──────────────────────────────────────────────── */
 
-function saveEntry(e) {
-  e.preventDefault();
+function saveEntry(ev) {
+  ev.preventDefault();
 
-  const val = id => {
-    const el = document.getElementById(id);
-    return el ? el.value : '';
-  };
+  const v = id => { const e = el(id); return e ? e.value : ''; };
 
   const entry = {
     id:         uid(),
     type:       currentType,
-    date:       val('f-date'),
-    totalHours: val('f-total'),
-    remarks:    val('f-remarks'),
+    authority:  activeAuthority,
+    date:       v('f-date'),
+    totalHours: v('f-total'),
+    remarks:    v('f-remarks'),
   };
 
   if (!entry.date || !entry.totalHours) {
-    alert('Date and Total Hours are required.');
+    alert('Date and Total Flight Time are required.');
     return;
   }
 
   if (currentType === 'flight') {
     Object.assign(entry, {
-      origin:         val('f-origin').toUpperCase(),
-      dest:           val('f-dest').toUpperCase(),
-      offBlock:       val('f-offblock'),
-      onBlock:        val('f-onblock'),
-      aircraftType:   val('f-aircraft-type').toUpperCase(),
-      registration:   val('f-reg').toUpperCase(),
-      engine:         val('f-engine'),
-      ops:            val('f-ops'),
-      dayHours:       val('f-day'),
-      nightHours:     val('f-night'),
-      ifrHours:       val('f-ifr'),
-      vfrHours:       val('f-vfr'),
-      role:           val('f-role'),
-      picName:        val('f-pic-name'),
-      instructorName: val('f-instructor'),
-      toDay:          val('f-to-day'),
-      toNight:        val('f-to-night'),
-      ldgDay:         val('f-ldg-day'),
-      ldgNight:       val('f-ldg-night'),
-      apprNum:        val('f-appr-num'),
-      apprType:       val('f-appr-type'),
+      origin:         v('f-origin').toUpperCase(),
+      dest:           v('f-dest').toUpperCase(),
+      offBlock:       v('f-offblock'),
+      onBlock:        v('f-onblock'),
+      aircraftType:   v('f-aircraft-type').toUpperCase(),
+      registration:   v('f-reg').toUpperCase(),
+      ops:            v('f-ops') || 'MP',
+      engine:         v('f-engine') || 'ME',
+      dayHours:       v('f-day'),
+      nightHours:     v('f-night'),
+      ifrHours:       v('f-ifr'),
+      vfrHours:       v('f-vfr'),
+      xcHours:        v('f-xc'),
+      soloHours:      v('f-solo'),
+      role:           v('f-role'),
+      picName:        v('f-pic-name'),
+      instructorName: v('f-instructor'),
+      toDay:          v('f-to-day'),
+      toNight:        v('f-to-night'),
+      ldgDay:         v('f-ldg-day'),
+      ldgNight:       v('f-ldg-night'),
+      apprNum:        v('f-appr-num'),
+      apprType:       v('f-appr-type'),
     });
   } else {
-    entry.fstdType = val('f-fstd-type');
+    entry.fstdType = v('f-fstd-type');
   }
 
   const entries = getEntries();
   entries.push(entry);
   saveEntries(entries);
 
-  // Reset
-  document.getElementById('entry-form').reset();
+  el('entry-form').reset();
   setType('flight');
+  updateOpsFields();
   closeDrawer();
   renderEntries();
   updateStats();
@@ -281,32 +379,52 @@ function saveEntry(e) {
 
 document.addEventListener('DOMContentLoaded', () => {
 
-  // Drawer
-  document.getElementById('btn-add-flight')
-    .addEventListener('click', openDrawer);
-  document.getElementById('drawer-close')
-    .addEventListener('click', closeDrawer);
-  document.getElementById('btn-cancel')
-    .addEventListener('click', closeDrawer);
-  document.getElementById('drawer-overlay')
-    .addEventListener('click', closeDrawer);
+  // Load or prompt authority
+  const saved = localStorage.getItem(AUTHORITY_KEY);
+  if (saved && AUTHORITIES[saved]) {
+    applyAuthority(saved);
+  } else {
+    applyAuthority('EASA'); // default
+    openAuthoritySelector(); // first time: ask
+  }
 
-  // Esc key closes drawer
+  // Authority selector buttons
+  document.querySelectorAll('.auth-card').forEach(btn => {
+    btn.addEventListener('click', () => applyAuthority(btn.dataset.authority));
+  });
+
+  // Header authority badge
+  el('auth-badge').addEventListener('click', openAuthoritySelector);
+
+  // Close authority selector on overlay click
+  el('auth-overlay').addEventListener('click', ev => {
+    if (ev.target === el('auth-overlay')) closeAuthoritySelector();
+  });
+
+  // Drawer
+  el('btn-add-flight').addEventListener('click', openDrawer);
+  el('drawer-close').addEventListener('click', closeDrawer);
+  el('btn-cancel').addEventListener('click', closeDrawer);
+  el('drawer-overlay').addEventListener('click', closeDrawer);
   document.addEventListener('keydown', ev => {
-    if (ev.key === 'Escape') closeDrawer();
+    if (ev.key === 'Escape') { closeDrawer(); closeAuthoritySelector(); }
   });
 
   // Type toggle
-  document.getElementById('type-flight')
-    .addEventListener('click', () => setType('flight'));
-  document.getElementById('type-sim')
-    .addEventListener('click', () => setType('sim'));
+  el('type-flight').addEventListener('click', () => setType('flight'));
+  el('type-sim').addEventListener('click',    () => setType('sim'));
 
-  // Role-dependent fields
-  document.getElementById('f-role')
-    .addEventListener('change', updateRoleFields);
+  // Block time auto-total
+  el('f-offblock').addEventListener('change', handleBlockTime);
+  el('f-onblock').addEventListener('change',  handleBlockTime);
 
-  // Auto-uppercase on ICAO / registration inputs
+  // SP/MP → SE/ME
+  el('f-ops').addEventListener('change', updateOpsFields);
+
+  // Role fields
+  el('f-role').addEventListener('change', updateRoleFields);
+
+  // Auto-uppercase
   document.querySelectorAll('.upper').forEach(input => {
     input.addEventListener('input', function () {
       const pos = this.selectionStart;
@@ -316,8 +434,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Form submit
-  document.getElementById('entry-form')
-    .addEventListener('submit', saveEntry);
+  el('entry-form').addEventListener('submit', saveEntry);
 
   // Initial render
   renderEntries();
