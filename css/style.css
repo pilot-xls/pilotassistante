@@ -652,7 +652,6 @@ input, select, textarea { font-family: var(--font-ui); }
 
 @media (max-width: 600px) {
   .header { padding: 0 16px; }
-
   .nav-link:not(.active) { display: none; }
 
   .stats-section { grid-template-columns: repeat(2, 1fr); }
@@ -664,6 +663,12 @@ input, select, textarea { font-family: var(--font-ui); }
   .list-title { font-size: 15px; }
 
   .drawer { width: 100%; }
+}
 
+@media (max-width: 500px) {
+  /* No drawer, todos os form-row empilham */
+  .form-row { grid-template-columns: 1fr; }
+
+  /* T/O e LDG ficam em 2 colunas (dia/noite lado a lado) */
   .form-row.four { grid-template-columns: 1fr 1fr; }
 }
