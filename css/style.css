@@ -198,10 +198,38 @@ input, select, textarea { font-family: var(--font-ui); }
   border-radius: var(--radius);
   transition: background 0.1s;
   margin: 0 -10px;
+  cursor: pointer;
 }
 
 .entry-row:hover { background: var(--surface); }
 .entry-row:last-child { border-bottom: none; }
+
+.entry-actions {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+
+.entry-row:hover .entry-actions { opacity: 1; }
+
+.entry-edit,
+.entry-delete {
+  background: none;
+  border: none;
+  padding: 5px 6px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.entry-edit  { color: var(--accent); }
+.entry-delete { color: #c0392b; }
+
+.entry-edit:hover  { background: var(--accent-bg); }
+.entry-delete:hover { background: #fff0ee; }
 
 .entry-date {
   font-family: var(--font-data);
@@ -269,21 +297,6 @@ input, select, textarea { font-family: var(--font-ui); }
   color: var(--text-muted);
   border: 1px solid var(--border);
 }
-
-.entry-delete {
-  opacity: 0;
-  background: none;
-  border: none;
-  color: #c0392b;
-  font-size: 13px;
-  padding: 4px 6px;
-  border-radius: var(--radius-sm);
-  flex-shrink: 0;
-  transition: opacity 0.1s;
-}
-
-.entry-row:hover .entry-delete { opacity: 0.5; }
-.entry-delete:hover { opacity: 1 !important; background: #fff0ee; }
 
 /* ── EMPTY STATE ──────────────────────────────────────────── */
 .empty-state {
