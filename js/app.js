@@ -425,6 +425,14 @@ function saveEntry(ev) {
   }
 
   if (currentType === 'flight') {
+    if (!el('f-offblock').value || !el('f-onblock').value) {
+      alert('Off-Block and On-Block times are required for flight entries.');
+      el('f-offblock').focus();
+      return;
+    }
+  }
+
+  if (currentType === 'flight') {
     Object.assign(entry, {
       origin:         v('f-origin').toUpperCase(),
       dest:           v('f-dest').toUpperCase(),
