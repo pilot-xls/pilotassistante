@@ -391,7 +391,15 @@ function setType(type) {
   el('drawer-title').textContent =
     type === 'sim' ? 'New Simulator Session' : 'New Flight';
 
-  // Re-apply authority rules when switching to flight
+  // Label do campo de horas muda conforme o tipo
+  const totalLabel = el('f-total').previousElementSibling;
+  if (totalLabel) {
+    totalLabel.innerHTML = type === 'sim'
+      ? 'Session Duration'
+      : 'Total Flight Time <span class="label-hint">auto from block times</span>';
+  }
+
+  // Re-apply authority rules quando muda para voo
   if (type === 'flight') applyAuthority(activeAuthority);
 }
 
