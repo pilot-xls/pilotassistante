@@ -33,6 +33,7 @@ Uma **Progressive Web App (PWA)** alimentada por IA, desenhada exclusivamente pa
 | Backend / Auth | Supabase | Logins + base de dados + storage |
 | Pagamentos | Stripe | Apenas na Fase 3 |
 | IA | Claude API — Anthropic | Haiku para geral, Sonnet para FTL |
+| Icons | Tabler Icons 3.11.0 (CDN jsdelivr) | Adicionado Sessão 3 |
 | App nativa | Capacitor (Ionic) | Apenas quando produto validado |
 | Controlo de versão | GitHub | Repositório: pilotassistante |
 
@@ -41,6 +42,27 @@ Uma **Progressive Web App (PWA)** alimentada por IA, desenhada exclusivamente pa
 - Haiku 4.5 para a maioria das funções ($1/$5 por MTok)
 - Sonnet 4.6 para análises complexas como FTL e briefing ($3/$15 por MTok)
 - PWA primeiro — App Store apenas quando produto estiver validado
+
+---
+
+## 🎨 Identidade Visual (definida Sessão 3)
+
+**Estilo:** Minimal Elegant
+**Paleta:** Índigo Profundo
+
+| Token | Valor | Uso |
+|---|---|---|
+| `--accent` | `#2825A0` | Cor principal — botões, PIC, nav activo |
+| `--accent-bg` | `#EEEDF8` | Fundo de badges e highlights |
+| `--accent-border` | `#B8B6E0` | Bordas de elementos activos |
+| `--text` | `#0B0929` | Texto principal |
+| `--text-muted` | `#8A88B0` | Labels, texto secundário |
+| `--border` | `#DDDAF2` | Bordas gerais |
+| `--border-subtle` | `#ECEBF8` | Separadores entre linhas |
+
+**Tipografia:**
+- UI: `Space Grotesk` (Google Fonts) — 400, 500, 600
+- Dados/números: `Space Mono` (Google Fonts) — horas, datas, ICAO codes
 
 ---
 
@@ -59,29 +81,59 @@ Uma **Progressive Web App (PWA)** alimentada por IA, desenhada exclusivamente pa
 - Email automático → app detecta e lê roster enviado por email
 - Funciona com qualquer software de qualquer empresa de qualquer país
 
-### Módulo 2 — Logbook Inteligente 🟡 Em progresso
-- Registo de voos (manual ou importação)
-- Totais automáticos: diurnas, noturnas, IFR, VFR, PIC, Co-Pilot, Dual, Instructor, simulador
-- Consulta em linguagem natural: "How many night hours in the last 90 days?"
-- Exportação para PDF oficial
-- Relatórios gerados pela IA
+### Módulo 2 — Logbook Inteligente 🟡 Em progresso (v0.4)
 
-**Formato Universal Interno (campos completos — implementados na Sessão 2):**
-Date, Origin (ICAO), Destination (ICAO), Off-block, On-block, Aircraft Type, Registration, SE/ME, SP/MP, Total Hours, Day Hours, Night Hours, IFR, VFR, Role (PIC/Co-Pilot/Dual/Instructor), PIC Name, Instructor Name, Take-offs Day, Take-offs Night, Landings Day, Landings Night, Instrument Approaches (number + type), FSTD Type, FSTD Hours, Remarks
+**Formato Universal Interno (campos completos):**
+Date, Origin (ICAO), Destination (ICAO), Off-block, On-block, Aircraft Type, Registration, SE/ME, SP/MP, Total Hours, Day Hours, Night Hours, IFR, VFR, XC Hours (FAA), Solo Hours (FAA), Role (PIC/Co-Pilot/SIC/Dual/Instructor), PIC Name, Instructor Name, Take-offs Day, Take-offs Night, Landings Day, Landings Night, Instrument Approaches (number + type), FSTD Type, FSTD Hours, Remarks, Authority (EASA/FAA/etc.)
 
-**Estado actual:**
-- ✅ Formulário completo com todos os campos EASA
+**Estado actual (v0.5):**
+- ✅ Formulário completo com todos os campos EASA e FAA
 - ✅ Toggle Flight / Simulator (campos mudam automaticamente)
+- ✅ Simulador: só Date + FSTD Type + Session Duration + Remarks (Part-FCL correcto)
 - ✅ Painel de estatísticas: Total HRS, PIC HRS, IFR HRS, Night HRS, Simulator, This Month
-- ✅ Lista de entradas com cartões detalhados
+- ✅ Lista de entradas com linhas detalhadas e ícones
+- ✅ Edição de entradas (clicar na linha abre drawer preenchido)
+- ✅ Eliminar entrada com confirmação
 - ✅ Armazenamento localStorage (offline, sem servidor)
-- ✅ App em inglês
 - ✅ Deploy no GitHub Pages
-- ⬜ Edição de entradas existentes
-- ⬜ Filtro por mês / pesquisa
+- ✅ Design Minimal Elegant + Índigo Profundo
+- ✅ Tabler Icons (avião, lua, nuvem, calendário, simulador, etc.)
+- ✅ Authority Profile System: EASA + FAA, escalável para qualquer autoridade
+- ✅ Off-Block e On-Block obrigatórios para voos (Part-FCL) — validação impede submissão sem eles
+- ✅ Total auto-calculado dos block times (overnight incluído), editável manualmente
+- ✅ SP/MP → SE/ME só aparece quando Single Pilot
+- ✅ Responsive mobile (drawer full-width, form-row empilha abaixo de 500px)
+- ⬜ Filtro por mês / pesquisa por rota ou aeronave
 - ⬜ Exportação CSV / PDF
 - ⬜ Importação via IA (foto, PDF, CSV)
 - ⬜ Consulta em linguagem natural (Claude API)
+
+**Authority Profile System — ficheiro `js/authorities.js`:**
+- Adicionar nova autoridade = acrescentar um objecto ao ficheiro
+- Template UK CAA incluído comentado
+- Cada perfil define: showOperations, engineWhenSP, showCrossCountry, showSolo, roles, simTypes, approachTypes, exportFormats
+- Autoridade activa guardada em localStorage
+- Primeiro uso: ecrã de selecção com cartões 🇪🇺 EASA / 🇺🇸 FAA
+- Badge no header para mudar a qualquer momento
+
+**Diferenças EASA vs FAA no formulário:**
+
+| Campo | EASA | FAA |
+|---|---|---|
+| Operations (MP/SP) | ✅ | ❌ escondido |
+| SE/ME | só quando SP | sempre visível |
+| Cross-Country (XC) | ❌ | ✅ |
+| Solo Hours | ❌ | ✅ |
+| Co-Pilot | "Co-Pilot (F/O)" | "SIC" |
+| Simulador | FFS/FTD/FNPT/BITD | FFS/FTD/ATD/AATD/BATD |
+| Approaches | ILS CAT I/II/III… | ILS/LOC/LDA… |
+
+**Ficheiros no repositório (v0.5):**
+- `index.html` — estrutura HTML + authority overlay (block times obrigatórios)
+- `css/style.css` — design Índigo Profundo + ícones + mobile
+- `js/app.js` — lógica completa: authority-aware, edit, block time auto-calc + validação
+- `js/authorities.js` — perfis EASA e FAA
+- `manifest.json` — PWA manifest (theme-color: #2825A0)
 
 **Métodos de importação (a implementar):**
 - Foto/screenshot de qualquer logbook (papel ou digital) → IA extrai dados
@@ -197,7 +249,7 @@ Date, Origin (ICAO), Destination (ICAO), Off-block, On-block, Aircraft Type, Reg
 
 | Semanas | Objectivo | Estado |
 |---|---|---|
-| 1-2 | Logbook básico | ✅ Concluído |
+| 1-2 | Logbook básico | ✅ Concluído (v0.4 — design + authority system + edição) |
 | 3-4 | Agenda + cálculo FTL simples | ⬜ Por fazer |
 | 5-6 | Integrar Claude API | ⬜ Por fazer |
 | 7-8 | Meteorologia + NOTAMs | ⬜ Por fazer |
@@ -273,7 +325,10 @@ Date, Origin (ICAO), Destination (ICAO), Off-block, On-block, Aircraft Type, Reg
 
 ## 🐛 Bugs Conhecidos
 
-*Nenhum ainda.*
+*Nenhum activo. Bugs resolvidos na Sessão 3:*
+- ~~`.hidden` sobrescrito por `.sim-only { display: flex }` — fix com `!important`~~
+- ~~app.js antigo no repositório impedia o drawer de abrir~~
+- ~~FSTD Type aparecia em modo Flight~~
 
 ---
 
@@ -320,7 +375,19 @@ Date, Origin (ICAO), Destination (ICAO), Off-block, On-block, Aircraft Type, Reg
 | Sessão 2 | Campos contextuais PIC Name / Instructor Name | Só aparecem quando a função seleccionada é relevante |
 | Sessão 2 | Horas de simulador separadas do tempo de voo real | Não contamina os totais de voo — correcto para EASA Part-FCL |
 | Sessão 2 | 4 tipos de função: PIC / Co-Pilot / Dual / Instructor | Cobre todos os casos EASA Part-FCL |
-| Sessão 2 | Tema visual: cockpit escuro tipo EFIS | Space Grotesk + Space Mono, paleta navy/cyan — identidade visual definida |
+| Sessão 3 | Minimal Elegant + Índigo Profundo (#2825A0) | Identidade visual definitiva — distinta, legível, não genérica |
+| Sessão 3 | Space Grotesk (UI) + Space Mono (dados/números) | Par tipográfico definitivo |
+| Sessão 3 | Formulário em drawer lateral | Mais espaço para a lista; UX mais limpa |
+| Sessão 3 | Tabler Icons 3.11.0 via CDN jsdelivr | Consistente, leve, sem frameworks |
+| Sessão 3 | `authorities.js` — ficheiro único para novas autoridades | Escalável: UK CAA = copiar template e preencher |
+| Sessão 3 | Dados em formato universal interno | Authority-agnostic — exporta para qualquer formato |
+| Sessão 3 | Block times opcionais → auto-calculam Total | Comerciais usam blocos; privados podem só meter o total directamente |
+| Sessão 3 | SP → SE/ME aparece; MP → SE/ME esconde | Lógica correcta EASA: MP não precisa de SE/ME no logbook |
+| Sessão 3 | `.hidden { display: none !important }` | Evita ser sobrescrito por selectores de igual especificidade |
+| Sessão 3 | Simulador: só 4 campos | Part-FCL só exige Date + FSTD Type + Duration + Remarks |
+| Sessão 3 | T/O e LDG default = 1 | Maioria dos voos tem 1 T/O e 1 LDG — mais rápido de preencher |
+| Sessão 3 | Edição de entradas via drawer | Clicar na linha abre drawer preenchido; Update Entry guarda no lugar |
+| Sessão 3 | Off-Block e On-Block obrigatórios | Part-FCL exige registo dos tempos de partida e chegada (colunas 5/6 logbook ANAC) |
 
 ---
 
@@ -336,56 +403,61 @@ Date, Origin (ICAO), Destination (ICAO), Off-block, On-block, Aircraft Type, Reg
 - Criação do documento Word completo (PilotAssistante_PlanoCompleto.docx)
 - Criação deste ficheiro CLAUDE.md
 - Discussão sobre GitHub, PWA, App Store (Capacitor), Supabase, Stripe
-- Clarificação sobre acessos: GitHub Pages só serve ficheiros, Supabase trata logins e dados
-- Clarificação sobre instalação PWA vs App Store — "Adicionar ao ecrã" não é profissional para escalar
-- Decisão: Capacitor na Fase 3 para publicar na App Store e Google Play com o mesmo código PWA
-- Solução de roster: IA lê screenshot/foto/PDF/iCal/email — funciona com qualquer software de qualquer empresa
-- Solução de logbook: formato universal interno + importação via IA de qualquer fonte + 4 templates de exportação (EASA, FAA, PDF, CSV)
+- Solução de roster: IA lê screenshot/foto/PDF/iCal/email
+- Solução de logbook: formato universal interno + importação via IA + 4 templates de exportação
 
 ---
 
 ### Sessão 2 — 14 Junho 2026
 **O que fizemos:**
-- Construção do Logbook — Módulo 2, Fase 1, Semanas 1-2
+- Construção do Logbook v0.1 e v0.2 — Módulo 2, Fase 1, Semanas 1-2
 - Criados 4 ficheiros: index.html, css/style.css, js/app.js, manifest.json
-- v0.1 — base funcional:
-  - Painel com 6 estatísticas (Total HRS, PIC HRS, IFR HRS, Night HRS, Simulator, This Month)
-  - Formulário para adicionar voos com campos essenciais
-  - Lista de entradas ordenada do mais recente para o mais antigo
-  - Eliminar entrada com confirmação
-  - Armazenamento em localStorage (offline, sem servidor)
-  - Aceita horas em "2:30" ou "2.5"
-- v0.2 — formulário expandido com todos os campos EASA:
-  - Toggle Flight / Simulator (mostra/oculta campos automaticamente)
-  - Off-block / On-block (departure and arrival times)
-  - SE / ME (Single Engine / Multi Engine)
-  - SP / MP (Single Pilot / Multi-Pilot)
-  - Funções: PIC, Co-Pilot, Dual, Instructor
-  - PIC Name (aparece quando função = Co-Pilot ou Dual)
-  - Instructor Name (aparece quando função = Dual)
-  - Take-offs day e night (separadas das landings)
-  - Instrument Approaches (número + tipo: ILS CAT I/II/III, RNAV, VOR, NDB…)
-  - FSTD Type (FFS, FTD, FNPT II MCC, FNPT II, FNPT I, BITD) + session duration
-  - Horas de simulador separadas do tempo de voo real no painel
-- Tradução completa para inglês (UI, labels, mensagens, datas, cartões)
-- Estrutura de pastas css/ e js/ definida para escalar com o projecto
-- Deploy no GitHub Pages
+- Formulário com todos os campos EASA, toggle Flight/Simulator, estatísticas
+- Armazenamento localStorage, deploy no GitHub Pages
 
-**Próxima sessão:**
-- Testar com voos reais do logbook pessoal
-- Adicionar edição de entradas (clicar num cartão abre o formulário preenchido)
-- Adicionar filtro por mês / pesquisa por rota ou aeronave
-- Considerar exportação CSV simples
+---
+
+### Sessão 3 — 15 Junho 2026
+**O que fizemos:**
+- Comparação de 3 estilos visuais (Dense Aviation / Modern Clean / Minimal Elegant)
+- Comparação de 4 paletas de cor em modo claro (Cobalto / Esmeralda / Índigo / Ferrugem)
+- Refinamento do Índigo com 4 variações → escolha: **Índigo Profundo** (#2825A0)
+- Reconstrução completa dos ficheiros (v0.3): design Minimal Elegant, Space Grotesk + Space Mono, drawer lateral
+- Deploy no GitHub → diagnóstico e correcção do bug (app.js antigo não substituído no repo)
+- Adição de Tabler Icons 3.11.0
+- Correcção da lógica SP/MP → SE/ME
+- Total Flight Time auto-calculado de Off-Block + On-Block (overnight incluído), editável
+- Block times marcados como "optional"
+- Construção do **Authority Profile System** (v0.4): `authorities.js` com EASA e FAA; template UK CAA incluído
+- Ecrã de selecção de autoridade no primeiro uso; badge no header para mudar a qualquer momento
+- Formulário adapta-se por autoridade: campos, roles, sim types, approach types
+- Implementação de edição de entradas: clicar na linha abre drawer preenchido com todos os dados
+- Fix CSS: `.hidden !important` resolve conflito de especificidade
+- Formulário de simulador correcto: só 4 campos (Part-FCL)
+- Fix mobile: form-row empilha abaixo de 500px; T/O/LDG em 2 colunas
+- Off-Block e On-Block tornados obrigatórios (Part-FCL) — validação bloqueia submissão sem eles
+- Total auto-calculado dos block times; se obrigatórios, o Total está sempre preenchido
+
+**Versão final da sessão: v0.5**
+**Ficheiros alterados:** `index.html`, `js/app.js`
+
+**Ficheiros actuais no repositório:**
+- `index.html` — v0.4
+- `css/style.css` — v0.4
+- `js/app.js` — v0.4
+- `js/authorities.js` — novo (criado Sessão 3)
+- `manifest.json` — inalterado
 
 ---
 
 ## 🚀 Próximos Passos Imediatos
 
-1. **Agora** → Testar o logbook com voos reais — adicionar os primeiros voos reais
-2. **Semana 2** → Adicionar edição de entradas + filtro por mês
-3. **Semana 3-4** → Agenda + cálculo FTL simples (Módulo 1 básico)
-4. **Mês 2** → Integrar Claude API: primeira pergunta em linguagem natural ao logbook
-5. **Mês 2-3** → Mostrar a pilotos amigos e recolher feedback honesto
+1. **Agora** → Testar com voos reais — adicionar os primeiros voos ao logbook v0.4
+2. **Semana 2** → Filtros e pesquisa (por mês, rota, aeronave)
+3. **Semana 2** → Exportação CSV simples
+4. **Semana 3-4** → Agenda + cálculo FTL simples (Módulo 1 básico)
+5. **Mês 2** → Integrar Claude API: primeira pergunta em linguagem natural ao logbook
+6. **Mês 2-3** → Mostrar a pilotos amigos e recolher feedback honesto
 
 ---
 
@@ -398,4 +470,4 @@ Date, Origin (ICAO), Destination (ICAO), Off-block, On-block, Aircraft Type, Reg
 
 ---
 
-*Última actualização: Sessão 2 — 14 Junho 2026*
+*Última actualização: Sessão 3 — 15 Junho 2026 (v0.5)*
