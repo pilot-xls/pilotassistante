@@ -366,6 +366,18 @@ function handleSubmit() {
       return;
     }
 
+    // ── Required fields (enter 00:00 if none) ──
+    const nightVal = document.getElementById('f-night').value;
+    const ifrVal   = document.getElementById('f-ifr').value;
+    if (!nightVal) {
+      alert('Night HRS is required. Enter 00:00 if the flight was entirely during the day.');
+      return;
+    }
+    if (!ifrVal) {
+      alert('IFR HRS is required. Enter 00:00 if the flight was entirely VFR.');
+      return;
+    }
+
     entryData = {
       ...entryData,
       origin:         document.getElementById('f-origin').value.toUpperCase().trim(),
