@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.11.0/dist/tabler-icons.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.mini.min.js"></script>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -90,6 +91,9 @@
         <h2>Flight Log</h2>
         <div class="entries-header-right">
           <span id="entries-count" class="entries-count">0 entries</span>
+          <button class="btn-export" onclick="openImport()" title="Import from CSV or Excel">
+            <i class="ti ti-upload"></i> Import
+          </button>
           <button class="btn-export" onclick="exportCSV()" title="Export visible entries to CSV">
             <i class="ti ti-download"></i> Export CSV
           </button>
@@ -402,6 +406,53 @@
       <button class="btn-primary" id="submit-btn" onclick="handleSubmit()">Add Entry</button>
     </div>
   </div><!-- /drawer -->
+
+  <!-- Import Modal -->
+  <div id="import-overlay" class="overlay hidden" onclick="handleImportOverlayClick(event)">
+    <div class="import-card" onclick="event.stopPropagation()">
+      <div class="import-header">
+        <h3 id="import-title">Import Flights</h3>
+        <button class="btn-icon-sm" onclick="closeImport()"><i class="ti ti-x"></i></button>
+      </div>
+      <!-- Step 1: Upload -->
+      <div id="import-step-1">
+        <div class="import-drop-zone" id="import-drop-zone"
+             onclick="document.getElementById('import-file-input').click()"
+             ondragover="event.preventDefault();this.classList.add('drag-over')"
+             ondragleave="this.classList.remove('drag-over')"
+             ondrop="handleImportDrop(event)">
+          <i class="ti ti-file-upload"></i>
+          <p>Click or drag a file here</p>
+          <span>.csv &middot; .xlsx &middot; .xls</span>
+        </div>
+        <input type="file" id="import-file-input" accept=".csv,.xlsx,.xls"
+               style="display:none" onchange="handleImportFile(this)">
+      </div>
+      <!-- Step 2: Map Columns -->
+      <div id="import-step-2" style="display:none">
+        <div class="import-step-info">
+          <span id="import-file-info"></span>
+          <button class="btn-link" onclick="resetImportFile()">Change file</button>
+        </div>
+        <div id="import-map-body" class="import-map-body"></div>
+        <div class="import-footer">
+          <button class="btn-secondary" onclick="closeImport()">Cancel</button>
+          <button class="btn-primary" onclick="showImportPreview()">Preview →</button>
+        </div>
+      </div>
+      <!-- Step 3: Preview + Confirm -->
+      <div id="import-step-3" style="display:none">
+        <div id="import-preview-info" class="import-preview-info"></div>
+        <div class="import-preview-wrap">
+          <table id="import-preview-table" class="import-preview-table"></table>
+        </div>
+        <div class="import-footer">
+          <button class="btn-secondary" onclick="backToMapping()">← Back</button>
+          <button id="import-confirm-btn" class="btn-primary" onclick="confirmImport()">Import</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="js/authorities.js"></script>
   <script src="js/app.js"></script>
