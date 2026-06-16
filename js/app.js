@@ -185,8 +185,8 @@ function validateEntry(data) {
 
   const totalTO  = (data.toDay  || 0) + (data.toNight  || 0);
   const totalLDG = (data.ldgDay || 0) + (data.ldgNight || 0);
-  if (totalLDG > totalTO)
-    return `Total landings (${totalLDG}) cannot exceed total take-offs (${totalTO})`;
+  if (totalLDG !== totalTO)
+    return `Total landings (${totalLDG}) must equal total take-offs (${totalTO})`;
 
   return null;
 }
