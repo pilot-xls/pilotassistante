@@ -25,6 +25,12 @@ let filterType         = 'all'; // 'all' | 'flight' | 'sim'
 // ── Init ────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
 
+  // iOS detection — adds .is-ios to <html> for Safari-specific CSS
+  if (/iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
+    document.documentElement.classList.add('is-ios');
+  }
+
   // Default date to today
   document.getElementById('f-date').valueAsDate = new Date();
 

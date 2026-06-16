@@ -692,6 +692,10 @@ body {
   padding: 0;
 }
 
+/* ── iOS Safari fix ────────────────────────────────────────── */
+/* .is-ios is added by JS (navigator.userAgent check) */
+.is-ios .fp-date-row input[type="date"] { min-height: 60px; }
+
 /* ── Mobile ────────────────────────────────────────────────── */
 @media (max-width: 500px) {
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
@@ -718,13 +722,6 @@ body {
     max-width: 100%;
     -webkit-appearance: none;
     min-width: 0;
-  }
-
-  /* iOS Safari only — date inputs collapse when empty without explicit min-height */
-  @supports (-webkit-touch-callout: none) {
-    .fp-date-row input[type="date"] {
-      min-height: 60px;
-    }
   }
 
   /* Prevent iOS Safari auto-zoom on input focus (font-size must be ≥ 16px) */
