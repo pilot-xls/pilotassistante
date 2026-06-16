@@ -1,94 +1,88 @@
-/* ─────────────────────────────────────────────────────────────
-   PilotAssistante — Authority Profiles
-   Adicionar nova autoridade = adicionar um objecto aqui.
-   O formulário adapta-se automaticamente.
-   ───────────────────────────────────────────────────────────── */
+/* ============================================================
+   PilotAssistante — Authority Profile System
+   v0.6 — EASA showApproaches: false (not required by Part-FCL)
+
+   Para adicionar nova autoridade:
+   1. Copia o template UK CAA no final
+   2. Remove os comentários /* e */
+   3. Preenche os campos
+   ============================================================ */
 
 const AUTHORITIES = {
 
   EASA: {
-    id:       'EASA',
-    name:     'EASA',
-    subtitle: 'Europe · ANAC · DGAC · LBA · ENAC · CAA',
-
-    form: {
-      showOperations:    true,   // campo MP / SP
-      engineWhenSP:      true,   // SE/ME só aparece quando SP
-      showCrossCountry:  false,  // horas XC (não é coluna EASA)
-      showSolo:          false,  // horas solo (não é coluna EASA)
-    },
-
+    name: 'EASA',
+    flag: '🇪🇺',
+    description: 'European Union Aviation Safety Agency',
+    showOperations:   true,   // SP/MP toggle (Part-FCL)
+    engineWhenSP:     true,   // SE/ME só aparece quando SP selected
+    showCrossCountry: false,  // XC hours — FAA only
+    showSolo:         false,  // Solo hours — FAA only
+    showApproaches:   false,  // Approaches — não obrigatório Part-FCL (registar em Remarks)
     roles: [
-      { value: 'PIC',        label: 'PIC — Pilot in Command' },
-      { value: 'Co-Pilot',   label: 'Co-Pilot (F/O)' },
-      { value: 'Dual',       label: 'Dual (Student)' },
-      { value: 'Instructor', label: 'Instructor' },
+      { value: 'PIC',        label: 'PIC'            },
+      { value: 'CO_PILOT',   label: 'Co-Pilot (F/O)' },
+      { value: 'DUAL',       label: 'Dual'            },
+      { value: 'INSTRUCTOR', label: 'Instructor'      },
     ],
-
-    simTypes: [
-      { value: 'FFS',          label: 'FFS — Full Flight Simulator' },
-      { value: 'FTD',          label: 'FTD — Flight Training Device' },
-      { value: 'FNPT II MCC',  label: 'FNPT II MCC' },
-      { value: 'FNPT II',      label: 'FNPT II' },
-      { value: 'FNPT I',       label: 'FNPT I' },
-      { value: 'BITD',         label: 'BITD' },
-    ],
-
-    approachTypes: [
-      'ILS CAT I', 'ILS CAT II', 'ILS CAT III',
-      'RNAV (GNSS)', 'VOR', 'NDB', 'Visual',
-    ],
-
-    exportFormats: ['EASA Part-FCL', 'CSV Universal'],
+    simTypes: ['FFS', 'FTD', 'FNPT I', 'FNPT II', 'BITD'],
+    approachTypes: ['ILS CAT I', 'ILS CAT II', 'ILS CAT III', 'RNP', 'RNAV', 'VOR', 'NDB', 'Visual'],
+    exportFormats: ['EASA Official', 'PDF Generic', 'CSV Universal'],
   },
 
   FAA: {
-    id:       'FAA',
-    name:     'FAA',
-    subtitle: 'United States of America',
-
-    form: {
-      showOperations:   false,  // FAA não usa coluna MP/SP no logbook
-      engineWhenSP:     false,  // SE/ME sempre visível
-      showCrossCountry: true,   // XC é obrigatório para certificados FAA
-      showSolo:         true,   // horas solo também são relevantes
-    },
-
+    name: 'FAA',
+    flag: '🇺🇸',
+    description: 'Federal Aviation Administration',
+    showOperations:   false,  // FAA não usa SP/MP no logbook
+    engineWhenSP:     false,  // SE/ME sempre visível
+    showCrossCountry: true,   // Obrigatório FAA
+    showSolo:         true,   // Obrigatório FAA
+    showApproaches:   true,   // Obrigatório FAA — currency IFR (6 em 6 meses)
     roles: [
-      { value: 'PIC',        label: 'PIC — Pilot in Command' },
-      { value: 'SIC',        label: 'SIC — Second in Command' },
-      { value: 'Dual',       label: 'Dual Received' },
-      { value: 'Instructor', label: 'CFI — Flight Instructor' },
+      { value: 'PIC',        label: 'PIC'        },
+      { value: 'SIC',        label: 'SIC'        },
+      { value: 'DUAL',       label: 'Dual'       },
+      { value: 'INSTRUCTOR', label: 'Instructor' },
     ],
-
-    simTypes: [
-      { value: 'FFS',  label: 'FFS — Full Flight Simulator' },
-      { value: 'FTD',  label: 'FTD — Flight Training Device' },
-      { value: 'ATD',  label: 'ATD — Aviation Training Device' },
-      { value: 'AATD', label: 'AATD — Advanced ATD' },
-      { value: 'BATD', label: 'BATD — Basic ATD' },
-    ],
-
-    approachTypes: [
-      'ILS', 'LOC', 'LDA', 'SDF',
-      'RNAV (GPS)', 'RNAV (RNP)',
-      'VOR', 'VOR/DME', 'NDB', 'Visual',
-    ],
-
-    exportFormats: ['FAA 8710-1', 'CSV Universal'],
+    simTypes: ['FFS', 'FTD', 'ATD', 'AATD', 'BATD'],
+    approachTypes: ['ILS', 'LOC', 'LDA', 'SDF', 'VOR', 'NDB', 'RNAV (GPS)', 'RNP', 'Visual'],
+    exportFormats: ['FAA Official', 'PDF Generic', 'CSV Universal'],
   },
 
-  /* ── TEMPLATE PARA NOVAS AUTORIDADES ──────────────────────
+  /* ── TEMPLATE: UK CAA ──────────────────────────────────────
+
   UK_CAA: {
-    id:       'UK_CAA',
-    name:     'UK CAA',
-    subtitle: 'United Kingdom',
-    form: { showOperations: true, engineWhenSP: true, showCrossCountry: false, showSolo: false },
-    roles: [ ... ],
-    simTypes: [ ... ],
-    approachTypes: [ ... ],
-    exportFormats: [ ... ],
+    name: 'UK CAA',
+    flag: '🇬🇧',
+    description: 'UK Civil Aviation Authority',
+    showOperations:   true,
+    engineWhenSP:     true,
+    showCrossCountry: false,
+    showSolo:         false,
+    showApproaches:   false,
+    roles: [
+      { value: 'PIC',        label: 'PIC'            },
+      { value: 'CO_PILOT',   label: 'Co-Pilot (F/O)' },
+      { value: 'DUAL',       label: 'Dual'            },
+      { value: 'INSTRUCTOR', label: 'Instructor'      },
+    ],
+    simTypes: ['FFS', 'FTD', 'FNPT I', 'FNPT II', 'BITD'],
+    approachTypes: ['ILS CAT I', 'ILS CAT II', 'ILS CAT III', 'RNP', 'RNAV', 'VOR', 'NDB', 'Visual'],
+    exportFormats: ['EASA Official', 'PDF Generic', 'CSV Universal'],
   },
+
   ─────────────────────────────────────────────────────────── */
 
 };
+
+/* ── Helpers ──────────────────────────────────────────────── */
+
+function getAuthority() {
+  const key = localStorage.getItem('pa_authority') || 'EASA';
+  return AUTHORITIES[key] || AUTHORITIES.EASA;
+}
+
+function getAuthorityKey() {
+  return localStorage.getItem('pa_authority') || 'EASA';
+}

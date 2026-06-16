@@ -1,11 +1,21 @@
 {
   "name": "PilotAssistante",
-  "short_name": "PilotAssistante",
-  "description": "Intelligent logbook and tools for professional pilots",
+  "short_name": "PilotAssist",
+  "description": "Your AI-powered pilot logbook",
   "start_url": "/",
   "display": "standalone",
-  "orientation": "portrait-primary",
-  "background_color": "#FFFFFF",
+  "background_color": "#F7F6FC",
   "theme_color": "#2825A0",
-  "icons": []
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }

@@ -2,311 +2,335 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#2825A0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PilotAssistante — Logbook</title>
   <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Space+Mono&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.11.0/dist/tabler-icons.min.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-  <!-- ── AUTHORITY SELECTOR OVERLAY ────────────────────────── -->
-  <div class="auth-overlay" id="auth-overlay">
-    <div class="auth-modal">
-      <p class="auth-modal-eyebrow">PilotAssistante</p>
-      <h2 class="auth-modal-title">Select your aviation authority</h2>
-      <p class="auth-modal-sub">Adapts fields, terminology and export formats to your licence.</p>
-      <div class="auth-grid">
-        <button class="auth-card" data-authority="EASA">
-          <span class="auth-flag">🇪🇺</span>
-          <span class="auth-card-name">EASA</span>
-          <span class="auth-card-sub">Europe · ANAC · DGAC · LBA · ENAC</span>
+  <!-- Authority Selection Overlay (first use) -->
+  <div id="authority-overlay" class="overlay hidden">
+    <div class="overlay-card">
+      <div class="overlay-logo">
+        <i class="ti ti-plane"></i>
+        <span>PilotAssistante</span>
+      </div>
+      <h2>Select your aviation authority</h2>
+      <p>This personalises your logbook fields and export formats.</p>
+      <div class="authority-cards">
+        <button class="authority-card" onclick="selectAuthority('EASA')">
+          <span class="authority-flag">🇪🇺</span>
+          <span class="authority-name">EASA</span>
+          <span class="authority-desc">European Union Aviation Safety Agency</span>
         </button>
-        <button class="auth-card" data-authority="FAA">
-          <span class="auth-flag">🇺🇸</span>
-          <span class="auth-card-name">FAA</span>
-          <span class="auth-card-sub">United States</span>
+        <button class="authority-card" onclick="selectAuthority('FAA')">
+          <span class="authority-flag">🇺🇸</span>
+          <span class="authority-name">FAA</span>
+          <span class="authority-desc">Federal Aviation Administration</span>
         </button>
       </div>
-      <p class="auth-modal-note">You can change this at any time from the header.</p>
     </div>
   </div>
 
-  <!-- ── HEADER ─────────────────────────────────────────────── -->
-  <header class="header">
-    <span class="logo">PilotAssistante</span>
-    <div class="header-sep"></div>
-    <nav class="nav">
-      <a href="#" class="nav-link active"><i class="ti ti-notebook" aria-hidden="true"></i> Logbook</a>
-      <a href="#" class="nav-link"><i class="ti ti-calendar-event" aria-hidden="true"></i> Schedule</a>
-      <a href="#" class="nav-link"><i class="ti ti-file-text" aria-hidden="true"></i> Docs</a>
-      <a href="#" class="nav-link"><i class="ti ti-map" aria-hidden="true"></i> Briefing</a>
-    </nav>
-    <button class="authority-badge" id="auth-badge" aria-label="Change authority">
-      <i class="ti ti-certificate" aria-hidden="true"></i>
-      <span id="authority-name">EASA</span>
-      <i class="ti ti-chevron-down" aria-hidden="true"></i>
-    </button>
-  </header>
+  <!-- App -->
+  <div id="app">
 
-  <!-- ── STATS ──────────────────────────────────────────────── -->
-  <section class="stats-section">
-    <div class="stat-card">
-      <span class="stat-label"><i class="ti ti-clock" aria-hidden="true"></i> Total</span>
-      <span class="stat-value" id="stat-total">0:00</span>
-    </div>
-    <div class="stat-card accent">
-      <span class="stat-label"><i class="ti ti-plane" aria-hidden="true"></i> PIC</span>
-      <span class="stat-value" id="stat-pic">0:00</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-label"><i class="ti ti-cloud" aria-hidden="true"></i> IFR</span>
-      <span class="stat-value" id="stat-ifr">0:00</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-label"><i class="ti ti-moon" aria-hidden="true"></i> Night</span>
-      <span class="stat-value" id="stat-night">0:00</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-label"><i class="ti ti-device-gamepad-2" aria-hidden="true"></i> Simulator</span>
-      <span class="stat-value" id="stat-sim">0:00</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-label"><i class="ti ti-calendar-month" aria-hidden="true"></i> This Month</span>
-      <span class="stat-value" id="stat-month">0:00</span>
-    </div>
-  </section>
+    <!-- Header -->
+    <header class="header">
+      <div class="header-brand">
+        <i class="ti ti-plane"></i>
+        <span>PilotAssistante</span>
+      </div>
+      <div class="header-actions">
+        <button id="authority-badge" class="badge-btn" onclick="showAuthorityOverlay()">
+          <span id="authority-label">EASA</span>
+        </button>
+        <button class="btn-icon" onclick="openDrawer()">
+          <i class="ti ti-plus"></i>
+        </button>
+      </div>
+    </header>
 
-  <!-- ── MAIN ───────────────────────────────────────────────── -->
-  <main class="main">
-    <div class="list-header">
-      <h1 class="list-title">Flight Logbook</h1>
-      <button class="btn-add" id="btn-add-flight">
-        <i class="ti ti-plus" aria-hidden="true"></i> Add Entry
-      </button>
-    </div>
-    <div class="entries-list" id="entries-list"></div>
-  </main>
+    <!-- Stats -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-label">Total HRS</span>
+        <span class="stat-value" id="stat-total">0:00</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">PIC HRS</span>
+        <span class="stat-value" id="stat-pic">0:00</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">IFR HRS</span>
+        <span class="stat-value" id="stat-ifr">0:00</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Night HRS</span>
+        <span class="stat-value" id="stat-night">0:00</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Simulator</span>
+        <span class="stat-value" id="stat-sim">0:00</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">This Month</span>
+        <span class="stat-value" id="stat-month">0:00</span>
+      </div>
+    </section>
 
-  <!-- ── DRAWER OVERLAY ─────────────────────────────────────── -->
-  <div class="drawer-overlay" id="drawer-overlay"></div>
+    <!-- Entry List -->
+    <section class="entries-section">
+      <div class="entries-header">
+        <h2>Flight Log</h2>
+        <span id="entries-count" class="entries-count">0 entries</span>
+      </div>
+      <div id="entries-list" class="entries-list">
+        <div class="empty-state">
+          <i class="ti ti-plane-off"></i>
+          <p>No flights logged yet</p>
+          <p class="empty-sub">Tap + to add your first flight</p>
+        </div>
+      </div>
+    </section>
 
-  <!-- ── DRAWER FORM ────────────────────────────────────────── -->
-  <aside class="drawer" id="drawer" aria-label="Add flight entry">
+  </div>
+
+  <!-- Drawer Overlay -->
+  <div id="drawer-overlay" class="drawer-overlay hidden" onclick="closeDrawer()"></div>
+
+  <!-- Drawer -->
+  <div id="drawer" class="drawer hidden">
     <div class="drawer-header">
-      <h2 class="drawer-title" id="drawer-title">New Flight</h2>
-      <button class="drawer-close" id="drawer-close" aria-label="Close">✕</button>
-    </div>
-
-    <div class="type-toggle">
-      <button class="type-btn active" id="type-flight">
-        <i class="ti ti-plane" aria-hidden="true"></i> Flight
-      </button>
-      <button class="type-btn" id="type-sim">
-        <i class="ti ti-device-gamepad-2" aria-hidden="true"></i> Simulator
+      <h3 id="drawer-title">New Entry</h3>
+      <button class="btn-icon-sm" onclick="closeDrawer()">
+        <i class="ti ti-x"></i>
       </button>
     </div>
 
-    <form class="form" id="entry-form" novalidate>
+    <div class="drawer-body">
 
-      <!-- Date -->
+      <!-- Toggle Flight / Simulator -->
+      <div class="toggle-row">
+        <button id="toggle-flight" class="toggle-btn active" onclick="setMode('flight')">
+          <i class="ti ti-plane"></i> Flight
+        </button>
+        <button id="toggle-sim" class="toggle-btn" onclick="setMode('sim')">
+          <i class="ti ti-device-laptop"></i> Simulator
+        </button>
+      </div>
+
+      <!-- Date (always shown) -->
       <div class="form-group">
-        <label class="form-label" for="f-date">Date</label>
-        <input class="form-input" type="date" id="f-date" required>
+        <label>Date</label>
+        <input type="date" id="f-date">
       </div>
 
-      <!-- ── FLIGHT ONLY ──────────────────────────────────── -->
-      <div class="flight-only">
+      <!-- ── FLIGHT FIELDS ── -->
+      <div id="flight-fields">
 
+        <!-- Route -->
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label" for="f-origin">Origin (ICAO)</label>
-            <input class="form-input mono upper" type="text" id="f-origin" placeholder="LPPT" maxlength="4" autocomplete="off">
+            <label>From (ICAO)</label>
+            <input type="text" id="f-origin" placeholder="LPPT" maxlength="4" class="mono" style="text-transform:uppercase">
           </div>
           <div class="form-group">
-            <label class="form-label" for="f-dest">Destination (ICAO)</label>
-            <input class="form-input mono upper" type="text" id="f-dest" placeholder="EGLL" maxlength="4" autocomplete="off">
+            <label>To (ICAO)</label>
+            <input type="text" id="f-destination" placeholder="EGLL" maxlength="4" class="mono" style="text-transform:uppercase">
           </div>
         </div>
 
+        <!-- Block Times -->
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label" for="f-offblock">Off-Block (UTC)</label>
-            <input class="form-input mono" type="time" id="f-offblock">
+            <label>Off-Block UTC <span class="required">*</span></label>
+            <input type="time" id="f-off-block" class="mono">
           </div>
           <div class="form-group">
-            <label class="form-label" for="f-onblock">On-Block (UTC)</label>
-            <input class="form-input mono" type="time" id="f-onblock">
+            <label>On-Block UTC <span class="required">*</span></label>
+            <input type="time" id="f-on-block" class="mono">
           </div>
         </div>
 
+        <!-- Total Time -->
+        <div class="form-group">
+          <label>Total Flight Time</label>
+          <input type="text" id="f-total" placeholder="2:30 or 2.5" class="mono" autocomplete="off">
+          <span class="field-hint">Auto-calculated from block times — edit if needed</span>
+        </div>
+
+        <!-- Aircraft -->
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label" for="f-aircraft-type">Aircraft Type</label>
-            <input class="form-input upper" type="text" id="f-aircraft-type" placeholder="B737-800" autocomplete="off">
+            <label>Aircraft Type</label>
+            <input type="text" id="f-aircraft-type" placeholder="A320">
           </div>
           <div class="form-group">
-            <label class="form-label" for="f-reg">Registration</label>
-            <input class="form-input mono upper" type="text" id="f-reg" placeholder="CS-TQA" autocomplete="off">
+            <label>Registration</label>
+            <input type="text" id="f-registration" placeholder="CS-TNV" style="text-transform:uppercase" class="mono">
           </div>
         </div>
 
-        <!-- Operations SP/MP (EASA only — hidden for FAA) -->
-        <div class="form-group" id="ops-group">
-          <label class="form-label" for="f-ops">Operations</label>
-          <select class="form-select" id="f-ops">
-            <option value="MP">MP — Multi Pilot</option>
-            <option value="SP">SP — Single Pilot</option>
-          </select>
-        </div>
-
-        <!-- Engine type: always visible for FAA, only when SP for EASA -->
-        <div class="form-group hidden" id="engine-group">
-          <label class="form-label" for="f-engine">
-            Engine type <span class="label-hint">SP only</span>
-          </label>
-          <select class="form-select" id="f-engine">
-            <option value="ME">ME — Multi Engine</option>
-            <option value="SE">SE — Single Engine</option>
-          </select>
-        </div>
-
-      </div>
-
-      <!-- Total flight time — auto from block times, editable -->
-      <div class="form-group">
-        <label class="form-label" for="f-total">
-          Total Flight Time <span class="label-hint">auto from block times</span>
-        </label>
-        <input class="form-input mono" type="text" id="f-total" placeholder="2:30" required autocomplete="off">
-      </div>
-
-      <!-- ── MORE FLIGHT ONLY ─────────────────────────────── -->
-      <div class="flight-only">
-
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label" for="f-day">Day Hours</label>
-            <input class="form-input mono" type="text" id="f-day" placeholder="2:00" autocomplete="off">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="f-night">Night Hours</label>
-            <input class="form-input mono" type="text" id="f-night" placeholder="0:30" autocomplete="off">
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label" for="f-ifr">IFR Hours</label>
-            <input class="form-input mono" type="text" id="f-ifr" placeholder="2:10" autocomplete="off">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="f-vfr">VFR Hours</label>
-            <input class="form-input mono" type="text" id="f-vfr" placeholder="0:00" autocomplete="off">
-          </div>
-        </div>
-
-        <!-- Cross-Country — FAA only -->
-        <div class="form-row hidden" id="xc-group">
-          <div class="form-group" style="grid-column:1/-1">
-            <label class="form-label" for="f-xc">
-              Cross-Country (XC) <span class="label-hint">FAA requirement</span>
+        <!-- Operations SP/MP (EASA only) -->
+        <div id="field-operations" class="form-group">
+          <label>Operations</label>
+          <div class="radio-row">
+            <label class="radio-label">
+              <input type="radio" name="operations" value="MP" checked onchange="handleOperationsChange()"> MP
             </label>
-            <input class="form-input mono" type="text" id="f-xc" placeholder="2.5" autocomplete="off">
+            <label class="radio-label">
+              <input type="radio" name="operations" value="SP" onchange="handleOperationsChange()"> SP
+            </label>
           </div>
         </div>
 
-        <!-- Solo — FAA only -->
-        <div class="form-row hidden" id="solo-group">
-          <div class="form-group" style="grid-column:1/-1">
-            <label class="form-label" for="f-solo">Solo Hours <span class="label-hint">FAA requirement</span></label>
-            <input class="form-input mono" type="text" id="f-solo" placeholder="1.0" autocomplete="off">
+        <!-- SE/ME (depends on authority + operations) -->
+        <div id="field-engine" class="form-group hidden">
+          <label>Engine</label>
+          <div class="radio-row">
+            <label class="radio-label">
+              <input type="radio" name="engine" value="SE"> SE
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="engine" value="ME" checked> ME
+            </label>
           </div>
         </div>
 
         <!-- Role -->
         <div class="form-group">
-          <label class="form-label" for="f-role">Role</label>
-          <select class="form-select" id="f-role">
-            <!-- Populated by applyAuthority() -->
+          <label>Role</label>
+          <select id="f-role" onchange="handleRoleChange()">
+            <!-- populated by JS -->
           </select>
         </div>
 
-        <div class="form-group hidden" id="pic-name-group">
-          <label class="form-label" for="f-pic-name">PIC Name</label>
-          <input class="form-input" type="text" id="f-pic-name" placeholder="Captain's full name">
+        <!-- PIC Name (when Co-Pilot / SIC / Dual) -->
+        <div id="field-pic-name" class="form-group hidden">
+          <label>PIC Name</label>
+          <input type="text" id="f-pic-name" placeholder="Captain's full name">
         </div>
 
-        <div class="form-group hidden" id="instructor-group">
-          <label class="form-label" for="f-instructor">Instructor Name</label>
-          <input class="form-input" type="text" id="f-instructor" placeholder="Instructor's full name">
+        <!-- Student Name (when Instructor) -->
+        <div id="field-instructor-name" class="form-group hidden">
+          <label>Student Name</label>
+          <input type="text" id="f-instructor-name" placeholder="Student's full name">
         </div>
 
-        <!-- Takeoffs & Landings -->
-        <div class="form-section-label">Takeoffs &amp; Landings</div>
-        <div class="form-row four">
-          <div class="form-group">
-            <label class="form-label" for="f-to-day">T/O Day</label>
-            <input class="form-input mono" type="number" id="f-to-day" min="0" value="1">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="f-to-night">T/O Night</label>
-            <input class="form-input mono" type="number" id="f-to-night" min="0" value="0">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="f-ldg-day">LDG Day</label>
-            <input class="form-input mono" type="number" id="f-ldg-day" min="0" value="1">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="f-ldg-night">LDG Night</label>
-            <input class="form-input mono" type="number" id="f-ldg-night" min="0" value="0">
-          </div>
-        </div>
-
-        <!-- Instrument Approaches -->
+        <!-- Day / Night Hours -->
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label" for="f-appr-num">Inst. Approaches</label>
-            <input class="form-input mono" type="number" id="f-appr-num" min="0" value="0">
+            <label>Day HRS</label>
+            <input type="text" id="f-day" placeholder="0:00" class="mono">
           </div>
           <div class="form-group">
-            <label class="form-label" for="f-appr-type">Approach Type</label>
-            <select class="form-select" id="f-appr-type">
-              <!-- Populated by applyAuthority() -->
+            <label>Night HRS</label>
+            <input type="text" id="f-night" placeholder="0:00" class="mono">
+          </div>
+        </div>
+
+        <!-- IFR / VFR Hours -->
+        <div class="form-row">
+          <div class="form-group">
+            <label>IFR HRS</label>
+            <input type="text" id="f-ifr" placeholder="0:00" class="mono">
+          </div>
+          <div class="form-group">
+            <label>VFR HRS</label>
+            <input type="text" id="f-vfr" placeholder="0:00" class="mono">
+          </div>
+        </div>
+
+        <!-- Cross-Country + Solo (FAA only) -->
+        <div id="field-xc" class="form-row hidden">
+          <div class="form-group">
+            <label>Cross-Country HRS</label>
+            <input type="text" id="f-xc" placeholder="0:00" class="mono">
+          </div>
+          <div class="form-group">
+            <label>Solo HRS</label>
+            <input type="text" id="f-solo" placeholder="0:00" class="mono">
+          </div>
+        </div>
+
+        <!-- Takeoffs -->
+        <div class="form-row">
+          <div class="form-group">
+            <label>T/O Day</label>
+            <input type="number" id="f-to-day" value="1" min="0" class="mono">
+          </div>
+          <div class="form-group">
+            <label>T/O Night</label>
+            <input type="number" id="f-to-night" value="0" min="0" class="mono">
+          </div>
+        </div>
+
+        <!-- Landings -->
+        <div class="form-row">
+          <div class="form-group">
+            <label>LDG Day</label>
+            <input type="number" id="f-ldg-day" value="1" min="0" class="mono">
+          </div>
+          <div class="form-group">
+            <label>LDG Night</label>
+            <input type="number" id="f-ldg-night" value="0" min="0" class="mono">
+          </div>
+        </div>
+
+        <!-- Instrument Approaches (FAA only) -->
+        <div id="field-approaches" class="form-row hidden">
+          <div class="form-group">
+            <label>Approaches (#)</label>
+            <input type="number" id="f-approach-count" value="0" min="0" class="mono">
+          </div>
+          <div class="form-group">
+            <label>Type</label>
+            <select id="f-approach-type">
+              <!-- populated by JS -->
             </select>
           </div>
         </div>
 
       </div>
+      <!-- ── END FLIGHT FIELDS ── -->
 
-      <!-- ── SIMULATOR ONLY ───────────────────────────────── -->
-      <div class="sim-only hidden">
+      <!-- ── SIMULATOR FIELDS ── -->
+      <div id="sim-fields" class="hidden">
+
         <div class="form-group">
-          <label class="form-label" for="f-fstd-type">FSTD Type</label>
-          <select class="form-select" id="f-fstd-type">
-            <!-- Populated by applyAuthority() -->
+          <label>FSTD Type</label>
+          <select id="f-fstd-type">
+            <!-- populated by JS -->
           </select>
         </div>
-      </div>
 
-      <!-- Remarks -->
+        <div class="form-group">
+          <label>Session Duration</label>
+          <input type="text" id="f-sim-duration" placeholder="2:00" class="mono">
+        </div>
+
+      </div>
+      <!-- ── END SIMULATOR FIELDS ── -->
+
+      <!-- Remarks (always shown) -->
       <div class="form-group">
-        <label class="form-label" for="f-remarks">Remarks</label>
-        <textarea class="form-textarea" id="f-remarks" rows="2" placeholder="ILS CAT I RWY 27L, night sector…"></textarea>
+        <label>Remarks</label>
+        <textarea id="f-remarks" rows="2" placeholder="Optional notes"></textarea>
       </div>
 
-      <div class="form-actions">
-        <button type="button" class="btn-cancel" id="btn-cancel">Cancel</button>
-        <button type="submit" class="btn-save">Save Entry</button>
-      </div>
+    </div><!-- /drawer-body -->
 
-    </form>
-  </aside>
+    <div class="drawer-footer">
+      <button class="btn-secondary" onclick="closeDrawer()">Cancel</button>
+      <button class="btn-primary" id="submit-btn" onclick="handleSubmit()">Add Entry</button>
+    </div>
+  </div><!-- /drawer -->
 
   <script src="js/authorities.js"></script>
   <script src="js/app.js"></script>
