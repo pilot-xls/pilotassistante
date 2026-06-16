@@ -144,8 +144,10 @@ pilotassistante/
 ### O que falta ⬜
 
 - Filtro por mês / pesquisa por rota ou aeronave ← **próxima tarefa**
-- Exportação CSV / PDF
-- Importação via IA (foto, PDF, CSV)
+- Exportação CSV
+- Importação CSV/Excel (upload de ficheiro, mapeamento de colunas) ← **sem IA, JS puro**
+- Integração API apps externas: LEON, Aims, Crewlink (Fase 2)
+- Foto → 1 voo: tirar foto à caderneta do avião, preenche uma entrada (Claude API, Fase 2+)
 - Consulta em linguagem natural (Claude API)
 
 ### Formato Universal Interno (campos)
@@ -178,10 +180,12 @@ Template UK CAA incluído comentado. Primeiro uso: ecrã de selecção. Badge no
 | Semanas | Objectivo | Estado |
 |---|---|---|
 | 1-2 | Logbook básico | ✅ Concluído (v0.6) |
-| 3-4 | Filtros + Exportação CSV + Agenda FTL básica | 🟡 A seguir |
-| 5-6 | Integrar Claude API | ⬜ Por fazer |
-| 7-8 | Meteorologia + NOTAMs | ⬜ Por fazer |
-| 9-12 | Polir, testar, corrigir bugs | ⬜ Por fazer |
+| 3 | Filtros + pesquisa (mês, rota, aeronave) | 🟡 A seguir |
+| 4 | Exportação CSV + Importação CSV/Excel | ⬜ Por fazer |
+| 5 | Agenda FTL básica (Módulo 1) | ⬜ Por fazer |
+| 6-7 | Integrar Claude API (consulta linguagem natural + foto→1 voo) | ⬜ Por fazer |
+| 8-9 | Meteorologia + NOTAMs | ⬜ Por fazer |
+| 10-12 | Polir, testar, corrigir bugs | ⬜ Por fazer |
 
 ### FASE 2 — Beta com Pilotos (Mês 4-6)
 
@@ -190,6 +194,8 @@ Template UK CAA incluído comentado. Primeiro uso: ecrã de selecção. Badge no
 - Criar grupo de feedback (WhatsApp ou Discord)
 - Activar Notificações Push
 - Interface de Voz + Wellbeing (módulos críticos)
+- Integração API apps externas: LEON, Aims, Crewlink (sync automático de rosters/logbook)
+- Foto → 1 voo via Claude API (caderneta do avião)
 
 ### FASE 3 — Produto Comercial (Mês 7-12)
 
@@ -263,6 +269,9 @@ Nunca gerar ficheiros completos do zero — editar apenas blocos específicos ·
 ### Sessão 5
 `type="time"` para todos os campos de horas · Day HRS e VFR HRS auto-calculados (não inseridos) · Night HRS e IFR HRS obrigatórios (00:00 se nenhum) · Validações: Night≤Total, IFR≤Total, LDG=T/O · Badge UTC no Off-Block/On-Block · EASA roles: PICUS + SPIC + FE adicionados · PWA icons criados
 
+### Sessão 6
+Estratégia de importação redefinida: importação CSV/Excel em JS puro (sem IA) vem logo a seguir à exportação CSV · Importação via foto REJEITADA para logbook completo · Foto via Claude API aceite apenas para 1 voo (caderneta do avião) · Integração API apps externas (LEON, Aims, Crewlink) planeada para Fase 2
+
 ---
 
 ## 📝 Registo de Sessões
@@ -282,20 +291,24 @@ Discussão sobre Claude Code vs claude.ai Project — como o CLAUDE.md funciona 
 ### Sessão 5 — 16 Junho 2026
 Logbook v0.5→v0.6: fix SyntaxError no authorities.js, PWA icons, todos os inputs de horas passaram a `type="time"`, Day HRS e VFR HRS tornaram-se auto-calculados, Night HRS e IFR HRS tornaram-se obrigatórios, validações completas (Night/IFR≤Total, LDG=T/O), badge UTC nos block times, roles EASA expandidos (PICUS, SPIC, FE).
 
+### Sessão 6 — 16 Junho 2026
+Redefinição da estratégia de importação: CSV/Excel em JS puro (sem IA) logo a seguir à exportação · Foto para 1 voo via Claude API na Fase 2+ · Integração API LEON/Aims/Crewlink na Fase 2 · CLAUDE.md actualizado com novo plano.
+
 **Próxima sessão:**
 - Filtros por mês / pesquisa por rota ou aeronave
 - Exportação CSV simples
-- Início do Módulo 1 — Agenda FTL básica
+- Importação CSV/Excel
 
 ---
 
 ## 🚀 Próximos Passos
 
-1. **Agora** → Testar com voos reais — adicionar os primeiros voos ao logbook v0.5
-2. **Próxima sessão** → Filtros + pesquisa (mês, rota, aeronave) no Logbook
-3. **Semana 3-4** → Exportação CSV + início Agenda FTL (Módulo 1 básico)
-4. **Mês 2** → Claude API: primeira pergunta em linguagem natural ao logbook
-5. **Mês 2-3** → Beta com pilotos amigos
+1. **Agora** → Filtros + pesquisa (mês, rota, aeronave) no Logbook
+2. **A seguir** → Exportação CSV
+3. **Depois** → Importação CSV/Excel (JS puro, sem IA)
+4. **Semana 5** → Agenda FTL básica (Módulo 1)
+5. **Semana 6-7** → Claude API: consulta em linguagem natural + foto → 1 voo
+6. **Fase 2** → Supabase + beta com pilotos + integrações LEON/Aims/Crewlink
 
 ---
 
@@ -308,4 +321,4 @@ Logbook v0.5→v0.6: fix SyntaxError no authorities.js, PWA icons, todos os inpu
 
 ---
 
-*Última actualização: Sessão 5 — 16 Junho 2026 (v0.6)*
+*Última actualização: Sessão 6 — 16 Junho 2026 (v0.6)*
