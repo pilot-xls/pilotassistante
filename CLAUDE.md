@@ -8,8 +8,8 @@
 
 | | |
 |---|---|
-| **Versão actual** | v0.5 |
-| **Última sessão** | Sessão 3 — 15 Junho 2026 |
+| **Versão actual** | v0.6 |
+| **Última sessão** | Sessão 5 — 16 Junho 2026 |
 | **Módulo em construção** | Módulo 2 — Logbook Inteligente |
 | **Próxima tarefa** | Filtros + pesquisa (por mês, rota, aeronave) |
 | **Deploy activo** | GitHub Pages ✅ |
@@ -20,7 +20,7 @@
 | # | Módulo | Estado |
 |---|---|---|
 | 1 | Agenda & Legalidades EASA | ⬜ Por fazer |
-| 2 | Logbook Inteligente | 🟡 Em progresso (v0.5) |
+| 2 | Logbook Inteligente | 🟡 Em progresso (v0.6) |
 | 3 | Documentos & Validades | ⬜ Por fazer |
 | 4 | Centro de Treino | ⬜ Por fazer |
 | 5 | Memórias & Diário | ⬜ Por fazer |
@@ -51,7 +51,7 @@
 
 ---
 
-## 🗂️ Estrutura do Repositório (v0.5)
+## 🗂️ Estrutura do Repositório (v0.6)
 
 ```
 pilotassistante/
@@ -59,21 +59,24 @@ pilotassistante/
 ├── index.html             ← estrutura HTML + authority overlay
 ├── manifest.json          ← PWA manifest (theme-color: #2825A0)
 ├── css/
-│   └── style.css          ← design Índigo Profundo + ícones + mobile
-└── js/
-    ├── app.js             ← lógica completa: authority-aware, edit, block time
-    └── authorities.js     ← perfis EASA e FAA (escalável para novas autoridades)
+│   └── style.css          ← design Índigo Profundo + ícones + mobile + .badge-utc
+├── js/
+│   ├── app.js             ← lógica completa: authority-aware, edit, validação, block time
+│   └── authorities.js     ← perfis EASA e FAA (escalável para novas autoridades)
+└── icons/
+    ├── icon-192.png       ← PWA icon (cor #2825A0)
+    └── icon-512.png       ← PWA icon (cor #2825A0)
 ```
 
 **O que está implementado em cada ficheiro:**
 
-`index.html` — formulário de voo/simulador, drawer lateral, painel de estatísticas, lista de entradas, authority overlay (primeiro uso), estrutura de navegação bottom bar
+`index.html` — formulário de voo/simulador, drawer lateral, painel de estatísticas, lista de entradas, authority overlay (primeiro uso), estrutura de navegação bottom bar, badge UTC nos campos Off-Block/On-Block
 
-`css/style.css` — paleta Índigo Profundo, tipografia Space Grotesk + Space Mono, drawer, cards, badges de autoridade, responsive mobile (empilha abaixo 500px), `.hidden { display: none !important }`
+`css/style.css` — paleta Índigo Profundo, tipografia Space Grotesk + Space Mono, drawer, cards, badges de autoridade, `.badge-utc` (badge índigo inline), responsive mobile (empilha abaixo 500px), `.hidden { display: none !important }`
 
-`js/app.js` — CRUD completo de entradas, toggle Flight/Simulator, auto-cálculo block times (overnight incluído), validação Off-Block/On-Block obrigatórios, edição via drawer, eliminação com confirmação, localStorage, lógica SP/MP→SE/ME, campos contextuais PIC Name/Instructor
+`js/app.js` — CRUD completo de entradas, toggle Flight/Simulator, auto-cálculo block times (overnight incluído), validação Off-Block/On-Block obrigatórios, Night HRS e IFR HRS obrigatórios (mínimo 00:00), Day HRS e VFR HRS auto-calculados (Day=Total−Night, VFR=Total−IFR), validações: Night≤Total, IFR≤Total, LDG=T/O, edição via drawer, eliminação com confirmação, localStorage, lógica SP/MP→SE/ME, campos contextuais PIC Name/Instructor/PICUS/SPIC/FE
 
-`js/authorities.js` — perfis EASA e FAA completos, template UK CAA comentado, sistema de activação por localStorage
+`js/authorities.js` — perfis EASA e FAA completos, EASA roles: PIC, PICUS, Co-Pilot (F/O), SPIC, Dual, Instructor, FE; template UK CAA comentado, sistema de activação por localStorage
 
 ---
 
@@ -113,7 +116,7 @@ pilotassistante/
 
 ## 📦 Módulo 2 — Logbook Inteligente (detalhe)
 
-### O que está feito (v0.5) ✅
+### O que está feito (v0.6) ✅
 
 - Formulário completo com todos os campos EASA e FAA
 - Toggle Flight / Simulator (campos mudam automaticamente)
@@ -126,11 +129,17 @@ pilotassistante/
 - Deploy no GitHub Pages ✅
 - Design Minimal Elegant + Índigo Profundo
 - Authority Profile System: EASA + FAA, escalável
-- Off-Block e On-Block obrigatórios — validação impede submissão sem eles
+- Off-Block e On-Block obrigatórios — badge UTC estilizado + validação impede submissão sem eles
 - Total auto-calculado dos block times (overnight incluído), editável manualmente
+- **Day HRS e VFR HRS auto-calculados** (Day = Total − Night, VFR = Total − IFR)
+- **Night HRS e IFR HRS obrigatórios** — mínimo "00:00" (piloto confirma explicitamente)
+- **Todos os inputs de horas usam `type="time"`** (picker nativo HH:MM, igual ao Off/On-Block)
 - SP/MP → SE/ME aparece só quando Single Pilot (lógica EASA correcta)
 - Responsive mobile (drawer full-width, form-row empilha abaixo de 500px)
 - T/O e LDG default = 1
+- **Validações completas:** Night ≤ Total, IFR ≤ Total, LDG total = T/O total (aplicam em new + edit)
+- **EASA roles:** PIC, PICUS (mostra PIC supervisor), Co-Pilot (F/O), SPIC (mostra Instructor), Dual, Instructor, FE (mostra examinando)
+- PWA icons: `icons/icon-192.png` e `icons/icon-512.png`
 
 ### O que falta ⬜
 
@@ -168,7 +177,7 @@ Template UK CAA incluído comentado. Primeiro uso: ecrã de selecção. Badge no
 
 | Semanas | Objectivo | Estado |
 |---|---|---|
-| 1-2 | Logbook básico | ✅ Concluído (v0.5) |
+| 1-2 | Logbook básico | ✅ Concluído (v0.6) |
 | 3-4 | Filtros + Exportação CSV + Agenda FTL básica | 🟡 A seguir |
 | 5-6 | Integrar Claude API | ⬜ Por fazer |
 | 7-8 | Meteorologia + NOTAMs | ⬜ Por fazer |
@@ -231,6 +240,10 @@ Resolvidos na Sessão 3:
 - ~~app.js antigo no repositório impedia o drawer de abrir~~
 - ~~FSTD Type aparecia em modo Flight~~
 
+Resolvidos na Sessão 5:
+- ~~`/* e */` no comentário de cabeçalho do `authorities.js` fechava prematuramente o bloco `/* */`, causando `SyntaxError: Unexpected identifier 'Preenche'` e `getAuthority is not defined`~~
+- ~~`document.getElementById('f-day').value` e `f-vfr` causavam `TypeError` após os campos serem removidos do HTML~~
+
 ---
 
 ## ✅ Decisões de Produto (resumo por sessão)
@@ -247,6 +260,9 @@ Minimal Elegant + Índigo Profundo (#2825A0) definitivo · Space Grotesk + Space
 ### Sessão 4
 Nunca gerar ficheiros completos do zero — editar apenas blocos específicos · Sempre pedir ficheiro actual antes de editar
 
+### Sessão 5
+`type="time"` para todos os campos de horas · Day HRS e VFR HRS auto-calculados (não inseridos) · Night HRS e IFR HRS obrigatórios (00:00 se nenhum) · Validações: Night≤Total, IFR≤Total, LDG=T/O · Badge UTC no Off-Block/On-Block · EASA roles: PICUS + SPIC + FE adicionados · PWA icons criados
+
 ---
 
 ## 📝 Registo de Sessões
@@ -262,6 +278,9 @@ Logbook v0.3→v0.5: identidade visual definitiva (Minimal Elegant + Índigo Pro
 
 ### Sessão 4 — 16 Junho 2026
 Discussão sobre Claude Code vs claude.ai Project — como o CLAUDE.md funciona como memória partilhada. Regra estabelecida: nunca gerar ficheiros completos, editar sempre blocos específicos. CLAUDE.md melhorado e reestruturado.
+
+### Sessão 5 — 16 Junho 2026
+Logbook v0.5→v0.6: fix SyntaxError no authorities.js, PWA icons, todos os inputs de horas passaram a `type="time"`, Day HRS e VFR HRS tornaram-se auto-calculados, Night HRS e IFR HRS tornaram-se obrigatórios, validações completas (Night/IFR≤Total, LDG=T/O), badge UTC nos block times, roles EASA expandidos (PICUS, SPIC, FE).
 
 **Próxima sessão:**
 - Filtros por mês / pesquisa por rota ou aeronave
@@ -289,4 +308,4 @@ Discussão sobre Claude Code vs claude.ai Project — como o CLAUDE.md funciona 
 
 ---
 
-*Última actualização: Sessão 4 — 16 Junho 2026 (v0.5)*
+*Última actualização: Sessão 5 — 16 Junho 2026 (v0.6)*
