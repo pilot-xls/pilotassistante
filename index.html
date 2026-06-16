@@ -88,7 +88,12 @@
     <section class="entries-section">
       <div class="entries-header">
         <h2>Flight Log</h2>
-        <span id="entries-count" class="entries-count">0 entries</span>
+        <div class="entries-header-right">
+          <span id="entries-count" class="entries-count">0 entries</span>
+          <button class="btn-export" onclick="exportCSV()" title="Export all entries to CSV">
+            <i class="ti ti-download"></i> Export CSV
+          </button>
+        </div>
       </div>
       <!-- Filter Bar -->
       <div class="filter-bar">

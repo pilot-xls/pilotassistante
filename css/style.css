@@ -152,7 +152,30 @@ body {
   margin-bottom: 14px;
 }
 .entries-header h2 { font-size: 16px; font-weight: 600; }
+.entries-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 .entries-count { font-size: 13px; color: var(--text-muted); }
+.btn-export {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-sm);
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.btn-export:hover { background: var(--accent-border); }
+.btn-export .ti { font-size: 14px; }
 
 /* ── Empty State ───────────────────────────────────────────── */
 .empty-state {
