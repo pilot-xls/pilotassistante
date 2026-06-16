@@ -6,9 +6,11 @@
 'use strict';
 
 // ── State ───────────────────────────────────────────────────
-let entries    = JSON.parse(localStorage.getItem('pa_entries') || '[]');
-let editingId  = null;
+let entries     = JSON.parse(localStorage.getItem('pa_entries') || '[]');
+let editingId   = null;
 let currentMode = 'flight'; // 'flight' | 'sim'
+let filterSearch = '';
+let filterMonth  = '';
 
 // ── Init ────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
@@ -443,32 +445,81 @@ function deleteEntry(id, event) {
   renderStats();
 }
 
+// ── Filters ──────────────────────────────────────────────────
+function applyFilters() {
+  filterSearch = document.getElementById('filter-search').value.trim().toLowerCase();
+  filterMonth  = document.getElementById('filter-month').value;
+  document.getElementById('filter-clear').classList.toggle('hidden', !(filterSearch || filterMonth));
+  renderEntries();
+}
+
+function clearFilters() {
+  document.getElementById('filter-search').value = '';
+  document.getElementById('filter-month').value  = '';
+  filterSearch = '';
+  filterMonth  = '';
+  document.getElementById('filter-clear').classList.add('hidden');
+  renderEntries();
+}
+
+function populateMonthFilter() {
+  const months = [...new Set(
+    entries.filter(e => e.date).map(e => e.date.slice(0, 7))
+  )].sort((a, b) => b.localeCompare(a));
+
+  const select  = document.getElementById('filter-month');
+  const current = select.value;
+  select.innerHTML = '<option value="">All months</option>' +
+    months.map(m => {
+      const label = new Date(m + '-15T12:00:00').toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
+      return `<option value="${m}"${m === current ? ' selected' : ''}>${label}</option>`;
+    }).join('');
+}
+
 // ── Render Entries ───────────────────────────────────────────
 function renderEntries() {
   const list  = document.getElementById('entries-list');
   const count = document.getElementById('entries-count');
 
-  count.textContent = `${entries.length} ${entries.length === 1 ? 'entry' : 'entries'}`;
+  populateMonthFilter();
 
-  if (entries.length === 0) {
-    list.innerHTML = `
-      <div class="empty-state">
-        <i class="ti ti-plane-off"></i>
-        <p>No flights logged yet</p>
-        <p class="empty-sub">Tap + to add your first flight</p>
-      </div>`;
+  let filtered = [...entries];
+  if (filterMonth) {
+    filtered = filtered.filter(e => e.date && e.date.startsWith(filterMonth));
+  }
+  if (filterSearch) {
+    filtered = filtered.filter(e => {
+      const haystack = [e.origin, e.destination, e.aircraftType, e.registration, e.fstdType, e.remarks]
+        .filter(Boolean).join(' ').toLowerCase();
+      return haystack.includes(filterSearch);
+    });
+  }
+
+  const total = entries.length;
+  const shown = filtered.length;
+  count.textContent = (filterMonth || filterSearch)
+    ? `${shown} of ${total} ${total === 1 ? 'entry' : 'entries'}`
+    : `${total} ${total === 1 ? 'entry' : 'entries'}`;
+
+  if (filtered.length === 0) {
+    list.innerHTML = entries.length === 0
+      ? `<div class="empty-state">
+           <i class="ti ti-plane-off"></i>
+           <p>No flights logged yet</p>
+           <p class="empty-sub">Tap + to add your first flight</p>
+         </div>`
+      : `<div class="empty-state">
+           <i class="ti ti-filter-off"></i>
+           <p>No entries match your filters</p>
+           <p class="empty-sub"><button class="btn-link" onclick="clearFilters()">Clear filters</button></p>
+         </div>`;
     return;
   }
 
-  // Sort by date descending (most recent first)
-  const sorted = [...entries].sort((a, b) => b.date.localeCompare(a.date));
-
-  list.innerHTML = sorted.map(entry => {
-    if (entry.isSim) {
-      return renderSimCard(entry);
-    }
-    return renderFlightCard(entry);
-  }).join('');
+  const sorted = [...filtered].sort((a, b) => b.date.localeCompare(a.date));
+  list.innerHTML = sorted.map(entry =>
+    entry.isSim ? renderSimCard(entry) : renderFlightCard(entry)
+  ).join('');
 }
 
 function renderFlightCard(e) {

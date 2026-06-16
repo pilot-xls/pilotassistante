@@ -463,6 +463,82 @@ body {
 .authority-name { font-size: 18px; font-weight: 700; color: var(--accent); }
 .authority-desc { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
 
+/* ── Filter Bar ─────────────────────────────────────────────── */
+.filter-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+  align-items: center;
+}
+.filter-search-wrap {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.filter-search-wrap .ti-search {
+  position: absolute;
+  left: 10px;
+  color: var(--text-muted);
+  font-size: 15px;
+  pointer-events: none;
+}
+.filter-search-wrap input {
+  width: 100%;
+  padding: 8px 34px 8px 32px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.filter-search-wrap input:focus {
+  border-color: var(--accent-border);
+  background: var(--surface);
+}
+.filter-clear {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
+.filter-clear:hover { color: var(--text); }
+#filter-month {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  outline: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  min-width: 110px;
+  transition: border-color 0.15s;
+}
+#filter-month:focus { border-color: var(--accent-border); }
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
 /* ── Mobile ────────────────────────────────────────────────── */
 @media (max-width: 500px) {
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
@@ -470,4 +546,6 @@ body {
   .form-row { grid-template-columns: 1fr; }
   .authority-cards { grid-template-columns: 1fr; }
   .entries-section { padding: 14px; }
+  .filter-bar { flex-direction: column; }
+  #filter-month { width: 100%; }
 }
