@@ -171,6 +171,39 @@ Date, Origin (ICAO), Destination (ICAO), Off-block, On-block, Aircraft Type, Reg
 Ficheiro `js/authorities.js` — adicionar nova autoridade = acrescentar um objecto.
 Template UK CAA incluído comentado. Primeiro uso: ecrã de selecção. Badge no header para mudar a qualquer momento.
 
+### Autoridades de Aviação — Prioridade de Implementação
+
+Apenas autoridades com formato de logbook distinto são relevantes.
+
+**🔴 Prioridade 1 — Já implementadas ou imediatas**
+
+| Sigla | Região/País | Cobertura |
+|---|---|---|
+| EASA | União Europeia + Suíça, Noruega, Islândia... | ~50 países |
+| FAA | Estados Unidos | EUA |
+| UK CAA | Reino Unido | GB (pós-Brexit) |
+
+**🟡 Prioridade 2 — Grande mercado, formato próprio**
+
+| Sigla | Nome completo | País |
+|---|---|---|
+| TCCA | Transport Canada Civil Aviation | Canadá |
+| CASA | Civil Aviation Safety Authority | Austrália |
+| CAA-NZ | Civil Aviation Authority | Nova Zelândia |
+| DGCA | Directorate General of Civil Aviation | Índia |
+| GCAA | General Civil Aviation Authority | UAE / Dubai |
+| ANAC | Agência Nacional de Aviação Civil | Brasil |
+
+**🟢 Prioridade 3 — Mercados emergentes / nicho**
+
+| Sigla | País |
+|---|---|
+| CAAC | China |
+| JCAB | Japão |
+| SACAA | África do Sul |
+| DGAC | México |
+| GACA | Arábia Saudita |
+
 ---
 
 ## 🗺️ Plano de Desenvolvimento
@@ -270,7 +303,7 @@ Nunca gerar ficheiros completos do zero — editar apenas blocos específicos ·
 `type="time"` para todos os campos de horas · Day HRS e VFR HRS auto-calculados (não inseridos) · Night HRS e IFR HRS obrigatórios (00:00 se nenhum) · Validações: Night≤Total, IFR≤Total, LDG=T/O · Badge UTC no Off-Block/On-Block · EASA roles: PICUS + SPIC + FE adicionados · PWA icons criados
 
 ### Sessão 6
-Estratégia de importação redefinida: importação CSV/Excel em JS puro (sem IA) vem logo a seguir à exportação CSV · Importação via foto REJEITADA para logbook completo · Foto via Claude API aceite apenas para 1 voo (caderneta do avião) · Integração API apps externas (LEON, Aims, Crewlink) planeada para Fase 2
+Estratégia de importação redefinida: importação CSV/Excel em JS puro (sem IA) vem logo a seguir à exportação CSV · Importação via foto REJEITADA para logbook completo · Foto via Claude API aceite apenas para 1 voo (caderneta do avião) · Integração API apps externas (LEON, Aims, Crewlink) planeada para Fase 2 · Lista de autoridades de aviação estratificada em 3 prioridades: P1 (EASA, FAA, UK CAA), P2 (TCCA, CASA, CAA-NZ, DGCA, GCAA, ANAC), P3 (CAAC, JCAB, SACAA, DGAC, GACA)
 
 ---
 
