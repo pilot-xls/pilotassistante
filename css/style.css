@@ -694,7 +694,7 @@ body {
 
 /* ── iOS Safari fix ────────────────────────────────────────── */
 /* .is-ios is added by JS (navigator.userAgent check) */
-.is-ios .fp-date-row input[type="date"] { min-height: 60px; }
+.is-ios .fp-date-row input[type="date"] { min-height: 40px; }
 
 /* ── Mobile ────────────────────────────────────────────────── */
 @media (max-width: 500px) {

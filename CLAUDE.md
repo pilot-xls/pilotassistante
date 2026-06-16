@@ -8,8 +8,8 @@
 
 | | |
 |---|---|
-| **Versão actual** | v0.9 |
-| **Última sessão** | Sessão 9 — 16 Junho 2026 |
+| **Versão actual** | v0.10 |
+| **Última sessão** | Sessão 10 — 16 Junho 2026 |
 | **Módulo em construção** | Módulo 2 — Logbook Inteligente |
 | **Próxima tarefa** | Importação CSV/Excel |
 | **Deploy activo** | GitHub Pages ✅ |
@@ -20,7 +20,7 @@
 | # | Módulo | Estado |
 |---|---|---|
 | 1 | Agenda & Legalidades EASA | ⬜ Por fazer |
-| 2 | Logbook Inteligente | 🟡 Em progresso (v0.9) |
+| 2 | Logbook Inteligente | 🟡 Em progresso (v0.10) |
 | 3 | Documentos & Validades | ⬜ Por fazer |
 | 4 | Centro de Treino | ⬜ Por fazer |
 | 5 | Memórias & Diário | ⬜ Por fazer |
@@ -328,6 +328,16 @@ Resolvidos na Sessão 8:
 - ~~Popup de filtro avançado saía fora do ecrã no mobile com `right:-36px` → fix: `right:0`~~
 - ~~Inputs no drawer desalinhados e página a deslocar lateralmente no iOS Safari → fix: `font-size:16px` em todos os inputs no mobile (iOS faz zoom automático abaixo de 16px)~~
 
+Resolvidos na Sessão 10:
+- ~~Dashboard de estatísticas não actualizava com filtros → fix: `renderStats()` usa `getFilteredEntries()`, chamado dentro de `renderEntries()`~~
+- ~~Export CSV não respeitava filtros activos → fix: `getFilteredEntries()` extraída como helper partilhado~~
+- ~~Export CSV universal (todas as colunas) → fix: colunas dinâmicas baseadas na autoridade activa (EASA/FAA); filename inclui autoridade~~
+- ~~Filtros avançados limitados → fix: popup expandido com Airport, Aircraft Type, Registration, Operations SP/MP (EASA), Engine SE/ME, Night, IFR~~
+- ~~Popup de filtro com scroll lateral no mobile → fix: `position:fixed` + `left:14px; right:14px`; top/max-height calculados via JS (`getBoundingClientRect`)~~
+- ~~Inputs date no popup overflow no iOS → fix: `overflow-x:hidden`, `font-size:16px`, `-webkit-appearance:none`, `min-width:0`, `max-width:100%` nos inputs do popup~~
+- ~~`input[type="date"]` no popup vazio sem altura no iOS → fix: `min-height:40px` via classe `.is-ios` detectada por JS (`navigator.userAgent`)~~
+- ~~Date inputs no filtro popup muito grandes no desktop → fix: `fp-date-row` passa a `flex-direction:column`~~
+
 ---
 
 ## ✅ Decisões de Produto (resumo por sessão)
@@ -387,9 +397,8 @@ Logbook v0.7→v0.8: iOS Safari fixes — drawer flush às laterais, filter popu
 ### Sessão 9 — 16 Junho 2026
 Logbook v0.8→v0.9: Exportação CSV implementada — botão "Export CSV" no header da lista, exporta entradas filtradas (respeita filtros activos), UTF-8 BOM para Excel, 30 colunas universais EASA+FAA, `getFilteredEntries()` extraída como helper partilhado.
 
-**Próxima sessão:**
-- Exportação CSV
-- Importação CSV/Excel
+### Sessão 10 — 16 Junho 2026
+Logbook v0.9→v0.10: Dashboard de estatísticas agora filtra com os filtros activos · Export CSV authority-aware (colunas dinâmicas por autoridade, filename inclui autoridade) · Popup de filtros avançados expandido: Airport, Aircraft Type, Registration, Operations SP/MP, Engine SE/ME, Night, IFR · Múltiplos fixes iOS Safari no popup de filtros: `position:fixed` + JS positioning, `overflow-x:hidden`, normalização de inputs, `min-height:40px` em date inputs via classe `.is-ios` detectada por JS · `fp-date-row` vertical (sem overflow no desktop)
 
 ---
 
@@ -412,4 +421,4 @@ Logbook v0.8→v0.9: Exportação CSV implementada — botão "Export CSV" no he
 
 ---
 
-*Última actualização: Sessão 9 — 16 Junho 2026 (v0.9)*
+*Última actualização: Sessão 10 — 16 Junho 2026 (v0.10)*
