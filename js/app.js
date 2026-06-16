@@ -513,6 +513,16 @@ function toggleFilterPopup() {
   const popup = document.getElementById('filter-popup');
   const isOpen = !popup.classList.contains('hidden');
   if (!isOpen) {
+    if (window.innerWidth <= 500) {
+      const btn  = document.getElementById('filter-popup-btn');
+      const rect = btn.getBoundingClientRect();
+      const top  = Math.round(rect.bottom) + 6;
+      popup.style.top       = top + 'px';
+      popup.style.maxHeight = `calc(100dvh - ${top + 14}px)`;
+    } else {
+      popup.style.top       = '';
+      popup.style.maxHeight = '';
+    }
     populatePopupFilters();
     setVisible('fp-group-ops', getAuthority().showOperations);
     popup.classList.remove('hidden');

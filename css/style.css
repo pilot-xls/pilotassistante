@@ -698,8 +698,8 @@ body {
   .form-row { grid-template-columns: 1fr; }
   .authority-cards { grid-template-columns: 1fr; }
   .entries-section { padding: 14px; }
-  .filter-bar { position: relative; }
-  .filter-popup { left: 0; right: 0; width: auto; max-width: none; }
+  .filter-popup-wrap { position: static; }
+  .filter-popup { position: fixed; left: 14px; right: 14px; width: auto; max-width: none; }
 
   /* Prevent iOS Safari auto-zoom on input focus (font-size must be ≥ 16px) */
   .form-group input,
