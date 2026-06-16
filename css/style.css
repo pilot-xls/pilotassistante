@@ -718,6 +718,7 @@ body {
     max-width: 100%;
     -webkit-appearance: none;
     min-width: 0;
+    min-height: 40px;
   }
 
   /* Prevent iOS Safari auto-zoom on input focus (font-size must be ≥ 16px) */
