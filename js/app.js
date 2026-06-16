@@ -75,8 +75,9 @@ function selectAuthority(key) {
 function initAuthority() {
   const auth = getAuthority();
 
-  // Update badge label
-  document.getElementById('authority-label').textContent = auth.name;
+  // Update badge label (flag emoji) and tooltip (full name)
+  document.getElementById('authority-label').textContent = auth.flag;
+  document.getElementById('authority-badge').title = auth.name;
 
   // Populate roles dropdown
   const roleSelect = document.getElementById('f-role');

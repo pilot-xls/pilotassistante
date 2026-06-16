@@ -49,10 +49,15 @@ body {
   padding: 14px 20px;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
 }
+
+/* Compensate for fixed header height (14px*2 padding + 36px btn = 64px) */
+#app { padding-top: 64px; }
 .header-brand {
   display: flex;
   align-items: center;
@@ -70,10 +75,9 @@ body {
   border: 1px solid var(--accent-border);
   color: var(--accent);
   border-radius: 20px;
-  padding: 4px 14px;
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
+  padding: 4px 8px;
+  font-size: 18px;
+  line-height: 1;
   cursor: pointer;
   transition: background 0.15s;
 }
