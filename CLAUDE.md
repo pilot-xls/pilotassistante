@@ -8,8 +8,8 @@
 
 | | |
 |---|---|
-| **Versão actual** | v0.10 |
-| **Última sessão** | Sessão 10 — 16 Junho 2026 |
+| **Versão actual** | v0.11 |
+| **Última sessão** | Sessão 11 — 16 Junho 2026 |
 | **Módulo em construção** | Módulo 2 — Logbook Inteligente |
 | **Próxima tarefa** | Importação CSV/Excel |
 | **Deploy activo** | GitHub Pages ✅ |
@@ -328,6 +328,12 @@ Resolvidos na Sessão 8:
 - ~~Popup de filtro avançado saía fora do ecrã no mobile com `right:-36px` → fix: `right:0`~~
 - ~~Inputs no drawer desalinhados e página a deslocar lateralmente no iOS Safari → fix: `font-size:16px` em todos os inputs no mobile (iOS faz zoom automático abaixo de 16px)~~
 
+Resolvidos na Sessão 11:
+- ~~inputs `type="time"` no drawer (Off-Block, On-Block, Night, IFR) com altura quase nula no iOS Safari → fix: `min-height: 40px` via `.is-ios` e `@media (max-width:500px)`~~
+- ~~Radio buttons MP/SP em Operations empilhados verticalmente no iOS Safari → fix: `width:auto` em `input[type="radio"]` e `input[type="checkbox"]` dentro de `.form-group` (override do `width:100%` geral)~~
+- ~~Header a fazer scroll com a página (position:sticky quebrado pelo overflow-x:hidden no body) → fix: `position:fixed` + `padding-top:64px` no `#app`~~
+- ~~Badge da autoridade no header mostrava texto ("EASA"/"FAA") → fix: mostra agora o emoji da bandeira (`auth.flag`), tooltip com nome completo~~
+
 Resolvidos na Sessão 10:
 - ~~Dashboard de estatísticas não actualizava com filtros → fix: `renderStats()` usa `getFilteredEntries()`, chamado dentro de `renderEntries()`~~
 - ~~Export CSV não respeitava filtros activos → fix: `getFilteredEntries()` extraída como helper partilhado~~
@@ -400,6 +406,9 @@ Logbook v0.8→v0.9: Exportação CSV implementada — botão "Export CSV" no he
 ### Sessão 10 — 16 Junho 2026
 Logbook v0.9→v0.10: Dashboard de estatísticas agora filtra com os filtros activos · Export CSV authority-aware (colunas dinâmicas por autoridade, filename inclui autoridade) · Popup de filtros avançados expandido: Airport, Aircraft Type, Registration, Operations SP/MP, Engine SE/ME, Night, IFR · Múltiplos fixes iOS Safari no popup de filtros: `position:fixed` + JS positioning, `overflow-x:hidden`, normalização de inputs, `min-height:40px` em date inputs via classe `.is-ios` detectada por JS · `fp-date-row` vertical (sem overflow no desktop)
 
+### Sessão 11 — 16 Junho 2026
+Logbook v0.10→v0.11: Quatro iOS Safari / mobile fixes — inputs `type="time"` no drawer com altura mínima; radio buttons Operations empilhados corrigidos (`width:auto`); header fixo ao topo (`position:fixed` + `padding-top:64px`); badge de autoridade passa a mostrar emoji da bandeira em vez de texto.
+
 ---
 
 ## 🚀 Próximos Passos
@@ -421,4 +430,4 @@ Logbook v0.9→v0.10: Dashboard de estatísticas agora filtra com os filtros act
 
 ---
 
-*Última actualização: Sessão 10 — 16 Junho 2026 (v0.10)*
+*Última actualização: Sessão 11 — 16 Junho 2026 (v0.11)*
