@@ -213,6 +213,7 @@ function openDrawer(id = null) {
   // Garante que os selects (Role, FSTD, Approaches) estão sempre preenchidos
   initAuthority();
 
+  document.body.style.overflow = 'hidden';
   document.getElementById('drawer-overlay').classList.remove('hidden');
   document.getElementById('drawer').classList.remove('hidden');
 
@@ -228,6 +229,7 @@ function openDrawer(id = null) {
 }
 
 function closeDrawer() {
+  document.body.style.overflow = '';
   document.getElementById('drawer-overlay').classList.add('hidden');
   document.getElementById('drawer').classList.add('hidden');
   editingId = null;
