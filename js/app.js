@@ -595,6 +595,7 @@ function renderEntries() {
            <p>No entries match your filters</p>
            <p class="empty-sub"><button class="btn-link" onclick="clearFilters()">Clear filters</button></p>
          </div>`;
+    renderStats();
     return;
   }
 
@@ -602,6 +603,8 @@ function renderEntries() {
   list.innerHTML = sorted.map(entry =>
     entry.isSim ? renderSimCard(entry) : renderFlightCard(entry)
   ).join('');
+
+  renderStats();
 }
 
 function renderFlightCard(e) {
@@ -666,8 +669,9 @@ function renderSimCard(e) {
 
 // ── Render Stats ─────────────────────────────────────────────
 function renderStats() {
-  const flights = entries.filter(e => !e.isSim);
-  const sims    = entries.filter(e => e.isSim);
+  const filtered = getFilteredEntries();
+  const flights  = filtered.filter(e => !e.isSim);
+  const sims     = filtered.filter(e => e.isSim);
 
   const now       = new Date();
   const thisMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
