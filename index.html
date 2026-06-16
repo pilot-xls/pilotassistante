@@ -116,12 +116,51 @@
               </div>
             </div>
             <div class="fp-group">
-              <div class="fp-label">Role</div>
-              <select id="fp-role" onchange="applyFilters()">
-                <option value="">All roles</option>
+              <div class="fp-label">Airport (ICAO)</div>
+              <input type="text" id="fp-airport" placeholder="e.g. LPCS" maxlength="4" class="fp-text-input mono" oninput="applyFilters()" style="text-transform:uppercase">
+            </div>
+            <div class="fp-group">
+              <div class="fp-label">Aircraft Type</div>
+              <select id="fp-ac-type" class="fp-select" onchange="applyFilters()">
+                <option value="">All types</option>
               </select>
             </div>
             <div class="fp-group">
+              <div class="fp-label">Registration</div>
+              <select id="fp-reg" class="fp-select" onchange="applyFilters()">
+                <option value="">All registrations</option>
+              </select>
+            </div>
+            <div id="fp-group-ops" class="fp-group hidden">
+              <div class="fp-label">Operations</div>
+              <div class="fp-type-row">
+                <button class="fp-type-btn active" data-ops="all" onclick="setOpsFilter('all')">All</button>
+                <button class="fp-type-btn" data-ops="SP" onclick="setOpsFilter('SP')">SP</button>
+                <button class="fp-type-btn" data-ops="MP" onclick="setOpsFilter('MP')">MP</button>
+              </div>
+            </div>
+            <div id="fp-group-eng" class="fp-group">
+              <div class="fp-label">Engine</div>
+              <div class="fp-type-row">
+                <button class="fp-type-btn active" data-eng="all" onclick="setEngineFilter('all')">All</button>
+                <button class="fp-type-btn" data-eng="SE" onclick="setEngineFilter('SE')">SE</button>
+                <button class="fp-type-btn" data-eng="ME" onclick="setEngineFilter('ME')">ME</button>
+              </div>
+            </div>
+            <div class="fp-group">
+              <div class="fp-label">Hours</div>
+              <div class="fp-check-row">
+                <label class="fp-check-label"><input type="checkbox" id="fp-has-night" onchange="applyFilters()"> Night</label>
+                <label class="fp-check-label"><input type="checkbox" id="fp-has-ifr" onchange="applyFilters()"> IFR</label>
+              </div>
+            </div>
+            <div class="fp-group">
+              <div class="fp-label">Role</div>
+              <select id="fp-role" class="fp-select" onchange="applyFilters()">
+                <option value="">All roles</option>
+              </select>
+            </div>
+            <div id="fp-group-type" class="fp-group">
               <div class="fp-label">Entry type</div>
               <div class="fp-type-row">
                 <button class="fp-type-btn active" data-type="all" onclick="setTypeFilter('all')">All</button>

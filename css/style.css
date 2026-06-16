@@ -582,6 +582,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  max-height: min(82vh, 520px);
+  overflow-y: auto;
 }
 .fp-group { display: flex; flex-direction: column; gap: 6px; }
 .fp-label {
@@ -591,6 +593,30 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
+.fp-text-input {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 7px 10px;
+  outline: none;
+  width: 100%;
+  transition: border-color 0.15s;
+}
+.fp-text-input:focus { border-color: var(--accent-border); }
+.fp-text-input.mono { font-family: 'Space Mono', monospace; font-size: 12px; }
+.fp-check-row { display: flex; gap: 16px; }
+.fp-check-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+}
+.fp-check-label input[type="checkbox"] { accent-color: var(--accent); }
 .fp-date-row {
   display: flex;
   flex-direction: column;
@@ -609,7 +635,7 @@ body {
   transition: border-color 0.15s;
 }
 .fp-date-row input[type="date"]:focus { border-color: var(--accent-border); }
-#fp-role {
+.fp-select {
   font-family: 'Space Grotesk', sans-serif;
   font-size: 13px;
   color: var(--text);
@@ -622,7 +648,7 @@ body {
   width: 100%;
   transition: border-color 0.15s;
 }
-#fp-role:focus { border-color: var(--accent-border); }
+.fp-select:focus { border-color: var(--accent-border); }
 .fp-type-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
