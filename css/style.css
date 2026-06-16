@@ -722,10 +722,8 @@ body {
 
   /* iOS Safari only — date inputs collapse when empty without explicit min-height */
   @supports (-webkit-touch-callout: none) {
-    .fp-date-row input[type="date"],
-    .fp-text-input,
-    .fp-select {
-      min-height: 80px;
+    .fp-date-row input[type="date"] {
+      min-height: 60px;
     }
   }
 
