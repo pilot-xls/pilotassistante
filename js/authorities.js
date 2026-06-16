@@ -4,7 +4,7 @@
 
    Para adicionar nova autoridade:
    1. Copia o template UK CAA no final
-   2. Remove os comentários /* e */
+   2. Remove os comentários de bloco
    3. Preenche os campos
    ============================================================ */
 
