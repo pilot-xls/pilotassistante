@@ -548,11 +548,8 @@ function populateRoleFilter() {
     ).join('');
 }
 
-// ── Render Entries ───────────────────────────────────────────
-function renderEntries() {
-  const list  = document.getElementById('entries-list');
-  const count = document.getElementById('entries-count');
-
+// ── Filter Helper ────────────────────────────────────────────
+function getFilteredEntries() {
   let filtered = [...entries];
   if (filterDateFrom) filtered = filtered.filter(e => e.date && e.date >= filterDateFrom);
   if (filterDateTo)   filtered = filtered.filter(e => e.date && e.date <= filterDateTo);
@@ -569,6 +566,15 @@ function renderEntries() {
       return haystack.includes(filterSearch);
     });
   }
+  return filtered;
+}
+
+// ── Render Entries ───────────────────────────────────────────
+function renderEntries() {
+  const list  = document.getElementById('entries-list');
+  const count = document.getElementById('entries-count');
+
+  const filtered = getFilteredEntries();
 
   const total = entries.length;
   const shown = filtered.length;
@@ -694,4 +700,82 @@ function formatDate(dateStr) {
     month: 'short',
     year:  'numeric',
   });
+}
+
+// ── Export CSV ───────────────────────────────────────────────
+function exportCSV() {
+  const toExport = getFilteredEntries();
+  if (toExport.length === 0) {
+    alert('No entries to export.');
+    return;
+  }
+
+  const headers = [
+    'Date', 'Type', 'Authority',
+    'From (ICAO)', 'To (ICAO)', 'Off-Block (UTC)', 'On-Block (UTC)',
+    'Total HRS', 'Day HRS', 'Night HRS', 'IFR HRS', 'VFR HRS',
+    'XC HRS', 'Solo HRS',
+    'Operations', 'Engine',
+    'Aircraft Type', 'Registration',
+    'Role', 'PIC Name', 'Student/Instructor',
+    'T/O Day', 'T/O Night', 'LDG Day', 'LDG Night',
+    'Approaches #', 'Approach Type',
+    'FSTD Type', 'SIM HRS',
+    'Remarks',
+  ];
+
+  const sorted = [...toExport].sort((a, b) => a.date.localeCompare(b.date));
+
+  const rows = sorted.map(e => {
+    if (e.isSim) {
+      return [
+        e.date, 'Simulator', e.authority || '',
+        '', '', '', '',
+        '', '', '', '', '',
+        '', '',
+        '', '',
+        '', '',
+        '', '', '',
+        '', '', '', '',
+        '', '',
+        e.fstdType || '', e.simDuration || '',
+        e.remarks || '',
+      ];
+    }
+
+    const auth     = AUTHORITIES[e.authority] || AUTHORITIES.EASA;
+    const roleObj  = auth.roles.find(r => r.value === e.role);
+    const roleLabel = roleObj ? roleObj.label : (e.role || '');
+
+    return [
+      e.date, 'Flight', e.authority || '',
+      e.origin || '', e.destination || '', e.offBlock || '', e.onBlock || '',
+      e.totalTime || '', e.dayHours || '', e.nightHours || '', e.ifrTime || '', e.vfrTime || '',
+      e.xcHours || '', e.soloHours || '',
+      e.operations || '', e.engine || '',
+      e.aircraftType || '', e.registration || '',
+      roleLabel, e.picName || '', e.instructorName || '',
+      e.toDay ?? '', e.toNight ?? '', e.ldgDay ?? '', e.ldgNight ?? '',
+      e.approachCount || '', e.approachType || '',
+      '', '',
+      e.remarks || '',
+    ];
+  });
+
+  const escapeCell = val => {
+    const s = String(val);
+    return (s.includes(',') || s.includes('"') || s.includes('\n'))
+      ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+
+  const csv  = [headers, ...rows].map(row => row.map(escapeCell).join(',')).join('\r\n');
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `pilotassistante_logbook_${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
