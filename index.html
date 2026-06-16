@@ -223,27 +223,15 @@
           <input type="text" id="f-instructor-name" placeholder="Student's full name">
         </div>
 
-        <!-- Day / Night Hours -->
+        <!-- Night / IFR Hours (Day and VFR are auto-calculated: Day=Total-Night, VFR=Total-IFR) -->
         <div class="form-row">
-          <div class="form-group">
-            <label>Day HRS</label>
-            <input type="time" id="f-day" class="mono">
-          </div>
           <div class="form-group">
             <label>Night HRS</label>
             <input type="time" id="f-night" class="mono">
           </div>
-        </div>
-
-        <!-- IFR / VFR Hours -->
-        <div class="form-row">
           <div class="form-group">
             <label>IFR HRS</label>
             <input type="time" id="f-ifr" class="mono">
-          </div>
-          <div class="form-group">
-            <label>VFR HRS</label>
-            <input type="time" id="f-vfr" class="mono">
           </div>
         </div>
 

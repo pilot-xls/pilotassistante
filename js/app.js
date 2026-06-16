@@ -167,37 +167,21 @@ function formatHours(decimal) {
 }
 
 // ── Hour Subset Validation ───────────────────────────────────
-// Day + Night cannot exceed Total
-// IFR + VFR cannot exceed Total
-// Each individual field cannot exceed Total
+// Night and IFR cannot exceed Total (Day and VFR are auto-calculated)
 function validateHourSubsets(data) {
   const total = parseHours(data.totalTime);
-  if (!total || total <= 0) return null; // no total = no validation
+  if (!total || total <= 0) return null;
 
-  const day   = parseHours(data.dayHours)   || 0;
   const night = parseHours(data.nightHours) || 0;
   const ifr   = parseHours(data.ifrTime)    || 0;
-  const vfr   = parseHours(data.vfrTime)    || 0;
-
-  if (day > total)
-    return `Day hours (${formatHours(day)}) cannot exceed Total Flight Time (${formatHours(total)})`;
 
   if (night > total)
     return `Night hours (${formatHours(night)}) cannot exceed Total Flight Time (${formatHours(total)})`;
 
-  if (day + night > total)
-    return `Day + Night (${formatHours(day + night)}) cannot exceed Total Flight Time (${formatHours(total)})`;
-
   if (ifr > total)
     return `IFR hours (${formatHours(ifr)}) cannot exceed Total Flight Time (${formatHours(total)})`;
 
-  if (vfr > total)
-    return `VFR hours (${formatHours(vfr)}) cannot exceed Total Flight Time (${formatHours(total)})`;
-
-  if (ifr + vfr > total)
-    return `IFR + VFR (${formatHours(ifr + vfr)}) cannot exceed Total Flight Time (${formatHours(total)})`;
-
-  return null; // all valid
+  return null;
 }
 
 // ── Drawer ───────────────────────────────────────────────────
@@ -238,7 +222,7 @@ function resetDrawer() {
     'f-origin', 'f-destination', 'f-off-block', 'f-on-block', 'f-total',
     'f-aircraft-type', 'f-registration',
     'f-pic-name', 'f-instructor-name',
-    'f-day', 'f-night', 'f-ifr', 'f-vfr', 'f-xc', 'f-solo',
+    'f-night', 'f-ifr', 'f-xc', 'f-solo',
     'f-sim-duration', 'f-remarks',
   ];
   toClear.forEach(id => {
@@ -311,10 +295,8 @@ function populateDrawer(id) {
   // Hours
   setValue('f-pic-name',        entry.picName);
   setValue('f-instructor-name', entry.instructorName);
-  setValue('f-day',             entry.dayHours);
   setValue('f-night',           entry.nightHours);
   setValue('f-ifr',             entry.ifrTime);
-  setValue('f-vfr',             entry.vfrTime);
   setValue('f-xc',              entry.xcHours);
   setValue('f-solo',            entry.soloHours);
 
@@ -391,10 +373,8 @@ function handleSubmit() {
       role:           document.getElementById('f-role').value,
       picName:        document.getElementById('f-pic-name').value.trim(),
       instructorName: document.getElementById('f-instructor-name').value.trim(),
-      dayHours:       document.getElementById('f-day').value.trim(),
       nightHours:     document.getElementById('f-night').value.trim(),
       ifrTime:        document.getElementById('f-ifr').value.trim(),
-      vfrTime:        document.getElementById('f-vfr').value.trim(),
       xcHours:        document.getElementById('f-xc').value.trim(),
       soloHours:      document.getElementById('f-solo').value.trim(),
       toDay:          parseInt(document.getElementById('f-to-day').value)    || 0,
@@ -404,6 +384,13 @@ function handleSubmit() {
       approachCount:  document.getElementById('f-approach-count')?.value || '',
       approachType:   document.getElementById('f-approach-type')?.value  || '',
     };
+
+    // ── Auto-calculate Day and VFR ──
+    const totalH = parseHours(entryData.totalTime);
+    const nightH = parseHours(entryData.nightHours);
+    const ifrH   = parseHours(entryData.ifrTime);
+    entryData.dayHours = formatHours(Math.max(0, totalH - nightH));
+    entryData.vfrTime  = formatHours(Math.max(0, totalH - ifrH));
 
     // ── Validate hour subsets ──
     const hoursError = validateHourSubsets(entryData);
