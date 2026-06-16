@@ -368,6 +368,30 @@ function handleSubmit() {
       return;
     }
 
+    // Route, aircraft and role required
+    const origin       = document.getElementById('f-origin').value.trim();
+    const destination  = document.getElementById('f-destination').value.trim();
+    const aircraftType = document.getElementById('f-aircraft-type').value.trim();
+    const registration = document.getElementById('f-registration').value.trim();
+    const role         = document.getElementById('f-role').value;
+
+    if (!origin || !destination) {
+      alert('Origin and Destination (ICAO) are required.');
+      return;
+    }
+    if (!aircraftType) {
+      alert('Aircraft Type is required.');
+      return;
+    }
+    if (!registration) {
+      alert('Registration is required.');
+      return;
+    }
+    if (!role) {
+      alert('Role is required.');
+      return;
+    }
+
     // ── Required fields (enter 00:00 if none) ──
     const nightVal = document.getElementById('f-night').value;
     const ifrVal   = document.getElementById('f-ifr').value;
