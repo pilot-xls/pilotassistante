@@ -1,58 +1,89 @@
 # ✈️ PilotAssistante — Ficheiro de Contexto & Memória do Projecto
 
-> Este ficheiro é a memória viva do projecto. É lido automaticamente pelo Claude Code e carregado no Project do claude.ai. Actualiza-o no final de cada sessão de trabalho.
+> **Memória viva do projecto.** Lido automaticamente pelo Claude Code (raiz do repo) e carregado no Project do claude.ai. Actualizar no final de cada sessão.
 
 ---
 
-## 🧭 O que é o PilotAssistante
+## ⚡ Estado Rápido — Lê isto primeiro
 
-Uma **Progressive Web App (PWA)** alimentada por IA, desenhada exclusivamente para pilotos de aviação comercial e privada. O objectivo é centralizar numa única plataforma inteligente todas as ferramentas que um piloto usa no seu dia a dia — com uma assistente de IA que conhece o piloto, aprende com ele e o ajuda a ser mais eficiente, seguro e informado.
+| | |
+|---|---|
+| **Versão actual** | v0.5 |
+| **Última sessão** | Sessão 3 — 15 Junho 2026 |
+| **Módulo em construção** | Módulo 2 — Logbook Inteligente |
+| **Próxima tarefa** | Filtros + pesquisa (por mês, rota, aeronave) |
+| **Deploy activo** | GitHub Pages ✅ |
+| **Linguagem da app** | Inglês |
 
-**Nome comercial:** PilotAssistante
-**Domínio futuro:** pilotassistante.com
-**Fundador:** Piloto de aviação (utilizador desta sessão)
+### Estado dos 15 Módulos
 
----
-
-## 👤 Perfil do Fundador
-
-- Piloto de aviação comercial activo
-- Conhecimentos técnicos: HTML, CSS, JavaScript — experiência com PWAs
-- Sem equipa — desenvolvimento solo, com assistência do Claude
-- Sem orçamento inicial — stack escolhida para custo zero no início
-- Objectivo pessoal: testar a app para uso próprio antes de lançar comercialmente
-
----
-
-## 🛠️ Stack Tecnológica
-
-| Camada | Ferramenta | Notas |
+| # | Módulo | Estado |
 |---|---|---|
-| Frontend | PWA (HTML + CSS + JS puro) | Sem frameworks por agora |
-| Hospedagem | GitHub Pages → Netlify | URL gratuito desde o dia 1 |
-| Backend / Auth | Supabase | Logins + base de dados + storage |
-| Pagamentos | Stripe | Apenas na Fase 3 |
-| IA | Claude API — Anthropic | Haiku para geral, Sonnet para FTL |
-| Icons | Tabler Icons 3.11.0 (CDN jsdelivr) | Adicionado Sessão 3 |
-| App nativa | Capacitor (Ionic) | Apenas quando produto validado |
-| Controlo de versão | GitHub | Repositório: pilotassistante |
-
-**Decisões tomadas:**
-- Escolhemos Supabase em vez de Firebase (mais simples, open source, RLS nativo)
-- Haiku 4.5 para a maioria das funções ($1/$5 por MTok)
-- Sonnet 4.6 para análises complexas como FTL e briefing ($3/$15 por MTok)
-- PWA primeiro — App Store apenas quando produto estiver validado
+| 1 | Agenda & Legalidades EASA | ⬜ Por fazer |
+| 2 | Logbook Inteligente | 🟡 Em progresso (v0.5) |
+| 3 | Documentos & Validades | ⬜ Por fazer |
+| 4 | Centro de Treino | ⬜ Por fazer |
+| 5 | Memórias & Diário | ⬜ Por fazer |
+| 6 | Oportunidades de Emprego | ⬜ Por fazer |
+| 7 | Notícias de Aviação | ⬜ Por fazer |
+| 8 | Briefing Inteligente | ⬜ Por fazer |
+| 9 | Calculadora Salário & Per Diem | ⬜ Por fazer |
+| 10 | Preparação de Entrevistas | ⬜ Por fazer |
+| 11 | Diário de Fadiga | ⬜ Por fazer |
+| 12 | Widget Ecrã Principal | ⬜ Por fazer |
+| 13 | Relatório Anual Automático | ⬜ Por fazer |
+| 14 | Interface de Voz 🔴 CRÍTICO | ⬜ Por fazer |
+| 15 | Wellbeing: Sono & Jet Lag 🔴 CRÍTICO | ⬜ Por fazer |
 
 ---
 
-## 🎨 Identidade Visual (definida Sessão 3)
+## 🤝 Regras de Colaboração — OBRIGATÓRIO LER
 
-**Estilo:** Minimal Elegant
-**Paleta:** Índigo Profundo
+> Estas regras existem para proteger o trabalho já feito. Seguir sempre, sem excepções.
 
-| Token | Valor | Uso |
+1. **NUNCA gerar ficheiros completos do zero.** Editar apenas o bloco específico que precisa de mudar.
+2. **SEMPRE pedir o ficheiro actual** antes de editar. Se o utilizador não o partilhar, pedi-lo explicitamente.
+3. **Indicar claramente o que muda:** "substitui as linhas X a Y por este código" ou "adiciona esta função após a linha X".
+4. **NUNCA sobrescrever trabalho já feito.** Se não tens o ficheiro actual, não editas.
+5. **Confirmar sempre** o que está implementado antes de sugerir algo — pode já existir.
+6. **No final de cada sessão**, gerar automaticamente o bloco de actualização deste ficheiro, mesmo que o utilizador não peça.
+7. **Avisar sempre:** "Não te esqueças de actualizar o CLAUDE.md no GitHub e no Project."
+
+---
+
+## 🗂️ Estrutura do Repositório (v0.5)
+
+```
+pilotassistante/
+├── CLAUDE.md              ← este ficheiro (memória do projecto)
+├── index.html             ← estrutura HTML + authority overlay
+├── manifest.json          ← PWA manifest (theme-color: #2825A0)
+├── css/
+│   └── style.css          ← design Índigo Profundo + ícones + mobile
+└── js/
+    ├── app.js             ← lógica completa: authority-aware, edit, block time
+    └── authorities.js     ← perfis EASA e FAA (escalável para novas autoridades)
+```
+
+**O que está implementado em cada ficheiro:**
+
+`index.html` — formulário de voo/simulador, drawer lateral, painel de estatísticas, lista de entradas, authority overlay (primeiro uso), estrutura de navegação bottom bar
+
+`css/style.css` — paleta Índigo Profundo, tipografia Space Grotesk + Space Mono, drawer, cards, badges de autoridade, responsive mobile (empilha abaixo 500px), `.hidden { display: none !important }`
+
+`js/app.js` — CRUD completo de entradas, toggle Flight/Simulator, auto-cálculo block times (overnight incluído), validação Off-Block/On-Block obrigatórios, edição via drawer, eliminação com confirmação, localStorage, lógica SP/MP→SE/ME, campos contextuais PIC Name/Instructor
+
+`js/authorities.js` — perfis EASA e FAA completos, template UK CAA comentado, sistema de activação por localStorage
+
+---
+
+## 🎨 Identidade Visual
+
+**Estilo:** Minimal Elegant | **Paleta:** Índigo Profundo
+
+| Token CSS | Valor | Uso |
 |---|---|---|
-| `--accent` | `#2825A0` | Cor principal — botões, PIC, nav activo |
+| `--accent` | `#2825A0` | Cor principal — botões, nav activo |
 | `--accent-bg` | `#EEEDF8` | Fundo de badges e highlights |
 | `--accent-border` | `#B8B6E0` | Bordas de elementos activos |
 | `--text` | `#0B0929` | Texto principal |
@@ -60,63 +91,59 @@ Uma **Progressive Web App (PWA)** alimentada por IA, desenhada exclusivamente pa
 | `--border` | `#DDDAF2` | Bordas gerais |
 | `--border-subtle` | `#ECEBF8` | Separadores entre linhas |
 
-**Tipografia:**
-- UI: `Space Grotesk` (Google Fonts) — 400, 500, 600
-- Dados/números: `Space Mono` (Google Fonts) — horas, datas, ICAO codes
+**Tipografia:** `Space Grotesk` (UI) + `Space Mono` (dados, horas, ICAO codes)
+**Icons:** Tabler Icons 3.11.0 via CDN jsdelivr
 
 ---
 
-## 📦 Módulos do Produto
+## 🛠️ Stack Tecnológica
 
-### Módulo 1 — Agenda & Legalidades EASA ⬜ Por fazer
-- Integração com calendário pessoal
-- Cálculo automático FTL segundo EASA ORO.FTL
-- Alertas de ilegalidades antes que aconteçam
-- Ex: "Tens voo amanhã às 06:00. Já fizeste 85h este mês — atenção ao limite."
+| Camada | Ferramenta | Custo | Notas |
+|---|---|---|---|
+| Frontend | PWA (HTML + CSS + JS puro) | Grátis | Sem frameworks |
+| Hospedagem | GitHub Pages → Netlify | Grátis | URL activo |
+| Backend / Auth | Supabase | Grátis (início) | Fase 2 — ainda não implementado |
+| Pagamentos | Stripe | 2,9%/transacção | Fase 3 |
+| IA | Claude API (Anthropic) | Por uso | Haiku geral, Sonnet para FTL |
+| App nativa | Capacitor (Ionic) | Grátis | Fase 3 — mesmo código PWA |
+| Icons | Tabler Icons 3.11.0 | Grátis | CDN jsdelivr |
+| Controlo de versão | GitHub | Grátis | Repo: pilotassistante (Private) |
 
-**Métodos de importação de roster (sem depender da empresa):**
-- Screenshot ou foto do roster → IA lê e extrai dados automaticamente
-- Upload de PDF exportado de qualquer software (LEON, Flica, AIMS, etc.)
-- Link iCal/CalDAV → sincronização automática e contínua
-- Email automático → app detecta e lê roster enviado por email
-- Funciona com qualquer software de qualquer empresa de qualquer país
+---
 
-### Módulo 2 — Logbook Inteligente 🟡 Em progresso (v0.4)
+## 📦 Módulo 2 — Logbook Inteligente (detalhe)
 
-**Formato Universal Interno (campos completos):**
+### O que está feito (v0.5) ✅
+
+- Formulário completo com todos os campos EASA e FAA
+- Toggle Flight / Simulator (campos mudam automaticamente)
+- Simulador: só Date + FSTD Type + Session Duration + Remarks (Part-FCL correcto)
+- Painel de estatísticas: Total HRS, PIC HRS, IFR HRS, Night HRS, Simulator, This Month
+- Lista de entradas com linhas detalhadas e ícones Tabler
+- Edição de entradas (clicar na linha abre drawer preenchido)
+- Eliminar entrada com confirmação
+- Armazenamento localStorage (offline, sem servidor)
+- Deploy no GitHub Pages ✅
+- Design Minimal Elegant + Índigo Profundo
+- Authority Profile System: EASA + FAA, escalável
+- Off-Block e On-Block obrigatórios — validação impede submissão sem eles
+- Total auto-calculado dos block times (overnight incluído), editável manualmente
+- SP/MP → SE/ME aparece só quando Single Pilot (lógica EASA correcta)
+- Responsive mobile (drawer full-width, form-row empilha abaixo de 500px)
+- T/O e LDG default = 1
+
+### O que falta ⬜
+
+- Filtro por mês / pesquisa por rota ou aeronave ← **próxima tarefa**
+- Exportação CSV / PDF
+- Importação via IA (foto, PDF, CSV)
+- Consulta em linguagem natural (Claude API)
+
+### Formato Universal Interno (campos)
+
 Date, Origin (ICAO), Destination (ICAO), Off-block, On-block, Aircraft Type, Registration, SE/ME, SP/MP, Total Hours, Day Hours, Night Hours, IFR, VFR, XC Hours (FAA), Solo Hours (FAA), Role (PIC/Co-Pilot/SIC/Dual/Instructor), PIC Name, Instructor Name, Take-offs Day, Take-offs Night, Landings Day, Landings Night, Instrument Approaches (number + type), FSTD Type, FSTD Hours, Remarks, Authority (EASA/FAA/etc.)
 
-**Estado actual (v0.5):**
-- ✅ Formulário completo com todos os campos EASA e FAA
-- ✅ Toggle Flight / Simulator (campos mudam automaticamente)
-- ✅ Simulador: só Date + FSTD Type + Session Duration + Remarks (Part-FCL correcto)
-- ✅ Painel de estatísticas: Total HRS, PIC HRS, IFR HRS, Night HRS, Simulator, This Month
-- ✅ Lista de entradas com linhas detalhadas e ícones
-- ✅ Edição de entradas (clicar na linha abre drawer preenchido)
-- ✅ Eliminar entrada com confirmação
-- ✅ Armazenamento localStorage (offline, sem servidor)
-- ✅ Deploy no GitHub Pages
-- ✅ Design Minimal Elegant + Índigo Profundo
-- ✅ Tabler Icons (avião, lua, nuvem, calendário, simulador, etc.)
-- ✅ Authority Profile System: EASA + FAA, escalável para qualquer autoridade
-- ✅ Off-Block e On-Block obrigatórios para voos (Part-FCL) — validação impede submissão sem eles
-- ✅ Total auto-calculado dos block times (overnight incluído), editável manualmente
-- ✅ SP/MP → SE/ME só aparece quando Single Pilot
-- ✅ Responsive mobile (drawer full-width, form-row empilha abaixo de 500px)
-- ⬜ Filtro por mês / pesquisa por rota ou aeronave
-- ⬜ Exportação CSV / PDF
-- ⬜ Importação via IA (foto, PDF, CSV)
-- ⬜ Consulta em linguagem natural (Claude API)
-
-**Authority Profile System — ficheiro `js/authorities.js`:**
-- Adicionar nova autoridade = acrescentar um objecto ao ficheiro
-- Template UK CAA incluído comentado
-- Cada perfil define: showOperations, engineWhenSP, showCrossCountry, showSolo, roles, simTypes, approachTypes, exportFormats
-- Autoridade activa guardada em localStorage
-- Primeiro uso: ecrã de selecção com cartões 🇪🇺 EASA / 🇺🇸 FAA
-- Badge no header para mudar a qualquer momento
-
-**Diferenças EASA vs FAA no formulário:**
+### Diferenças EASA vs FAA
 
 | Campo | EASA | FAA |
 |---|---|---|
@@ -128,172 +155,50 @@ Date, Origin (ICAO), Destination (ICAO), Off-block, On-block, Aircraft Type, Reg
 | Simulador | FFS/FTD/FNPT/BITD | FFS/FTD/ATD/AATD/BATD |
 | Approaches | ILS CAT I/II/III… | ILS/LOC/LDA… |
 
-**Ficheiros no repositório (v0.5):**
-- `index.html` — estrutura HTML + authority overlay (block times obrigatórios)
-- `css/style.css` — design Índigo Profundo + ícones + mobile
-- `js/app.js` — lógica completa: authority-aware, edit, block time auto-calc + validação
-- `js/authorities.js` — perfis EASA e FAA
-- `manifest.json` — PWA manifest (theme-color: #2825A0)
+### Authority Profile System
 
-**Métodos de importação (a implementar):**
-- Foto/screenshot de qualquer logbook (papel ou digital) → IA extrai dados
-- Upload de PDF exportado de qualquer app → IA processa
-- CSV de apps como LogTen Pro, MyFlightbook, Safelog → IA mapeia colunas
-- Introdução manual campo a campo ✅ (já implementado)
-
-**Templates de exportação (apenas 4):**
-- EASA (formato oficial europeu) — prioritário
-- FAA (formato oficial americano)
-- PDF genérico profissional
-- CSV universal (para migrar para outra app)
-
-### Módulo 3 — Documentos & Validades ⬜ Por fazer (CRÍTICO — adicionado Sessão 1)
-- Licença ATPL/CPL/PPL — data de validade + alertas
-- Medical Classe 1/2 — validade + lembrete para marcar consulta
-- Type Rating — validade + data de renovação
-- IR (Instrument Rating) — validade
-- Currency de aterragens (3 em 90 dias) — calculado automaticamente pelo logbook
-- English Language Proficiency — validade
-- Currency nocturna — calculada automaticamente
-- Alertas automáticos: 90 dias, 60 dias, 30 dias, 7 dias antes do vencimento
-- Ex: "Your Medical expires in 47 days. Time to book your appointment."
-
-### Módulo 4 — Centro de Treino ⬜ Por fazer
-- Base de conhecimento ATPL/CPL/PPL
-- Documentação do type rating (introduzida pelo piloto)
-- Modo quiz, flashcards, revisão por voz
-- IA que adapta o estudo ao historial do piloto
-
-### Módulo 5 — Memórias & Diário ⬜ Por fazer
-- Álbum de fotos ligado a voos específicos
-- Diário de bordo pessoal
-- Consulta: "Show me photos from my first solo flight"
-
-### Módulo 6 — Oportunidades de Emprego ⬜ Por fazer
-- Feed de ofertas filtrado por type rating e localização
-- Alertas de novas oportunidades relevantes
-
-### Módulo 7 — Notícias de Aviação ⬜ Por fazer
-- Feed personalizado de notícias do setor
-- Resumo diário pela IA
-
-### Módulo 8 — Briefing Inteligente ⬜ Por fazer
-
-### Módulo 9 — Calculadora de Salário & Per Diem ⬜ Por fazer (Fase 2)
-- Cálculo automático de horas extra com base no logbook
-- Per diem por país/destino configurável
-- Total a receber no mês actual
-- Histórico mensal e anual
-- "How much will I earn this month?" → resposta imediata
-
-### Módulo 10 — Preparação de Entrevistas ⬜ Por fazer (Fase 2)
-- IA prepara o piloto com perguntas reais por companhia
-- Simulação de sim check por type rating
-- Dicas específicas do processo de cada companhia
-- Ligado ao módulo de emprego — vaga detectada → preparação automática
-
-### Módulo 11 — Diário de Fadiga ⬜ Por fazer (Fase 2)
-- Registo de fadiga após cada duty (escala simples 1-5)
-- Histórico correlacionado com tipo de duties
-- Insights da IA: "Your fatigue is higher after night standby followed by early starts"
-- Alinhado com requisitos de reporte EASA
-
-### Módulo 12 — Widget Ecrã Principal ⬜ Por fazer (Fase 3)
-- Próximo voo (hora, rota, aeronave)
-- Alertas de validades urgentes
-- Horas voadas no mês
-- Visível sem abrir a app
-
-### Módulo 13 — Relatório Anual Automático ⬜ Por fazer (Fase 2)
-- Gerado pela IA no final de cada ano
-- Total de horas, países, aterragens, melhor mês
-- Comparação com ano anterior
-- Partilhável nas redes sociais (marketing orgânico)
-
-### Módulo 14 — Interface de Voz ⬜ Por fazer (Fase 2) 🔴 CRÍTICO
-- Controlo total da app por voz
-- "PilotAssistante, what's my duty time tomorrow?"
-- "PilotAssistante, add a flight Lisbon London 4h30"
-- "PilotAssistante, what's the weather at Heathrow?"
-- Perfeito no carro a caminho do aeroporto — sem tocar no telemóvel
-
-### Módulo 15 — Wellbeing: Sono & Jet Lag ⬜ Por fazer (Fase 2) 🔴 CRÍTICO
-- Análise automática do roster para calcular jet lag previsto
-- Recomendações de sono personalizadas por rota e fuso horário
-- Índice de alerta previsto para cada fase do voo
-- "You're crossing 5 time zones — sleep between 14:00 and 22:00 today"
-- Diferenciador enorme — segurança aérea real, nenhuma app faz isto
-
----
-
-## 🔮 Funcionalidades Futuras — Ano 3+
-
-*Boas ideias mas fora do âmbito das Fases 1 e 2. Reavaliar quando o produto estiver validado.*
-
-- Progressão de Carreira — trajectory de horas até Captain, widebody, etc.
-- Apple Watch integration
-- Calculadoras de performance de aeronave
-- QRH digital por type rating
-- Gestão fiscal multi-país (per diem, impostos)
-- White-label para companhias aéreas
-- METAR, TAF, SIGMET em linguagem natural
-- NOTAMs automáticos com resumo inteligente
-- Sugestão de alternates baseada nas condições
+Ficheiro `js/authorities.js` — adicionar nova autoridade = acrescentar um objecto.
+Template UK CAA incluído comentado. Primeiro uso: ecrã de selecção. Badge no header para mudar a qualquer momento.
 
 ---
 
 ## 🗺️ Plano de Desenvolvimento
 
 ### FASE 1 — Versão Pessoal (Mês 1-3)
-**Objectivo:** Construir para uso próprio. Aprender. Testar na vida real.
 
 | Semanas | Objectivo | Estado |
 |---|---|---|
-| 1-2 | Logbook básico | ✅ Concluído (v0.4 — design + authority system + edição) |
-| 3-4 | Agenda + cálculo FTL simples | ⬜ Por fazer |
+| 1-2 | Logbook básico | ✅ Concluído (v0.5) |
+| 3-4 | Filtros + Exportação CSV + Agenda FTL básica | 🟡 A seguir |
 | 5-6 | Integrar Claude API | ⬜ Por fazer |
 | 7-8 | Meteorologia + NOTAMs | ⬜ Por fazer |
 | 9-12 | Polir, testar, corrigir bugs | ⬜ Por fazer |
 
 ### FASE 2 — Beta com Pilotos (Mês 4-6)
-**Objectivo:** Validar com 10-20 pilotos amigos. Recolher feedback real.
-- Adicionar Supabase (logins + cloud sync)
-- Partilhar link da PWA com pilotos amigos
+
+- Adicionar Supabase (logins + cloud sync — substituir localStorage)
+- Partilhar link da PWA com 10-20 pilotos amigos
 - Criar grupo de feedback (WhatsApp ou Discord)
-- Iterar semanalmente com base no feedback
+- Activar Notificações Push
+- Interface de Voz + Wellbeing (módulos críticos)
 
 ### FASE 3 — Produto Comercial (Mês 7-12)
-**Objectivo:** Lançar o PilotAssistante como produto pago.
-- Implementar Stripe para subscrições
-- Lançar plano Free vs Premium
-- Publicar domínio: pilotassistante.com
+
+- Implementar Stripe (Free vs Premium €9,99/mês)
+- Publicar pilotassistante.com
 - Converter para app nativa com Capacitor
-- Submeter à App Store e Google Play
+- Submeter à App Store (99€/ano) e Google Play (25€ único)
+- GDPR & Privacidade completos
 
 ---
 
 ## 💰 Modelo de Negócio
 
-**Plano Grátis:**
-- Logbook até 50 voos
-- Meteorologia simples
-- Agenda básica
-- 5 perguntas/dia à assistente IA
+**Grátis:** Logbook 50 voos, meteorologia simples, agenda básica, 5 perguntas IA/dia
 
-**Plano Premium — €9,99/mês:**
-- Logbook ilimitado + relatórios IA
-- Verificação legalidades EASA automática
-- Centro de treino completo + type rating
-- NOTAMs + Meteorologia avançada
-- Oportunidades de emprego
-- Memórias e diário
-- Assistente IA ilimitada
+**Premium €9,99/mês:** Logbook ilimitado + IA, FTL automático, treino completo, NOTAMs, emprego, memórias, IA ilimitada
 
----
-
-## 📊 Projecção de Mercado
-
-| Ano | Subscribers | Receita/mês | Lucro estimado/ano |
+| Ano | Subscribers | Receita/mês | Lucro/ano |
 |---|---|---|---|
 | Ano 1 | 0-20 | €0-200 | Investimento |
 | Ano 2 | 20-200 | €200-2.000 | ~€10.000 |
@@ -301,173 +206,87 @@ Date, Origin (ICAO), Destination (ICAO), Off-block, On-block, Aircraft Type, Reg
 | Ano 4 | 1.000-2.500 | €9.990-24.975 | ~€170.000 |
 | Ano 5 | 2.500-3.500 | €24.975-34.965 | ~€300.000 |
 
-**Meta:** 1% dos ~350.000 pilotos comerciais mundiais = ~3.500 subscribers no Ano 5
+**Meta:** 1% dos ~350.000 pilotos comerciais mundiais = ~3.500 subscribers (Ano 5)
 
 ---
 
-## 💶 Custos da Claude API (2026)
+## 💶 Custos Claude API (2026)
 
 | Modelo | Input/MTok | Output/MTok | Uso |
 |---|---|---|---|
 | Haiku 4.5 | $1,00 | $5,00 | Maioria das funções |
 | Sonnet 4.6 | $3,00 | $15,00 | FTL, briefing complexo |
 
-**Custo real estimado por fase:**
-- Só tu (Fase 1): < $1/mês
-- Beta 10-20 pilotos (Fase 2): ~$5-10/mês
-- 100 subscribers: ~$6/mês
-- 1.000 subscribers: ~$60/mês
-- 3.500 subscribers (meta): ~$210/mês
-
-*Com prompt caching activo: redução de até 90% nos custos de input.*
+Fase 1 < $1/mês · Fase 2 ~$5-10/mês · 100 subs ~$6 · 1k subs ~$60 · 3.5k subs ~$210
+*Com prompt caching: até -90% nos custos de input.*
 
 ---
 
 ## 🐛 Bugs Conhecidos
 
-*Nenhum activo. Bugs resolvidos na Sessão 3:*
-- ~~`.hidden` sobrescrito por `.sim-only { display: flex }` — fix com `!important`~~
+*Nenhum activo.*
+
+Resolvidos na Sessão 3:
+- ~~`.hidden` sobrescrito por `.sim-only { display: flex }` → fix com `!important`~~
 - ~~app.js antigo no repositório impedia o drawer de abrir~~
 - ~~FSTD Type aparecia em modo Flight~~
 
 ---
 
-## ✅ Decisões de Produto
+## ✅ Decisões de Produto (resumo por sessão)
 
-| Data | Decisão | Motivo |
-|---|---|---|
-| Sessão 1 | GitHub Pages para hospedagem | Grátis, integrado com repositório, simples |
-| Sessão 1 | Supabase para autenticação e base de dados | Grátis até 50.000 utilizadores, RLS nativo, JS simples |
-| Sessão 1 | Supabase Auth para logins | Email+password + OAuth Google/Apple, sessões JWT automáticas |
-| Sessão 1 | GitHub Pages NÃO gere acessos sozinho | Só serve ficheiros estáticos — Supabase trata de tudo o resto |
-| Sessão 1 | Netlify apenas na Fase 3 | Necessário só para funções serverless (ex: Stripe seguro) |
-| Sessão 1 | Row Level Security (RLS) no Supabase | Cada piloto só vê os seus dados — configurado uma vez, funciona sempre |
-| Sessão 1 | PWA "Adicionar ao ecrã" apenas nas Fases 1 e 2 | Aceitável para uso pessoal e beta, mas não profissional para escalar |
-| Sessão 1 | App Store + Google Play via Capacitor na Fase 3 | Produto profissional, pesquisável na loja, credível para utilizadores pagos |
-| Sessão 1 | Capacitor não reescreve código | Pega no código PWA existente e embrulha em app nativa — mesmo código, duas lojas |
-| Sessão 1 | Apple Developer Account (99€/ano) só na Fase 3 | Não faz sentido pagar antes de ter utilizadores reais e produto validado |
-| Sessão 1 | Integração com roster via IA (não via API) | APIs de LEON/Flica/AIMS dependem da empresa — piloto não tem acesso directo |
-| Sessão 1 | 4 métodos de importação de roster | Screenshot/foto, upload PDF, link iCal, email automático — funciona com qualquer software |
-| Sessão 1 | Solução universal: IA lê qualquer formato de roster | Funciona com LEON, Flica, AIMS, papel, qualquer software, qualquer país |
-| Sessão 1 | Logbook com formato universal interno | Um único formato interno com todos os campos possíveis — importa de qualquer fonte |
-| Sessão 1 | Importação de logbook via IA | Foto de papel, PDF, CSV, screenshot — IA converte tudo para formato interno |
-| Sessão 1 | Apenas 4 templates de exportação de logbook | EASA (oficial europeu), FAA (oficial americano), PDF genérico, CSV universal |
-| Sessão 1 | Grande valor: reunir logbooks dispersos | Papel + LogTen + MyFlightbook + outros → tudo num sítio só via IA |
-| Sessão 1 | Modo Offline obrigatório desde o início | Pilotos sem internet no cockpit, aeroportos remotos, roaming — app tem de funcionar sempre |
-| Sessão 1 | Módulo Documentos & Validades adicionado (crítico) | Dor real para todos os pilotos — Medical, Type Rating, IR, currency — alertas automáticos |
-| Sessão 1 | GDPR & Privacidade — implementar antes do lançamento | Dados profissionais sensíveis, obrigatório na Europa — exportação e apagamento de dados |
-| Sessão 1 | Notificações Push — activar na Fase 2 | Sem push, os alertas FTL e validades perdem 80% do valor |
-| Sessão 1 | Módulo Calculadora Per Diem adicionado | Dor real — pilotos calculam isto manualmente, nenhuma app faz bem |
-| Sessão 1 | Módulo Preparação de Entrevistas adicionado | IA faz tudo, baixo esforço, alto valor — ligado ao módulo de emprego |
-| Sessão 1 | Módulo Diário de Fadiga adicionado | Segurança aérea + dados pessoais valiosos + alinhado com EASA |
-| Sessão 1 | Módulo Widget Ecrã Principal adicionado | Lembra o piloto da app todos os dias sem abrir |
-| Sessão 1 | Módulo Relatório Anual Automático adicionado | IA gera, partilhável nas redes — marketing orgânico gratuito |
-| Sessão 1 | Comunidade de Pilotos — REJEITADO | Decisão do fundador — fora do âmbito do produto |
-| Sessão 1 | Módulo Interface de Voz adicionado (crítico) | Natural para pilotos, inovador, perfeito para uso no carro |
-| Sessão 1 | Módulo Wellbeing Sono & Jet Lag adicionado (crítico) | Maior dor real do piloto, nenhuma app trata isto seriamente |
-| Sessão 1 | Funcionalidades Ano 3+ definidas e arquivadas | Apple Watch, QRH, fiscal, white-label — fora do âmbito actual |
-| Sessão 1 | Produto considerado completo para início de desenvolvimento | 15 módulos definidos, produto inovador sem equivalente no mercado |
-| Sessão 2 | localStorage na Fase 1 | Sem servidor, custo zero, funciona offline desde o primeiro dia |
-| Sessão 2 | Estrutura de pastas css/ e js/ desde o início | Projecto vai crescer — organização correcta desde já evita reorganização futura |
-| Sessão 2 | App em inglês | Produto para pilotos internacionais — brand name "PilotAssistante" mantido |
-| Sessão 2 | Aceita horas em "2:30" e "2.5" | Flexível para uso real — pilotos usam ambos os formatos |
-| Sessão 2 | Toggle Flight / Simulator no formulário | Formulário não mostra campos irrelevantes — UX mais limpa |
-| Sessão 2 | Campos contextuais PIC Name / Instructor Name | Só aparecem quando a função seleccionada é relevante |
-| Sessão 2 | Horas de simulador separadas do tempo de voo real | Não contamina os totais de voo — correcto para EASA Part-FCL |
-| Sessão 2 | 4 tipos de função: PIC / Co-Pilot / Dual / Instructor | Cobre todos os casos EASA Part-FCL |
-| Sessão 3 | Minimal Elegant + Índigo Profundo (#2825A0) | Identidade visual definitiva — distinta, legível, não genérica |
-| Sessão 3 | Space Grotesk (UI) + Space Mono (dados/números) | Par tipográfico definitivo |
-| Sessão 3 | Formulário em drawer lateral | Mais espaço para a lista; UX mais limpa |
-| Sessão 3 | Tabler Icons 3.11.0 via CDN jsdelivr | Consistente, leve, sem frameworks |
-| Sessão 3 | `authorities.js` — ficheiro único para novas autoridades | Escalável: UK CAA = copiar template e preencher |
-| Sessão 3 | Dados em formato universal interno | Authority-agnostic — exporta para qualquer formato |
-| Sessão 3 | Block times opcionais → auto-calculam Total | Comerciais usam blocos; privados podem só meter o total directamente |
-| Sessão 3 | SP → SE/ME aparece; MP → SE/ME esconde | Lógica correcta EASA: MP não precisa de SE/ME no logbook |
-| Sessão 3 | `.hidden { display: none !important }` | Evita ser sobrescrito por selectores de igual especificidade |
-| Sessão 3 | Simulador: só 4 campos | Part-FCL só exige Date + FSTD Type + Duration + Remarks |
-| Sessão 3 | T/O e LDG default = 1 | Maioria dos voos tem 1 T/O e 1 LDG — mais rápido de preencher |
-| Sessão 3 | Edição de entradas via drawer | Clicar na linha abre drawer preenchido; Update Entry guarda no lugar |
-| Sessão 3 | Off-Block e On-Block obrigatórios | Part-FCL exige registo dos tempos de partida e chegada (colunas 5/6 logbook ANAC) |
+### Sessão 1
+GitHub Pages (hospedagem) · Supabase (auth + BD, Fase 2) · RLS nativo · PWA primeiro, App Store na Fase 3 via Capacitor · Roster via IA não via API (piloto não tem acesso) · 4 métodos importação roster · Logbook formato universal interno · 4 templates exportação (EASA/FAA/PDF/CSV) · Offline obrigatório desde início · GDPR antes do lançamento · Push Notifications na Fase 2 · Comunidade Pilotos REJEITADO · 15 módulos definidos e completos
+
+### Sessão 2
+localStorage na Fase 1 · Estrutura css/ e js/ desde o início · App em inglês · Aceita horas em "2:30" e "2.5" · Toggle Flight/Simulator · Campos contextuais PIC Name/Instructor · Horas simulador separadas do voo real · 4 funções: PIC/Co-Pilot/Dual/Instructor
+
+### Sessão 3
+Minimal Elegant + Índigo Profundo (#2825A0) definitivo · Space Grotesk + Space Mono definitivos · Drawer lateral para formulário · Tabler Icons 3.11.0 CDN · `authorities.js` único para novas autoridades · Block times opcionais mas auto-calculam Total · Off-Block e On-Block obrigatórios (Part-FCL) · Simulador só 4 campos · T/O e LDG default = 1 · Edição via drawer · `.hidden !important` evita conflitos CSS
+
+### Sessão 4
+Nunca gerar ficheiros completos do zero — editar apenas blocos específicos · Sempre pedir ficheiro actual antes de editar
 
 ---
 
 ## 📝 Registo de Sessões
 
 ### Sessão 1 — Junho 2026
-**O que fizemos:**
-- Discussão completa sobre como funciona a IA (redes neurais, LLMs, história)
-- Definição do produto PilotAssistante e todos os seus módulos
-- Escolha da stack tecnológica completa
-- Definição do modelo de negócio (freemium + €9,99/mês)
-- Projecção financeira até ao Ano 5 (1% do mercado)
-- Criação do documento Word completo (PilotAssistante_PlanoCompleto.docx)
-- Criação deste ficheiro CLAUDE.md
-- Discussão sobre GitHub, PWA, App Store (Capacitor), Supabase, Stripe
-- Solução de roster: IA lê screenshot/foto/PDF/iCal/email
-- Solução de logbook: formato universal interno + importação via IA + 4 templates de exportação
-
----
+Definição completa do produto, stack, 15 módulos, modelo de negócio, projecções, CLAUDE.md criado.
 
 ### Sessão 2 — 14 Junho 2026
-**O que fizemos:**
-- Construção do Logbook v0.1 e v0.2 — Módulo 2, Fase 1, Semanas 1-2
-- Criados 4 ficheiros: index.html, css/style.css, js/app.js, manifest.json
-- Formulário com todos os campos EASA, toggle Flight/Simulator, estatísticas
-- Armazenamento localStorage, deploy no GitHub Pages
-
----
+Logbook v0.1→v0.2: index.html, css/style.css, js/app.js, manifest.json. Formulário EASA, toggle Flight/Simulator, localStorage, GitHub Pages.
 
 ### Sessão 3 — 15 Junho 2026
-**O que fizemos:**
-- Comparação de 3 estilos visuais (Dense Aviation / Modern Clean / Minimal Elegant)
-- Comparação de 4 paletas de cor em modo claro (Cobalto / Esmeralda / Índigo / Ferrugem)
-- Refinamento do Índigo com 4 variações → escolha: **Índigo Profundo** (#2825A0)
-- Reconstrução completa dos ficheiros (v0.3): design Minimal Elegant, Space Grotesk + Space Mono, drawer lateral
-- Deploy no GitHub → diagnóstico e correcção do bug (app.js antigo não substituído no repo)
-- Adição de Tabler Icons 3.11.0
-- Correcção da lógica SP/MP → SE/ME
-- Total Flight Time auto-calculado de Off-Block + On-Block (overnight incluído), editável
-- Block times marcados como "optional"
-- Construção do **Authority Profile System** (v0.4): `authorities.js` com EASA e FAA; template UK CAA incluído
-- Ecrã de selecção de autoridade no primeiro uso; badge no header para mudar a qualquer momento
-- Formulário adapta-se por autoridade: campos, roles, sim types, approach types
-- Implementação de edição de entradas: clicar na linha abre drawer preenchido com todos os dados
-- Fix CSS: `.hidden !important` resolve conflito de especificidade
-- Formulário de simulador correcto: só 4 campos (Part-FCL)
-- Fix mobile: form-row empilha abaixo de 500px; T/O/LDG em 2 colunas
-- Off-Block e On-Block tornados obrigatórios (Part-FCL) — validação bloqueia submissão sem eles
-- Total auto-calculado dos block times; se obrigatórios, o Total está sempre preenchido
+Logbook v0.3→v0.5: identidade visual definitiva (Minimal Elegant + Índigo Profundo), Authority Profile System (EASA+FAA), edição de entradas, Off-Block/On-Block obrigatórios, fix bugs CSS e drawer, responsive mobile.
 
-**Versão final da sessão: v0.5**
-**Ficheiros alterados:** `index.html`, `js/app.js`
+### Sessão 4 — 16 Junho 2026
+Discussão sobre Claude Code vs claude.ai Project — como o CLAUDE.md funciona como memória partilhada. Regra estabelecida: nunca gerar ficheiros completos, editar sempre blocos específicos. CLAUDE.md melhorado e reestruturado.
 
-**Ficheiros actuais no repositório:**
-- `index.html` — v0.4
-- `css/style.css` — v0.4
-- `js/app.js` — v0.4
-- `js/authorities.js` — novo (criado Sessão 3)
-- `manifest.json` — inalterado
+**Próxima sessão:**
+- Filtros por mês / pesquisa por rota ou aeronave
+- Exportação CSV simples
+- Início do Módulo 1 — Agenda FTL básica
 
 ---
 
-## 🚀 Próximos Passos Imediatos
+## 🚀 Próximos Passos
 
-1. **Agora** → Testar com voos reais — adicionar os primeiros voos ao logbook v0.4
-2. **Semana 2** → Filtros e pesquisa (por mês, rota, aeronave)
-3. **Semana 2** → Exportação CSV simples
-4. **Semana 3-4** → Agenda + cálculo FTL simples (Módulo 1 básico)
-5. **Mês 2** → Integrar Claude API: primeira pergunta em linguagem natural ao logbook
-6. **Mês 2-3** → Mostrar a pilotos amigos e recolher feedback honesto
+1. **Agora** → Testar com voos reais — adicionar os primeiros voos ao logbook v0.5
+2. **Próxima sessão** → Filtros + pesquisa (mês, rota, aeronave) no Logbook
+3. **Semana 3-4** → Exportação CSV + início Agenda FTL (Módulo 1 básico)
+4. **Mês 2** → Claude API: primeira pergunta em linguagem natural ao logbook
+5. **Mês 2-3** → Beta com pilotos amigos
 
 ---
 
 ## 📋 Como usar este ficheiro
 
-1. **Claude Code:** coloca este ficheiro na raiz do repositório como `CLAUDE.md` — é lido automaticamente
-2. **Claude.ai Project:** faz upload deste ficheiro ao teu Project "PilotAssistante"
-3. **Fim de cada sessão:** pede ao Claude para gerar o resumo da sessão e adiciona aqui em "Registo de Sessões"
-4. **Início de cada sessão:** o Claude já sabe tudo — basta abrir o Project e continuar
+1. **Claude Code** → na raiz do repo como `CLAUDE.md` — lido automaticamente
+2. **Claude.ai Project** → upload nos Ficheiros do Project
+3. **Fim de cada sessão** → Claude gera bloco de update → copias → commit GitHub → upload no Project
+4. **Início de cada sessão** → Claude lê e confirma o estado actual antes de começar
 
 ---
 
-*Última actualização: Sessão 3 — 15 Junho 2026 (v0.5)*
+*Última actualização: Sessão 4 — 16 Junho 2026 (v0.5)*
