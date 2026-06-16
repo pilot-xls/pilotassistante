@@ -539,7 +539,10 @@ function renderEntries() {
   }
   if (filterSearch) {
     filtered = filtered.filter(e => {
-      const haystack = [e.origin, e.destination, e.aircraftType, e.registration, e.fstdType, e.remarks]
+      const auth     = AUTHORITIES[e.authority] || AUTHORITIES.EASA;
+      const roleObj  = auth ? auth.roles.find(r => r.value === e.role) : null;
+      const roleLabel = roleObj ? roleObj.label : (e.role || '');
+      const haystack = [e.origin, e.destination, e.aircraftType, e.registration, e.fstdType, e.remarks, roleLabel]
         .filter(Boolean).join(' ').toLowerCase();
       return haystack.includes(filterSearch);
     });
