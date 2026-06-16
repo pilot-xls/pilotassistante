@@ -9,8 +9,11 @@
 let entries     = JSON.parse(localStorage.getItem('pa_entries') || '[]');
 let editingId   = null;
 let currentMode = 'flight'; // 'flight' | 'sim'
-let filterSearch = '';
-let filterMonth  = '';
+let filterSearch   = '';
+let filterDateFrom = '';
+let filterDateTo   = '';
+let filterRole     = '';
+let filterType     = 'all'; // 'all' | 'flight' | 'sim'
 
 // ── Init ────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
@@ -32,6 +35,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   renderEntries();
   renderStats();
+
+  // Close filter popup when clicking outside
+  document.addEventListener('click', e => {
+    const popup = document.getElementById('filter-popup');
+    const btn   = document.getElementById('filter-popup-btn');
+    if (popup && !popup.classList.contains('hidden') &&
+        !popup.contains(e.target) && btn && !btn.contains(e.target)) {
+      popup.classList.add('hidden');
+    }
+  });
 });
 
 // ── Authority ────────────────────────────────────────────────
@@ -470,34 +483,79 @@ function deleteEntry(id, event) {
 }
 
 // ── Filters ──────────────────────────────────────────────────
+function hasAdvancedFilter() {
+  return filterDateFrom || filterDateTo || filterRole || filterType !== 'all';
+}
+
 function applyFilters() {
-  filterSearch = document.getElementById('filter-search').value.trim().toLowerCase();
-  filterMonth  = document.getElementById('filter-month').value;
-  document.getElementById('filter-clear').classList.toggle('hidden', !(filterSearch || filterMonth));
+  filterSearch   = document.getElementById('filter-search').value.trim().toLowerCase();
+  filterDateFrom = document.getElementById('fp-date-from')?.value || '';
+  filterDateTo   = document.getElementById('fp-date-to')?.value   || '';
+  filterRole     = document.getElementById('fp-role')?.value      || '';
+  const hasFilter = filterSearch || hasAdvancedFilter();
+  document.getElementById('filter-clear').classList.toggle('hidden', !hasFilter);
+  document.getElementById('filter-popup-btn').classList.toggle('active', !!hasAdvancedFilter());
   renderEntries();
 }
 
 function clearFilters() {
   document.getElementById('filter-search').value = '';
-  document.getElementById('filter-month').value  = '';
   filterSearch = '';
-  filterMonth  = '';
+  clearAdvancedFilters();
+}
+
+function toggleFilterPopup() {
+  const popup = document.getElementById('filter-popup');
+  const isOpen = !popup.classList.contains('hidden');
+  if (!isOpen) {
+    populateRoleFilter();
+    popup.classList.remove('hidden');
+  } else {
+    popup.classList.add('hidden');
+  }
+}
+
+function setTypeFilter(type) {
+  filterType = type;
+  document.querySelectorAll('.fp-type-btn').forEach(btn =>
+    btn.classList.toggle('active', btn.dataset.type === type)
+  );
+  applyFilters();
+}
+
+function clearAdvancedFilters() {
+  const from = document.getElementById('fp-date-from');
+  const to   = document.getElementById('fp-date-to');
+  const role = document.getElementById('fp-role');
+  if (from) from.value = '';
+  if (to)   to.value   = '';
+  if (role) role.value = '';
+  filterDateFrom = '';
+  filterDateTo   = '';
+  filterRole     = '';
+  filterType     = 'all';
+  document.querySelectorAll('.fp-type-btn').forEach(btn =>
+    btn.classList.toggle('active', btn.dataset.type === 'all')
+  );
   document.getElementById('filter-clear').classList.add('hidden');
+  document.getElementById('filter-popup-btn').classList.remove('active');
   renderEntries();
 }
 
-function populateMonthFilter() {
-  const months = [...new Set(
-    entries.filter(e => e.date).map(e => e.date.slice(0, 7))
-  )].sort((a, b) => b.localeCompare(a));
-
-  const select  = document.getElementById('filter-month');
+function populateRoleFilter() {
+  const usedRoles = [...new Set(
+    entries.filter(e => !e.isSim && e.role).map(e => e.role)
+  )];
+  const labelMap = {};
+  Object.values(AUTHORITIES).forEach(auth =>
+    auth.roles.forEach(r => { if (!labelMap[r.value]) labelMap[r.value] = r.label; })
+  );
+  const select  = document.getElementById('fp-role');
   const current = select.value;
-  select.innerHTML = '<option value="">All months</option>' +
-    months.map(m => {
-      const label = new Date(m + '-15T12:00:00').toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
-      return `<option value="${m}"${m === current ? ' selected' : ''}>${label}</option>`;
-    }).join('');
+  select.innerHTML = '<option value="">All roles</option>' +
+    usedRoles.sort().map(v =>
+      `<option value="${v}"${v === current ? ' selected' : ''}>${labelMap[v] || v}</option>`
+    ).join('');
 }
 
 // ── Render Entries ───────────────────────────────────────────
@@ -505,18 +563,18 @@ function renderEntries() {
   const list  = document.getElementById('entries-list');
   const count = document.getElementById('entries-count');
 
-  populateMonthFilter();
-
   let filtered = [...entries];
-  if (filterMonth) {
-    filtered = filtered.filter(e => e.date && e.date.startsWith(filterMonth));
-  }
+  if (filterDateFrom) filtered = filtered.filter(e => e.date && e.date >= filterDateFrom);
+  if (filterDateTo)   filtered = filtered.filter(e => e.date && e.date <= filterDateTo);
+  if (filterRole)     filtered = filtered.filter(e => e.role === filterRole);
+  if (filterType === 'flight') filtered = filtered.filter(e => !e.isSim);
+  if (filterType === 'sim')    filtered = filtered.filter(e => e.isSim);
   if (filterSearch) {
     filtered = filtered.filter(e => {
-      const auth     = AUTHORITIES[e.authority] || AUTHORITIES.EASA;
-      const roleObj  = auth ? auth.roles.find(r => r.value === e.role) : null;
+      const auth      = AUTHORITIES[e.authority] || AUTHORITIES.EASA;
+      const roleObj   = auth ? auth.roles.find(r => r.value === e.role) : null;
       const roleLabel = roleObj ? roleObj.label : (e.role || '');
-      const haystack = [e.origin, e.destination, e.aircraftType, e.registration, e.fstdType, e.remarks, roleLabel]
+      const haystack  = [e.origin, e.destination, e.aircraftType, e.registration, e.fstdType, e.remarks, roleLabel]
         .filter(Boolean).join(' ').toLowerCase();
       return haystack.includes(filterSearch);
     });
@@ -524,7 +582,8 @@ function renderEntries() {
 
   const total = entries.length;
   const shown = filtered.length;
-  count.textContent = (filterMonth || filterSearch)
+  const isFiltered = filterSearch || hasAdvancedFilter();
+  count.textContent = isFiltered
     ? `${shown} of ${total} ${total === 1 ? 'entry' : 'entries'}`
     : `${total} ${total === 1 ? 'entry' : 'entries'}`;
 

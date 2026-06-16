@@ -97,9 +97,37 @@
           <input type="text" id="filter-search" placeholder="Route, AC, Reg, Role" oninput="applyFilters()">
           <button id="filter-clear" class="filter-clear hidden" onclick="clearFilters()"><i class="ti ti-x"></i></button>
         </div>
-        <select id="filter-month" onchange="applyFilters()">
-          <option value="">All months</option>
-        </select>
+        <div class="filter-popup-wrap">
+          <button id="filter-popup-btn" class="filter-popup-btn" onclick="toggleFilterPopup()" title="Advanced filters">
+            <i class="ti ti-adjustments-horizontal"></i>
+          </button>
+          <!-- Advanced Filter Popup -->
+          <div id="filter-popup" class="filter-popup hidden">
+            <div class="fp-group">
+              <div class="fp-label">Date range</div>
+              <div class="fp-date-row">
+                <input type="date" id="fp-date-from" onchange="applyFilters()">
+                <span class="fp-date-sep"><i class="ti ti-arrow-narrow-right"></i></span>
+                <input type="date" id="fp-date-to" onchange="applyFilters()">
+              </div>
+            </div>
+            <div class="fp-group">
+              <div class="fp-label">Role</div>
+              <select id="fp-role" onchange="applyFilters()">
+                <option value="">All roles</option>
+              </select>
+            </div>
+            <div class="fp-group">
+              <div class="fp-label">Entry type</div>
+              <div class="fp-type-row">
+                <button class="fp-type-btn active" data-type="all" onclick="setTypeFilter('all')">All</button>
+                <button class="fp-type-btn" data-type="flight" onclick="setTypeFilter('flight')"><i class="ti ti-plane"></i> Flight</button>
+                <button class="fp-type-btn" data-type="sim" onclick="setTypeFilter('sim')"><i class="ti ti-device-laptop"></i> Sim</button>
+              </div>
+            </div>
+            <button class="btn-secondary fp-clear-btn" onclick="clearAdvancedFilters()">Clear filters</button>
+          </div>
+        </div>
       </div>
 
       <div id="entries-list" class="entries-list">
