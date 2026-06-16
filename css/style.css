@@ -624,6 +624,8 @@ body {
 }
 .fp-date-row input[type="date"] {
   width: 100%;
+  min-width: 0;
+  -webkit-appearance: none;
   font-family: 'Space Mono', monospace;
   font-size: 12px;
   color: var(--text);
