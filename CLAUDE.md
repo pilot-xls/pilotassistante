@@ -8,8 +8,8 @@
 
 | | |
 |---|---|
-| **Versão actual** | v0.7 |
-| **Última sessão** | Sessão 7 — 16 Junho 2026 |
+| **Versão actual** | v0.8 |
+| **Última sessão** | Sessão 8 — 16 Junho 2026 |
 | **Módulo em construção** | Módulo 2 — Logbook Inteligente |
 | **Próxima tarefa** | Exportação CSV |
 | **Deploy activo** | GitHub Pages ✅ |
@@ -20,7 +20,7 @@
 | # | Módulo | Estado |
 |---|---|---|
 | 1 | Agenda & Legalidades EASA | ⬜ Por fazer |
-| 2 | Logbook Inteligente | 🟡 Em progresso (v0.7) |
+| 2 | Logbook Inteligente | 🟡 Em progresso (v0.8) |
 | 3 | Documentos & Validades | ⬜ Por fazer |
 | 4 | Centro de Treino | ⬜ Por fazer |
 | 5 | Memórias & Diário | ⬜ Por fazer |
@@ -48,6 +48,42 @@
 5. **Confirmar sempre** o que está implementado antes de sugerir algo — pode já existir.
 6. **No final de cada sessão**, gerar automaticamente o bloco de actualização deste ficheiro, mesmo que o utilizador não peça.
 7. **Avisar sempre:** "Não te esqueças de actualizar o CLAUDE.md no GitHub e no Project."
+
+---
+
+## 📱 Regras Mobile / iOS Safari — OBRIGATÓRIO RESPEITAR
+
+> Regras descobertas em produção. Violar qualquer uma destas causa bugs visuais graves no Safari mobile.
+
+1. **`font-size` mínimo 16px em todos os inputs no mobile.**
+   iOS Safari faz zoom automático ao focar qualquer input com `font-size < 16px`, deslocando toda a página lateralmente. Sempre adicionar ao `@media (max-width: 500px)`:
+   ```css
+   .form-group input, .form-group select, .form-group textarea { font-size: 16px; }
+   ```
+
+2. **Drawers/modais full-screen: usar `left: 0; right: 0; width: 100%` — nunca `100vw`.**
+   `100vw` no iOS inclui a largura da scrollbar e pode causar overflow. Usar sempre:
+   ```css
+   .drawer { left: 0; right: 0; width: 100%; max-width: 100%; height: 100dvh; }
+   ```
+
+3. **Popups absolutamente posicionados: nunca `right` negativo no mobile.**
+   `right: -Xpx` empurra o popup para fora do ecrã. No mobile usar sempre `right: 0` ou `left: 0`.
+
+4. **Sempre `overflow-x: hidden` em `html` e `body`.**
+   Previne scroll horizontal acidental causado por qualquer elemento que ultrapasse o viewport.
+
+5. **Bloquear scroll do body quando um drawer está aberto.**
+   ```js
+   // ao abrir:  document.body.style.overflow = 'hidden';
+   // ao fechar: document.body.style.overflow = '';
+   ```
+
+6. **Inputs `type="time"` e `type="date"` no iOS: normalizar com:**
+   ```css
+   -webkit-appearance: none; min-width: 0; width: 100%;
+   ```
+   Sem isto, os pickers iOS têm tamanhos intrínsecos diferentes e quebram layouts de grid.
 
 ---
 
@@ -286,6 +322,11 @@ Resolvidos na Sessão 5:
 - ~~`/* e */` no comentário de cabeçalho do `authorities.js` fechava prematuramente o bloco `/* */`, causando `SyntaxError: Unexpected identifier 'Preenche'` e `getAuthority is not defined`~~
 - ~~`document.getElementById('f-day').value` e `f-vfr` causavam `TypeError` após os campos serem removidos do HTML~~
 
+Resolvidos na Sessão 8:
+- ~~Drawer "New Entry" flutuava no iOS Safari (não ficava justo às laterais) → fix: `left:0; right:0; width:100%; height:100dvh`~~
+- ~~Popup de filtro avançado saía fora do ecrã no mobile com `right:-36px` → fix: `right:0`~~
+- ~~Inputs no drawer desalinhados e página a deslocar lateralmente no iOS Safari → fix: `font-size:16px` em todos os inputs no mobile (iOS faz zoom automático abaixo de 16px)~~
+
 ---
 
 ## ✅ Decisões de Produto (resumo por sessão)
@@ -310,6 +351,9 @@ Estratégia de importação redefinida: importação CSV/Excel em JS puro (sem I
 
 ### Sessão 7
 Filtros implementados: pesquisa de texto (rota/AC/reg/role) + popup de filtros avançados (date range, role dropdown, Flight/Sim toggle) · Month dropdown removido a favor do popup · Off-Block/On-Block labels simplificados (sem badge UTC) · Origin, Destination, Aircraft Type, Registration, Role passaram a ser obrigatórios no submit · Night HRS e IFR HRS passaram a ser opcionais (vazio = 00:00)
+
+### Sessão 8
+iOS Safari fixes: drawer flush às laterais (left/right/width 100%, 100dvh, body scroll lock) · filter popup corrigido (right:0 em vez de right:-36px) · inputs normalizados a font-size 16px no mobile (previne zoom automático iOS) · Secção "Regras Mobile / iOS Safari" adicionada ao CLAUDE.md como referência permanente
 
 ---
 
@@ -336,6 +380,9 @@ Redefinição da estratégia de importação: CSV/Excel em JS puro (sem IA) logo
 ### Sessão 7 — 16 Junho 2026
 Logbook v0.6→v0.7: filtros de pesquisa implementados (texto + popup avançado com date range/role/tipo), month dropdown removido, Off-Block/On-Block labels simplificados, origin/destination/aircraftType/registration/role tornaram-se obrigatórios, Night/IFR tornaram-se opcionais.
 
+### Sessão 8 — 16 Junho 2026
+Logbook v0.7→v0.8: iOS Safari fixes — drawer flush às laterais, filter popup dentro do viewport, font-size 16px em inputs no mobile (previne zoom automático iOS). Regras Mobile iOS Safari adicionadas ao CLAUDE.md como referência permanente.
+
 **Próxima sessão:**
 - Exportação CSV
 - Importação CSV/Excel
@@ -361,4 +408,4 @@ Logbook v0.6→v0.7: filtros de pesquisa implementados (texto + popup avançado 
 
 ---
 
-*Última actualização: Sessão 7 — 16 Junho 2026 (v0.7)*
+*Última actualização: Sessão 8 — 16 Junho 2026 (v0.8)*
