@@ -513,8 +513,7 @@ body {
   align-items: center;
 }
 .filter-clear:hover { color: var(--text); }
-#filter-month,
-#filter-role {
+#filter-month {
   font-family: 'Space Grotesk', sans-serif;
   font-size: 13px;
   color: var(--text);
@@ -528,8 +527,7 @@ body {
   min-width: 110px;
   transition: border-color 0.15s;
 }
-#filter-month:focus,
-#filter-role:focus { border-color: var(--accent-border); }
+#filter-month:focus { border-color: var(--accent-border); }
 .btn-link {
   background: none;
   border: none;
@@ -549,5 +547,5 @@ body {
   .authority-cards { grid-template-columns: 1fr; }
   .entries-section { padding: 14px; }
   .filter-bar { flex-direction: column; }
-  #filter-month, #filter-role { width: 100%; }
+  #filter-month { width: 100%; }
 }
