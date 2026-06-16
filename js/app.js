@@ -11,6 +11,7 @@ let editingId   = null;
 let currentMode = 'flight'; // 'flight' | 'sim'
 let filterSearch = '';
 let filterMonth  = '';
+let filterRole   = '';
 
 // ── Init ────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
@@ -473,15 +474,18 @@ function deleteEntry(id, event) {
 function applyFilters() {
   filterSearch = document.getElementById('filter-search').value.trim().toLowerCase();
   filterMonth  = document.getElementById('filter-month').value;
-  document.getElementById('filter-clear').classList.toggle('hidden', !(filterSearch || filterMonth));
+  filterRole   = document.getElementById('filter-role').value;
+  document.getElementById('filter-clear').classList.toggle('hidden', !(filterSearch || filterMonth || filterRole));
   renderEntries();
 }
 
 function clearFilters() {
   document.getElementById('filter-search').value = '';
   document.getElementById('filter-month').value  = '';
+  document.getElementById('filter-role').value   = '';
   filterSearch = '';
   filterMonth  = '';
+  filterRole   = '';
   document.getElementById('filter-clear').classList.add('hidden');
   renderEntries();
 }
@@ -500,16 +504,38 @@ function populateMonthFilter() {
     }).join('');
 }
 
+function populateRoleFilter() {
+  const usedRoles = [...new Set(
+    entries.filter(e => !e.isSim && e.role).map(e => e.role)
+  )];
+
+  const labelMap = {};
+  Object.values(AUTHORITIES).forEach(auth => {
+    auth.roles.forEach(r => { if (!labelMap[r.value]) labelMap[r.value] = r.label; });
+  });
+
+  const select  = document.getElementById('filter-role');
+  const current = select.value;
+  select.innerHTML = '<option value="">All roles</option>' +
+    usedRoles.sort().map(v =>
+      `<option value="${v}"${v === current ? ' selected' : ''}>${labelMap[v] || v}</option>`
+    ).join('');
+}
+
 // ── Render Entries ───────────────────────────────────────────
 function renderEntries() {
   const list  = document.getElementById('entries-list');
   const count = document.getElementById('entries-count');
 
   populateMonthFilter();
+  populateRoleFilter();
 
   let filtered = [...entries];
   if (filterMonth) {
     filtered = filtered.filter(e => e.date && e.date.startsWith(filterMonth));
+  }
+  if (filterRole) {
+    filtered = filtered.filter(e => e.role === filterRole);
   }
   if (filterSearch) {
     filtered = filtered.filter(e => {

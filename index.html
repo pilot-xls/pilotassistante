@@ -100,6 +100,9 @@
         <select id="filter-month" onchange="applyFilters()">
           <option value="">All months</option>
         </select>
+        <select id="filter-role" onchange="applyFilters()">
+          <option value="">All roles</option>
+        </select>
       </div>
 
       <div id="entries-list" class="entries-list">
@@ -161,11 +164,11 @@
         <!-- Block Times -->
         <div class="form-row">
           <div class="form-group">
-            <label>Off-Block <span class="badge-utc">UTC</span> <span class="required">*</span></label>
+            <label>Off-Block UTC</label>
             <input type="time" id="f-off-block" class="mono">
           </div>
           <div class="form-group">
-            <label>On-Block <span class="badge-utc">UTC</span> <span class="required">*</span></label>
+            <label>On-Block UTC</label>
             <input type="time" id="f-on-block" class="mono">
           </div>
         </div>
