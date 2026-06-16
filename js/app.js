@@ -168,18 +168,25 @@ function formatHours(decimal) {
 
 // ── Hour Subset Validation ───────────────────────────────────
 // Night and IFR cannot exceed Total (Day and VFR are auto-calculated)
-function validateHourSubsets(data) {
+// Total landings cannot exceed total take-offs
+function validateEntry(data) {
   const total = parseHours(data.totalTime);
-  if (!total || total <= 0) return null;
 
-  const night = parseHours(data.nightHours) || 0;
-  const ifr   = parseHours(data.ifrTime)    || 0;
+  if (total > 0) {
+    const night = parseHours(data.nightHours) || 0;
+    const ifr   = parseHours(data.ifrTime)    || 0;
 
-  if (night > total)
-    return `Night hours (${formatHours(night)}) cannot exceed Total Flight Time (${formatHours(total)})`;
+    if (night > total)
+      return `Night hours (${formatHours(night)}) cannot exceed Total Flight Time (${formatHours(total)})`;
 
-  if (ifr > total)
-    return `IFR hours (${formatHours(ifr)}) cannot exceed Total Flight Time (${formatHours(total)})`;
+    if (ifr > total)
+      return `IFR hours (${formatHours(ifr)}) cannot exceed Total Flight Time (${formatHours(total)})`;
+  }
+
+  const totalTO  = (data.toDay  || 0) + (data.toNight  || 0);
+  const totalLDG = (data.ldgDay || 0) + (data.ldgNight || 0);
+  if (totalLDG > totalTO)
+    return `Total landings (${totalLDG}) cannot exceed total take-offs (${totalTO})`;
 
   return null;
 }
@@ -392,8 +399,8 @@ function handleSubmit() {
     entryData.dayHours = formatHours(Math.max(0, totalH - nightH));
     entryData.vfrTime  = formatHours(Math.max(0, totalH - ifrH));
 
-    // ── Validate hour subsets ──
-    const hoursError = validateHourSubsets(entryData);
+    // ── Validate entry ──
+    const hoursError = validateEntry(entryData);
     if (hoursError) {
       alert(hoursError);
       return;
