@@ -649,5 +649,5 @@ body {
   .form-row { grid-template-columns: 1fr; }
   .authority-cards { grid-template-columns: 1fr; }
   .entries-section { padding: 14px; }
-  .filter-popup { width: calc(100vw - 40px); right: -36px; }
+  .filter-popup { width: calc(100vw - 28px); right: 0; max-width: none; }
 }
