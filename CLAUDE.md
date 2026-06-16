@@ -8,10 +8,10 @@
 
 | | |
 |---|---|
-| **Versão actual** | v0.8 |
-| **Última sessão** | Sessão 8 — 16 Junho 2026 |
+| **Versão actual** | v0.9 |
+| **Última sessão** | Sessão 9 — 16 Junho 2026 |
 | **Módulo em construção** | Módulo 2 — Logbook Inteligente |
-| **Próxima tarefa** | Exportação CSV |
+| **Próxima tarefa** | Importação CSV/Excel |
 | **Deploy activo** | GitHub Pages ✅ |
 | **Linguagem da app** | Inglês |
 
@@ -20,7 +20,7 @@
 | # | Módulo | Estado |
 |---|---|---|
 | 1 | Agenda & Legalidades EASA | ⬜ Por fazer |
-| 2 | Logbook Inteligente | 🟡 Em progresso (v0.8) |
+| 2 | Logbook Inteligente | 🟡 Em progresso (v0.9) |
 | 3 | Documentos & Validades | ⬜ Por fazer |
 | 4 | Centro de Treino | ⬜ Por fazer |
 | 5 | Memórias & Diário | ⬜ Por fazer |
@@ -181,10 +181,11 @@ pilotassistante/
 - **Popup de filtros avançados:** date range From/To, Role dropdown, Entry type (All/Flight/Sim)
 - Ícone de filtro fica accent quando há filtros activos; × limpa tudo
 
+- **Exportação CSV** — botão "Export CSV" na lista; exporta entradas filtradas (ou todas se sem filtro); UTF-8 BOM para Excel; 30 colunas (universal EASA+FAA); `getFilteredEntries()` partilhada com render
+
 ### O que falta ⬜
 
-- Exportação CSV ← **próxima tarefa**
-- Importação CSV/Excel (upload de ficheiro, mapeamento de colunas) ← **sem IA, JS puro**
+- Importação CSV/Excel (upload de ficheiro, mapeamento de colunas) ← **próxima tarefa** (JS puro, sem IA)
 - Integração API apps externas: LEON, Aims, Crewlink (Fase 2)
 - Foto → 1 voo: tirar foto à caderneta do avião, preenche uma entrada (Claude API, Fase 2+)
 - Consulta em linguagem natural (Claude API)
@@ -253,7 +254,7 @@ Apenas autoridades com formato de logbook distinto são relevantes.
 |---|---|---|
 | 1-2 | Logbook básico | ✅ Concluído (v0.6) |
 | 3 | Filtros + pesquisa (mês, rota, aeronave) | ✅ Concluído (v0.7) |
-| 4 | Exportação CSV + Importação CSV/Excel | 🟡 A seguir |
+| 4 | Exportação CSV + Importação CSV/Excel | 🟡 Em progresso (export ✅, import a seguir) |
 | 5 | Agenda FTL básica (Módulo 1) | ⬜ Por fazer |
 | 6-7 | Integrar Claude API (consulta linguagem natural + foto→1 voo) | ⬜ Por fazer |
 | 8-9 | Meteorologia + NOTAMs | ⬜ Por fazer |
@@ -383,6 +384,9 @@ Logbook v0.6→v0.7: filtros de pesquisa implementados (texto + popup avançado 
 ### Sessão 8 — 16 Junho 2026
 Logbook v0.7→v0.8: iOS Safari fixes — drawer flush às laterais, filter popup dentro do viewport, font-size 16px em inputs no mobile (previne zoom automático iOS). Regras Mobile iOS Safari adicionadas ao CLAUDE.md como referência permanente.
 
+### Sessão 9 — 16 Junho 2026
+Logbook v0.8→v0.9: Exportação CSV implementada — botão "Export CSV" no header da lista, exporta entradas filtradas (respeita filtros activos), UTF-8 BOM para Excel, 30 colunas universais EASA+FAA, `getFilteredEntries()` extraída como helper partilhado.
+
 **Próxima sessão:**
 - Exportação CSV
 - Importação CSV/Excel
@@ -391,8 +395,8 @@ Logbook v0.7→v0.8: iOS Safari fixes — drawer flush às laterais, filter popu
 
 ## 🚀 Próximos Passos
 
-1. **Agora** → Exportação CSV
-2. **A seguir** → Importação CSV/Excel (JS puro, sem IA)
+1. **Agora** → Importação CSV/Excel (JS puro, sem IA)
+2. **A seguir** → Agenda FTL básica (Módulo 1)
 3. **Semana 5** → Agenda FTL básica (Módulo 1)
 4. **Semana 6-7** → Claude API: consulta em linguagem natural + foto → 1 voo
 5. **Fase 2** → Supabase + beta com pilotos + integrações LEON/Aims/Crewlink
@@ -408,4 +412,4 @@ Logbook v0.7→v0.8: iOS Safari fixes — drawer flush às laterais, filter popu
 
 ---
 
-*Última actualização: Sessão 8 — 16 Junho 2026 (v0.8)*
+*Última actualização: Sessão 9 — 16 Junho 2026 (v0.9)*
