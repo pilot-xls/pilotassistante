@@ -8,10 +8,10 @@
 
 | | |
 |---|---|
-| **Versão actual** | v0.6 |
-| **Última sessão** | Sessão 5 — 16 Junho 2026 |
+| **Versão actual** | v0.7 |
+| **Última sessão** | Sessão 7 — 16 Junho 2026 |
 | **Módulo em construção** | Módulo 2 — Logbook Inteligente |
-| **Próxima tarefa** | Filtros + pesquisa (por mês, rota, aeronave) |
+| **Próxima tarefa** | Exportação CSV |
 | **Deploy activo** | GitHub Pages ✅ |
 | **Linguagem da app** | Inglês |
 
@@ -20,7 +20,7 @@
 | # | Módulo | Estado |
 |---|---|---|
 | 1 | Agenda & Legalidades EASA | ⬜ Por fazer |
-| 2 | Logbook Inteligente | 🟡 Em progresso (v0.6) |
+| 2 | Logbook Inteligente | 🟡 Em progresso (v0.7) |
 | 3 | Documentos & Validades | ⬜ Por fazer |
 | 4 | Centro de Treino | ⬜ Por fazer |
 | 5 | Memórias & Diário | ⬜ Por fazer |
@@ -51,7 +51,7 @@
 
 ---
 
-## 🗂️ Estrutura do Repositório (v0.6)
+## 🗂️ Estrutura do Repositório (v0.7)
 
 ```
 pilotassistante/
@@ -70,11 +70,11 @@ pilotassistante/
 
 **O que está implementado em cada ficheiro:**
 
-`index.html` — formulário de voo/simulador, drawer lateral, painel de estatísticas, lista de entradas, authority overlay (primeiro uso), estrutura de navegação bottom bar, badge UTC nos campos Off-Block/On-Block
+`index.html` — formulário de voo/simulador, drawer lateral, painel de estatísticas, lista de entradas, authority overlay (primeiro uso), barra de filtros (search + popup avançado), estrutura de navegação bottom bar
 
-`css/style.css` — paleta Índigo Profundo, tipografia Space Grotesk + Space Mono, drawer, cards, badges de autoridade, `.badge-utc` (badge índigo inline), responsive mobile (empilha abaixo 500px), `.hidden { display: none !important }`
+`css/style.css` — paleta Índigo Profundo, tipografia Space Grotesk + Space Mono, drawer, cards, badges de autoridade, filter bar + popup, responsive mobile (empilha abaixo 500px), `.hidden { display: none !important }`
 
-`js/app.js` — CRUD completo de entradas, toggle Flight/Simulator, auto-cálculo block times (overnight incluído), validação Off-Block/On-Block obrigatórios, Night HRS e IFR HRS obrigatórios (mínimo 00:00), Day HRS e VFR HRS auto-calculados (Day=Total−Night, VFR=Total−IFR), validações: Night≤Total, IFR≤Total, LDG=T/O, edição via drawer, eliminação com confirmação, localStorage, lógica SP/MP→SE/ME, campos contextuais PIC Name/Instructor/PICUS/SPIC/FE
+`js/app.js` — CRUD completo de entradas, toggle Flight/Simulator, auto-cálculo block times (overnight incluído), validação Off-Block/On-Block + rota + aeronave + matrícula + role obrigatórios, Night HRS e IFR HRS opcionais (vazio = 00:00), Day HRS e VFR HRS auto-calculados (Day=Total−Night, VFR=Total−IFR), validações: Night≤Total, IFR≤Total, LDG=T/O, edição via drawer, eliminação com confirmação, localStorage, lógica SP/MP→SE/ME, campos contextuais PIC Name/Instructor/PICUS/SPIC/FE, filtros: texto (rota/AC/reg/role), popup avançado (date range, role dropdown, Flight/Sim toggle)
 
 `js/authorities.js` — perfis EASA e FAA completos, EASA roles: PIC, PICUS, Co-Pilot (F/O), SPIC, Dual, Instructor, FE; template UK CAA comentado, sistema de activação por localStorage
 
@@ -116,7 +116,7 @@ pilotassistante/
 
 ## 📦 Módulo 2 — Logbook Inteligente (detalhe)
 
-### O que está feito (v0.6) ✅
+### O que está feito (v0.7) ✅
 
 - Formulário completo com todos os campos EASA e FAA
 - Toggle Flight / Simulator (campos mudam automaticamente)
@@ -129,22 +129,25 @@ pilotassistante/
 - Deploy no GitHub Pages ✅
 - Design Minimal Elegant + Índigo Profundo
 - Authority Profile System: EASA + FAA, escalável
-- Off-Block e On-Block obrigatórios — badge UTC estilizado + validação impede submissão sem eles
+- Off-Block e On-Block obrigatórios — labels "Off-Block UTC" / "On-Block UTC" (texto simples)
 - Total auto-calculado dos block times (overnight incluído), editável manualmente
 - **Day HRS e VFR HRS auto-calculados** (Day = Total − Night, VFR = Total − IFR)
-- **Night HRS e IFR HRS obrigatórios** — mínimo "00:00" (piloto confirma explicitamente)
+- **Night HRS e IFR HRS opcionais** — vazio tratado como 00:00
 - **Todos os inputs de horas usam `type="time"`** (picker nativo HH:MM, igual ao Off/On-Block)
 - SP/MP → SE/ME aparece só quando Single Pilot (lógica EASA correcta)
 - Responsive mobile (drawer full-width, form-row empilha abaixo de 500px)
 - T/O e LDG default = 1
 - **Validações completas:** Night ≤ Total, IFR ≤ Total, LDG total = T/O total (aplicam em new + edit)
+- **Campos obrigatórios no submit:** Date, Off-Block, On-Block, Origin, Destination, Aircraft Type, Registration, Role
 - **EASA roles:** PIC, PICUS (mostra PIC supervisor), Co-Pilot (F/O), SPIC (mostra Instructor), Dual, Instructor, FE (mostra examinando)
 - PWA icons: `icons/icon-192.png` e `icons/icon-512.png`
+- **Filtros:** barra com pesquisa de texto (rota, AC, reg, role) + ícone de filtros avançados
+- **Popup de filtros avançados:** date range From/To, Role dropdown, Entry type (All/Flight/Sim)
+- Ícone de filtro fica accent quando há filtros activos; × limpa tudo
 
 ### O que falta ⬜
 
-- Filtro por mês / pesquisa por rota ou aeronave ← **próxima tarefa**
-- Exportação CSV
+- Exportação CSV ← **próxima tarefa**
 - Importação CSV/Excel (upload de ficheiro, mapeamento de colunas) ← **sem IA, JS puro**
 - Integração API apps externas: LEON, Aims, Crewlink (Fase 2)
 - Foto → 1 voo: tirar foto à caderneta do avião, preenche uma entrada (Claude API, Fase 2+)
@@ -213,8 +216,8 @@ Apenas autoridades com formato de logbook distinto são relevantes.
 | Semanas | Objectivo | Estado |
 |---|---|---|
 | 1-2 | Logbook básico | ✅ Concluído (v0.6) |
-| 3 | Filtros + pesquisa (mês, rota, aeronave) | 🟡 A seguir |
-| 4 | Exportação CSV + Importação CSV/Excel | ⬜ Por fazer |
+| 3 | Filtros + pesquisa (mês, rota, aeronave) | ✅ Concluído (v0.7) |
+| 4 | Exportação CSV + Importação CSV/Excel | 🟡 A seguir |
 | 5 | Agenda FTL básica (Módulo 1) | ⬜ Por fazer |
 | 6-7 | Integrar Claude API (consulta linguagem natural + foto→1 voo) | ⬜ Por fazer |
 | 8-9 | Meteorologia + NOTAMs | ⬜ Por fazer |
@@ -305,6 +308,9 @@ Nunca gerar ficheiros completos do zero — editar apenas blocos específicos ·
 ### Sessão 6
 Estratégia de importação redefinida: importação CSV/Excel em JS puro (sem IA) vem logo a seguir à exportação CSV · Importação via foto REJEITADA para logbook completo · Foto via Claude API aceite apenas para 1 voo (caderneta do avião) · Integração API apps externas (LEON, Aims, Crewlink) planeada para Fase 2 · Lista de autoridades de aviação estratificada em 3 prioridades: P1 (EASA, FAA, UK CAA), P2 (TCCA, CASA, CAA-NZ, DGCA, GCAA, ANAC), P3 (CAAC, JCAB, SACAA, DGAC, GACA)
 
+### Sessão 7
+Filtros implementados: pesquisa de texto (rota/AC/reg/role) + popup de filtros avançados (date range, role dropdown, Flight/Sim toggle) · Month dropdown removido a favor do popup · Off-Block/On-Block labels simplificados (sem badge UTC) · Origin, Destination, Aircraft Type, Registration, Role passaram a ser obrigatórios no submit · Night HRS e IFR HRS passaram a ser opcionais (vazio = 00:00)
+
 ---
 
 ## 📝 Registo de Sessões
@@ -327,21 +333,22 @@ Logbook v0.5→v0.6: fix SyntaxError no authorities.js, PWA icons, todos os inpu
 ### Sessão 6 — 16 Junho 2026
 Redefinição da estratégia de importação: CSV/Excel em JS puro (sem IA) logo a seguir à exportação · Foto para 1 voo via Claude API na Fase 2+ · Integração API LEON/Aims/Crewlink na Fase 2 · CLAUDE.md actualizado com novo plano.
 
+### Sessão 7 — 16 Junho 2026
+Logbook v0.6→v0.7: filtros de pesquisa implementados (texto + popup avançado com date range/role/tipo), month dropdown removido, Off-Block/On-Block labels simplificados, origin/destination/aircraftType/registration/role tornaram-se obrigatórios, Night/IFR tornaram-se opcionais.
+
 **Próxima sessão:**
-- Filtros por mês / pesquisa por rota ou aeronave
-- Exportação CSV simples
+- Exportação CSV
 - Importação CSV/Excel
 
 ---
 
 ## 🚀 Próximos Passos
 
-1. **Agora** → Filtros + pesquisa (mês, rota, aeronave) no Logbook
-2. **A seguir** → Exportação CSV
-3. **Depois** → Importação CSV/Excel (JS puro, sem IA)
-4. **Semana 5** → Agenda FTL básica (Módulo 1)
-5. **Semana 6-7** → Claude API: consulta em linguagem natural + foto → 1 voo
-6. **Fase 2** → Supabase + beta com pilotos + integrações LEON/Aims/Crewlink
+1. **Agora** → Exportação CSV
+2. **A seguir** → Importação CSV/Excel (JS puro, sem IA)
+3. **Semana 5** → Agenda FTL básica (Módulo 1)
+4. **Semana 6-7** → Claude API: consulta em linguagem natural + foto → 1 voo
+5. **Fase 2** → Supabase + beta com pilotos + integrações LEON/Aims/Crewlink
 
 ---
 
@@ -354,4 +361,4 @@ Redefinição da estratégia de importação: CSV/Excel em JS puro (sem IA) logo
 
 ---
 
-*Última actualização: Sessão 6 — 16 Junho 2026 (v0.6)*
+*Última actualização: Sessão 7 — 16 Junho 2026 (v0.7)*
