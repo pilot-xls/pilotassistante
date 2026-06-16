@@ -114,10 +114,10 @@ function handleOperationsChange() {
 function handleRoleChange() {
   const role = document.getElementById('f-role').value;
 
-  // PIC Name visible when flying as Co-Pilot, SIC, or Dual
-  setVisible('field-pic-name',       ['CO_PILOT', 'SIC', 'DUAL'].includes(role));
-  // Student Name visible when acting as Instructor
-  setVisible('field-instructor-name', role === 'INSTRUCTOR');
+  // PIC Name: Co-Pilot, SIC, Dual, PICUS (supervising captain)
+  setVisible('field-pic-name',       ['CO_PILOT', 'SIC', 'DUAL', 'PICUS'].includes(role));
+  // Student/Instructor Name: Instructor, SPIC (student acting as PIC), FE
+  setVisible('field-instructor-name', ['INSTRUCTOR', 'SPIC', 'FE'].includes(role));
 }
 
 // ── Mode Toggle (Flight / Simulator) ────────────────────────

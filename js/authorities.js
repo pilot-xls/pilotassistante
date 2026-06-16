@@ -21,9 +21,12 @@ const AUTHORITIES = {
     showApproaches:   false,  // Approaches — não obrigatório Part-FCL (registar em Remarks)
     roles: [
       { value: 'PIC',        label: 'PIC'            },
+      { value: 'PICUS',      label: 'PICUS'          },
       { value: 'CO_PILOT',   label: 'Co-Pilot (F/O)' },
-      { value: 'DUAL',       label: 'Dual'            },
-      { value: 'INSTRUCTOR', label: 'Instructor'      },
+      { value: 'SPIC',       label: 'SPIC'           },
+      { value: 'DUAL',       label: 'Dual'           },
+      { value: 'INSTRUCTOR', label: 'Instructor'     },
+      { value: 'FE',         label: 'FE'             },
     ],
     simTypes: ['FFS', 'FTD', 'FNPT I', 'FNPT II', 'BITD'],
     approachTypes: ['ILS CAT I', 'ILS CAT II', 'ILS CAT III', 'RNP', 'RNAV', 'VOR', 'NDB', 'Visual'],
