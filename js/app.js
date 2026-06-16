@@ -548,11 +548,8 @@ function populateRoleFilter() {
     ).join('');
 }
 
-// ── Render Entries ───────────────────────────────────────────
-function renderEntries() {
-  const list  = document.getElementById('entries-list');
-  const count = document.getElementById('entries-count');
-
+// ── Filter Helper ────────────────────────────────────────────
+function getFilteredEntries() {
   let filtered = [...entries];
   if (filterDateFrom) filtered = filtered.filter(e => e.date && e.date >= filterDateFrom);
   if (filterDateTo)   filtered = filtered.filter(e => e.date && e.date <= filterDateTo);
@@ -569,6 +566,15 @@ function renderEntries() {
       return haystack.includes(filterSearch);
     });
   }
+  return filtered;
+}
+
+// ── Render Entries ───────────────────────────────────────────
+function renderEntries() {
+  const list  = document.getElementById('entries-list');
+  const count = document.getElementById('entries-count');
+
+  const filtered = getFilteredEntries();
 
   const total = entries.length;
   const shown = filtered.length;
@@ -698,7 +704,8 @@ function formatDate(dateStr) {
 
 // ── Export CSV ───────────────────────────────────────────────
 function exportCSV() {
-  if (entries.length === 0) {
+  const toExport = getFilteredEntries();
+  if (toExport.length === 0) {
     alert('No entries to export.');
     return;
   }
@@ -717,7 +724,7 @@ function exportCSV() {
     'Remarks',
   ];
 
-  const sorted = [...entries].sort((a, b) => a.date.localeCompare(b.date));
+  const sorted = [...toExport].sort((a, b) => a.date.localeCompare(b.date));
 
   const rows = sorted.map(e => {
     if (e.isSim) {
