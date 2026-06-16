@@ -90,6 +90,18 @@
         <h2>Flight Log</h2>
         <span id="entries-count" class="entries-count">0 entries</span>
       </div>
+      <!-- Filter Bar -->
+      <div class="filter-bar">
+        <div class="filter-search-wrap">
+          <i class="ti ti-search"></i>
+          <input type="text" id="filter-search" placeholder="Route, aircraft, registration…" oninput="applyFilters()">
+          <button id="filter-clear" class="filter-clear hidden" onclick="clearFilters()"><i class="ti ti-x"></i></button>
+        </div>
+        <select id="filter-month" onchange="applyFilters()">
+          <option value="">All months</option>
+        </select>
+      </div>
+
       <div id="entries-list" class="entries-list">
         <div class="empty-state">
           <i class="ti ti-plane-off"></i>
