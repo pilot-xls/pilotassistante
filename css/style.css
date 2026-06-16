@@ -646,8 +646,30 @@ body {
 @media (max-width: 500px) {
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
   .drawer { left: 0; right: 0; width: 100%; max-width: 100%; }
+  .drawer-body { padding: 16px; }
   .form-row { grid-template-columns: 1fr; }
   .authority-cards { grid-template-columns: 1fr; }
   .entries-section { padding: 14px; }
   .filter-popup { width: calc(100vw - 28px); right: 0; max-width: none; }
+
+  /* Prevent iOS Safari auto-zoom on input focus (font-size must be ≥ 16px) */
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    font-size: 16px;
+  }
+  /* Keep mono style but at 16px */
+  .form-group input.mono,
+  .form-group select.mono {
+    font-size: 16px;
+  }
+  /* Prevent grid children from overflowing their cell */
+  .form-group { min-width: 0; }
+  /* Normalize time/date inputs on iOS */
+  .form-group input[type="time"],
+  .form-group input[type="date"] {
+    -webkit-appearance: none;
+    min-width: 0;
+    width: 100%;
+  }
 }
