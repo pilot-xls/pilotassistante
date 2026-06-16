@@ -49,10 +49,15 @@ body {
   padding: 14px 20px;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
 }
+
+/* Compensate for fixed header height (14px*2 padding + 36px btn = 64px) */
+#app { padding-top: 64px; }
 .header-brand {
   display: flex;
   align-items: center;
