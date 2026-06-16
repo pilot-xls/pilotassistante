@@ -718,7 +718,15 @@ body {
     max-width: 100%;
     -webkit-appearance: none;
     min-width: 0;
-    min-height: 80px;
+  }
+
+  /* iOS Safari only — date inputs collapse when empty without explicit min-height */
+  @supports (-webkit-touch-callout: none) {
+    .fp-date-row input[type="date"],
+    .fp-text-input,
+    .fp-select {
+      min-height: 80px;
+    }
   }
 
   /* Prevent iOS Safari auto-zoom on input focus (font-size must be ≥ 16px) */
