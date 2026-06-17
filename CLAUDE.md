@@ -8,10 +8,10 @@
 
 | | |
 |---|---|
-| **Versão actual** | v0.11 |
-| **Última sessão** | Sessão 11 — 16 Junho 2026 |
+| **Versão actual** | v0.12 |
+| **Última sessão** | Sessão 12 — 17 Junho 2026 |
 | **Módulo em construção** | Módulo 2 — Logbook Inteligente |
-| **Próxima tarefa** | Importação CSV/Excel |
+| **Próxima tarefa** | Agenda FTL básica (Módulo 1) |
 | **Deploy activo** | GitHub Pages ✅ |
 | **Linguagem da app** | Inglês |
 
@@ -254,7 +254,7 @@ Apenas autoridades com formato de logbook distinto são relevantes.
 |---|---|---|
 | 1-2 | Logbook básico | ✅ Concluído (v0.6) |
 | 3 | Filtros + pesquisa (mês, rota, aeronave) | ✅ Concluído (v0.7) |
-| 4 | Exportação CSV + Importação CSV/Excel | 🟡 Em progresso (export ✅, import a seguir) |
+| 4 | Exportação CSV + Importação CSV/Excel | ✅ Concluído (v0.12) |
 | 5 | Agenda FTL básica (Módulo 1) | ⬜ Por fazer |
 | 6-7 | Integrar Claude API (consulta linguagem natural + foto→1 voo) | ⬜ Por fazer |
 | 8-9 | Meteorologia + NOTAMs | ⬜ Por fazer |
@@ -327,6 +327,9 @@ Resolvidos na Sessão 8:
 - ~~Drawer "New Entry" flutuava no iOS Safari (não ficava justo às laterais) → fix: `left:0; right:0; width:100%; height:100dvh`~~
 - ~~Popup de filtro avançado saía fora do ecrã no mobile com `right:-36px` → fix: `right:0`~~
 - ~~Inputs no drawer desalinhados e página a deslocar lateralmente no iOS Safari → fix: `font-size:16px` em todos os inputs no mobile (iOS faz zoom automático abaixo de 16px)~~
+
+Resolvidos na Sessão 12:
+- ~~`entries-header` com título "Flight Log" e dois botões (Import + Export CSV) ficava squished no mobile → fix: `flex-direction:column` na `.entries-header` em mobile, botões empilham abaixo do título~~
 
 Resolvidos na Sessão 11:
 - ~~inputs `type="time"` no drawer (Off-Block, On-Block, Night, IFR) com altura quase nula no iOS Safari → fix: `min-height: 40px` via `.is-ios` e `@media (max-width:500px)`~~
@@ -409,11 +412,14 @@ Logbook v0.9→v0.10: Dashboard de estatísticas agora filtra com os filtros act
 ### Sessão 11 — 16 Junho 2026
 Logbook v0.10→v0.11: Quatro iOS Safari / mobile fixes — inputs `type="time"` no drawer com altura mínima; radio buttons Operations empilhados corrigidos (`width:auto`); header fixo ao topo (`position:fixed` + `padding-top:64px`); badge de autoridade passa a mostrar emoji da bandeira em vez de texto.
 
+### Sessão 12 — 17 Junho 2026
+Logbook v0.11→v0.12: Importação CSV/Excel implementada — modal 3 passos (upload com drag&drop, mapeamento de colunas com auto-detecção de 25 campos por aliases, preview das primeiras 5 entradas, confirmação). Suporte a CSV (delimitador auto-detectado, BOM UTF-8 handled) e .xlsx/.xls via SheetJS CDN. Fix mobile: `entries-header` em coluna no mobile (título "Flight Log" acima dos botões Import/Export).
+
 ---
 
 ## 🚀 Próximos Passos
 
-1. **Agora** → Importação CSV/Excel (JS puro, sem IA)
+1. **Agora** → Agenda FTL básica (Módulo 1)
 2. **A seguir** → Agenda FTL básica (Módulo 1)
 3. **Semana 5** → Agenda FTL básica (Módulo 1)
 4. **Semana 6-7** → Claude API: consulta em linguagem natural + foto → 1 voo
@@ -430,4 +436,4 @@ Logbook v0.10→v0.11: Quatro iOS Safari / mobile fixes — inputs `type="time"`
 
 ---
 
-*Última actualização: Sessão 11 — 16 Junho 2026 (v0.11)*
+*Última actualização: Sessão 12 — 17 Junho 2026 (v0.12)*
