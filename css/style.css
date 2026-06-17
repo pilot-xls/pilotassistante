@@ -721,6 +721,9 @@ body {
   .form-row { grid-template-columns: 1fr; }
   .authority-cards { grid-template-columns: 1fr; }
   .entries-section { padding: 14px; }
+  /* Stack entries header: title on top, buttons below */
+  .entries-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .entries-header-right { align-self: stretch; }
   .filter-popup-wrap { position: static; }
   .filter-popup {
     position: fixed;
