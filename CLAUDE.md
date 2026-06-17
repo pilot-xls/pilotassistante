@@ -8,8 +8,8 @@
 
 | | |
 |---|---|
-| **Versão actual** | v0.12 |
-| **Última sessão** | Sessão 12 — 17 Junho 2026 |
+| **Versão actual** | v0.13 |
+| **Última sessão** | Sessão 13 — 17 Junho 2026 |
 | **Módulo em construção** | Módulo 2 — Logbook Inteligente |
 | **Próxima tarefa** | Agenda FTL básica (Módulo 1) |
 | **Deploy activo** | GitHub Pages ✅ |
@@ -20,7 +20,7 @@
 | # | Módulo | Estado |
 |---|---|---|
 | 1 | Agenda & Legalidades EASA | ⬜ Por fazer |
-| 2 | Logbook Inteligente | 🟡 Em progresso (v0.10) |
+| 2 | Logbook Inteligente | 🟡 Em progresso (v0.13) |
 | 3 | Documentos & Validades | ⬜ Por fazer |
 | 4 | Centro de Treino | ⬜ Por fazer |
 | 5 | Memórias & Diário | ⬜ Por fazer |
@@ -152,7 +152,7 @@ pilotassistante/
 
 ## 📦 Módulo 2 — Logbook Inteligente (detalhe)
 
-### O que está feito (v0.7) ✅
+### O que está feito (v0.13) ✅
 
 - Formulário completo com todos os campos EASA e FAA
 - Toggle Flight / Simulator (campos mudam automaticamente)
@@ -183,9 +183,15 @@ pilotassistante/
 
 - **Exportação CSV** — botão "Export CSV" na lista; exporta entradas filtradas (ou todas se sem filtro); UTF-8 BOM para Excel; 30 colunas (universal EASA+FAA); `getFilteredEntries()` partilhada com render
 
+- **Importação CSV/Excel** — modal 3 passos: upload (drag&drop), mapeamento de 36 campos com auto-detecção por aliases, preview 5 entradas, confirmação. Suporte CSV (delimitador auto-detectado, BOM UTF-8) e .xlsx/.xls via SheetJS CDN. **Formato EASA físico coberto na íntegra:**
+  - **Colunas de role por horas** — `picHours`, `picusHours`, `copilotHours`, `dualHours`, `instructorHours`, `spicHours`, `feHours`: role inferido da coluna com valor; horas usadas como `totalTime` fallback
+  - **Colunas SP SE / SP ME / MP** — `spseHours`, `spmeHours`, `mpHours`: `operations` + `engine` inferidos da coluna com valor; horas usadas como `totalTime` fallback
+  - **SIM Date separada** — `simDate`: usado como fallback de data quando a coluna "Date" está vazia (linhas de simulador em logbooks físicos)
+  - **`normalizeImportRole()`** — converte texto livre ("Co-Pilot (F/O)", "F/O", "SIC", "CFI", "Dual Received"…) para valores internos correctos
+  - **Atenção:** coluna "Instructor - Time" (com traço) não auto-detecta — mapear manualmente para "Instructor Hours" na UI
+
 ### O que falta ⬜
 
-- Importação CSV/Excel (upload de ficheiro, mapeamento de colunas) ← **próxima tarefa** (JS puro, sem IA)
 - Integração API apps externas: LEON, Aims, Crewlink (Fase 2)
 - Foto → 1 voo: tirar foto à caderneta do avião, preenche uma entrada (Claude API, Fase 2+)
 - Consulta em linguagem natural (Claude API)
@@ -254,7 +260,7 @@ Apenas autoridades com formato de logbook distinto são relevantes.
 |---|---|---|
 | 1-2 | Logbook básico | ✅ Concluído (v0.6) |
 | 3 | Filtros + pesquisa (mês, rota, aeronave) | ✅ Concluído (v0.7) |
-| 4 | Exportação CSV + Importação CSV/Excel | ✅ Concluído (v0.12) |
+| 4 | Exportação CSV + Importação CSV/Excel | ✅ Concluído (v0.13) |
 | 5 | Agenda FTL básica (Módulo 1) | ⬜ Por fazer |
 | 6-7 | Integrar Claude API (consulta linguagem natural + foto→1 voo) | ⬜ Por fazer |
 | 8-9 | Meteorologia + NOTAMs | ⬜ Por fazer |
@@ -375,6 +381,9 @@ Filtros implementados: pesquisa de texto (rota/AC/reg/role) + popup de filtros a
 ### Sessão 8
 iOS Safari fixes: drawer flush às laterais (left/right/width 100%, 100dvh, body scroll lock) · filter popup corrigido (right:0 em vez de right:-36px) · inputs normalizados a font-size 16px no mobile (previne zoom automático iOS) · Secção "Regras Mobile / iOS Safari" adicionada ao CLAUDE.md como referência permanente
 
+### Sessão 13
+Import EASA físico: roles como colunas de horas (não campo de texto) · SP SE / SP ME / MP como colunas de horas · SIM Date separada da Date dos voos · `normalizeImportRole()` para texto livre · coluna "Instructor - Time" (com traço) NÃO auto-detecta — mapear manualmente · totalTime fallback: roleInferredTime → opsInferredTime → simDurVal (por ordem de prioridade)
+
 ---
 
 ## 📝 Registo de Sessões
@@ -415,6 +424,13 @@ Logbook v0.10→v0.11: Quatro iOS Safari / mobile fixes — inputs `type="time"`
 ### Sessão 12 — 17 Junho 2026
 Logbook v0.11→v0.12: Importação CSV/Excel implementada — modal 3 passos (upload com drag&drop, mapeamento de colunas com auto-detecção de 25 campos por aliases, preview das primeiras 5 entradas, confirmação). Suporte a CSV (delimitador auto-detectado, BOM UTF-8 handled) e .xlsx/.xls via SheetJS CDN. Fix mobile: `entries-header` em coluna no mobile (título "Flight Log" acima dos botões Import/Export).
 
+### Sessão 13 — 17 Junho 2026
+Logbook v0.12→v0.13: Import melhorado para cobrir formato EASA físico (logbooks em papel digitalizados). Três PRs:
+- **PR #29** — 7 campos de role-por-horas (picHours, picusHours, copilotHours, dualHours, instructorHours, spicHours, feHours): role inferido da coluna com valor; `normalizeImportRole()` converte texto livre ("F/O", "Co-Pilot (F/O)", "CFI", "Dual Received"…) para valores internos correctos
+- **PR #30** — campo `simDate`: SIM Date separada como fallback de data quando coluna "Date" está vazia nas linhas de simulador
+- **PR #31** — 3 campos de operações-por-horas (spseHours, spmeHours, mpHours): `operations` + `engine` inferidos da coluna com valor; horas como `totalTime` fallback. SP ME/SP SE sem distinção SE/ME em MP (correcto EASA)
+Total: 36 campos no IMPORT_FIELDS (era 25 na v0.12)
+
 ---
 
 ## 🚀 Próximos Passos
@@ -436,4 +452,4 @@ Logbook v0.11→v0.12: Importação CSV/Excel implementada — modal 3 passos (u
 
 ---
 
-*Última actualização: Sessão 12 — 17 Junho 2026 (v0.12)*
+*Última actualização: Sessão 13 — 17 Junho 2026 (v0.13)*
