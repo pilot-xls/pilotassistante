@@ -885,7 +885,14 @@ const IMPORT_FIELDS = [
   { key: 'registration',   label: 'Registration',        aliases: ['registration', 'reg', 'tail', 'tail number', 'regn', 'a/c reg'] },
   { key: 'operations',     label: 'Operations (SP/MP)',  aliases: ['operations', 'ops', 'sp/mp', 'spmp'] },
   { key: 'engine',         label: 'Engine (SE/ME)',      aliases: ['engine', 'se/me', 'seme', 'eng'] },
-  { key: 'role',           label: 'Role',                aliases: ['role', 'function', 'capacity', 'duty', 'crew function'] },
+  { key: 'role',           label: 'Role (text)',          aliases: ['role', 'function', 'capacity', 'duty', 'crew function'] },
+  { key: 'picHours',        label: 'PIC Hours',           aliases: ['pic time', 'pic hours', 'pic hrs', 'pilot in command time', 'pilot in command hours', 'pilot in command hrs'] },
+  { key: 'picusHours',      label: 'PICUS Hours',         aliases: ['picus time', 'picus hours', 'picus hrs', 'pic under supervision', 'pic under supervision hrs'] },
+  { key: 'copilotHours',    label: 'Co-Pilot / SIC Hours', aliases: ['co-pilot time', 'co-pilot hours', 'co-pilot hrs', 'copilot time', 'copilot hours', 'sic time', 'sic hours', 'sic hrs', 'f/o time', 'f/o hours', 'first officer time'] },
+  { key: 'dualHours',       label: 'Dual Hours',          aliases: ['dual time', 'dual hours', 'dual hrs', 'dual received time', 'dual received', 'under instruction'] },
+  { key: 'instructorHours', label: 'Instructor Hours',    aliases: ['dual given', 'dual given time', 'dual given hrs', 'instruction given', 'instructor time', 'cfi time', 'cfi hours', 'cfi hrs'] },
+  { key: 'spicHours',       label: 'SPIC Hours',          aliases: ['spic time', 'spic hours', 'spic hrs', 'student pic time', 'student pic hrs'] },
+  { key: 'feHours',         label: 'FE Hours',            aliases: ['fe time', 'fe hours', 'fe hrs', 'flight examiner time', 'examiner time', 'examiner hrs'] },
   { key: 'picName',        label: 'PIC Name',            aliases: ['pic name', 'captain', 'captain name', 'commander', 'pilot in command'] },
   { key: 'instructorName', label: 'Instructor / Student', aliases: ['instructor', 'instructor name', 'student', 'student name', 'student/instructor'] },
   { key: 'nightHours',     label: 'Night HRS',           aliases: ['night', 'night hrs', 'night time', 'night hours'] },
@@ -1099,6 +1106,26 @@ function showImportPreview() {
   showImportStep(3);
 }
 
+function normalizeImportRole(raw, authKey) {
+  if (!raw) return '';
+  const vUp = raw.trim().toUpperCase().replace(/[\s\-\.\/\(\)_]+/g, '');
+  const auth = getAuthority();
+  for (const r of auth.roles) {
+    if (vUp === r.value.replace(/_/g, '')) return r.value;
+    if (vUp === r.label.toUpperCase().replace(/[\s\-\.\/\(\)]+/g, '')) return r.value;
+  }
+  const common = {
+    'COPILOT': 'CO_PILOT', 'FO': 'CO_PILOT', 'FIRSTOFFICER': 'CO_PILOT',
+    'SIC': authKey === 'FAA' ? 'SIC' : 'CO_PILOT',
+    'CFI': 'INSTRUCTOR', 'DUALGIVEN': 'INSTRUCTOR', 'INSTRUCTIONSGIVEN': 'INSTRUCTOR',
+    'DUALRECEIVED': 'DUAL', 'UNDERINSTRUCTION': 'DUAL',
+    'PICUNDERSUPERVISION': 'PICUS', 'PICUS': 'PICUS',
+    'STUDENTPILOTINCOMMAND': 'SPIC',
+    'FLIGHTEXAMINER': 'FE', 'EXAMINER': 'FE',
+  };
+  return common[vUp] || raw.trim();
+}
+
 function buildImportEntries() {
   const m = importState.mapping;
   const authKey = getAuthorityKey();
@@ -1111,7 +1138,31 @@ function buildImportEntries() {
     const simDurVal    = get(row, 'simDuration');
     const isSim = entryTypeRaw.includes('sim') ||
                   (fstdTypeVal !== '' && !entryTypeRaw.includes('flight'));
-    const totalTime = normalizeImportHours(get(row, 'totalTime') || (isSim ? simDurVal : ''));
+
+    // Determine role: text column first, then infer from role-time columns
+    let role = normalizeImportRole(get(row, 'role'), authKey);
+    let roleInferredTime = '';
+    if (!role) {
+      const roleTimeCols = [
+        { key: 'picHours',        value: 'PIC' },
+        { key: 'picusHours',      value: 'PICUS' },
+        { key: 'copilotHours',    value: authKey === 'FAA' ? 'SIC' : 'CO_PILOT' },
+        { key: 'dualHours',       value: 'DUAL' },
+        { key: 'instructorHours', value: 'INSTRUCTOR' },
+        { key: 'spicHours',       value: 'SPIC' },
+        { key: 'feHours',         value: 'FE' },
+      ];
+      for (const rc of roleTimeCols) {
+        const t = get(row, rc.key);
+        if (t && parseHours(normalizeImportHours(t)) > 0) {
+          role = rc.value;
+          roleInferredTime = normalizeImportHours(t);
+          break;
+        }
+      }
+    }
+
+    const totalTime = normalizeImportHours(get(row, 'totalTime') || (isSim ? simDurVal : '') || roleInferredTime);
     const nightHours = normalizeImportHours(get(row, 'nightHours'));
     const ifrTime    = normalizeImportHours(get(row, 'ifrTime'));
     const totalDec = parseHours(totalTime);
@@ -1133,7 +1184,7 @@ function buildImportEntries() {
       registration:   get(row, 'registration').toUpperCase(),
       operations:     ['SP','MP'].includes(ops) ? ops : 'MP',
       engine:         ['SE','ME'].includes(eng) ? eng : 'ME',
-      role:           get(row, 'role'),
+      role,
       picName:        get(row, 'picName'),
       instructorName: get(row, 'instructorName'),
       nightHours,
