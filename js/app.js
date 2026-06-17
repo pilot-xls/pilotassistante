@@ -884,8 +884,11 @@ const IMPORT_FIELDS = [
   { key: 'totalTime',      label: 'Total HRS',           aliases: ['total', 'total hrs', 'total time', 'block time', 'duration', 'flight time', 'total flight time'] },
   { key: 'aircraftType',   label: 'Aircraft Type',       aliases: ['aircraft type', 'ac type', 'aircraft', 'actype', 'a/c type', 'type'] },
   { key: 'registration',   label: 'Registration',        aliases: ['registration', 'reg', 'tail', 'tail number', 'regn', 'a/c reg'] },
-  { key: 'operations',     label: 'Operations (SP/MP)',  aliases: ['operations', 'ops', 'sp/mp', 'spmp'] },
-  { key: 'engine',         label: 'Engine (SE/ME)',      aliases: ['engine', 'se/me', 'seme', 'eng'] },
+  { key: 'operations',     label: 'Operations (SP/MP text)', aliases: ['operations', 'ops', 'sp/mp', 'spmp'] },
+  { key: 'engine',         label: 'Engine (SE/ME text)',     aliases: ['engine', 'se/me', 'seme', 'eng'] },
+  { key: 'spseHours',      label: 'SP SE Hours',            aliases: ['sp se', 'sp se hrs', 'sp se time', 'single pilot se', 'single engine sp', 'se sp'] },
+  { key: 'spmeHours',      label: 'SP ME Hours',            aliases: ['sp me', 'sp me hrs', 'sp me time', 'single pilot me', 'multi engine sp', 'me sp'] },
+  { key: 'mpHours',        label: 'MP Hours',               aliases: ['mp', 'mp hrs', 'mp time', 'multi pilot', 'multi pilot hrs', 'multi pilot time', 'multi-pilot'] },
   { key: 'role',           label: 'Role (text)',          aliases: ['role', 'function', 'capacity', 'duty', 'crew function'] },
   { key: 'picHours',        label: 'PIC Hours',           aliases: ['pic time', 'pic hours', 'pic hrs', 'pilot in command time', 'pilot in command hours', 'pilot in command hrs'] },
   { key: 'picusHours',      label: 'PICUS Hours',         aliases: ['picus time', 'picus hours', 'picus hrs', 'pic under supervision', 'pic under supervision hrs'] },
@@ -1163,14 +1166,31 @@ function buildImportEntries() {
       }
     }
 
-    const totalTime = normalizeImportHours(get(row, 'totalTime') || (isSim ? simDurVal : '') || roleInferredTime);
     const nightHours = normalizeImportHours(get(row, 'nightHours'));
     const ifrTime    = normalizeImportHours(get(row, 'ifrTime'));
-    const totalDec = parseHours(totalTime);
     const nightDec = parseHours(nightHours);
     const ifrDec   = parseHours(ifrTime);
-    const ops = get(row, 'operations').toUpperCase();
-    const eng = get(row, 'engine').toUpperCase();
+    // Determine operations + engine from text fields or dedicated hour columns (SP SE / SP ME / MP)
+    const opsRaw  = get(row, 'operations').toUpperCase();
+    const engRaw  = get(row, 'engine').toUpperCase();
+    const spseVal = get(row, 'spseHours');
+    const spmeVal = get(row, 'spmeHours');
+    const mpVal   = get(row, 'mpHours');
+    let operations, engine, opsInferredTime = '';
+    if (['SP','MP'].includes(opsRaw)) {
+      operations = opsRaw;
+      engine     = ['SE','ME'].includes(engRaw) ? engRaw : 'ME';
+    } else if (spseVal && parseHours(normalizeImportHours(spseVal)) > 0) {
+      operations = 'SP'; engine = 'SE'; opsInferredTime = normalizeImportHours(spseVal);
+    } else if (spmeVal && parseHours(normalizeImportHours(spmeVal)) > 0) {
+      operations = 'SP'; engine = 'ME'; opsInferredTime = normalizeImportHours(spmeVal);
+    } else if (mpVal && parseHours(normalizeImportHours(mpVal)) > 0) {
+      operations = 'MP'; engine = 'ME'; opsInferredTime = normalizeImportHours(mpVal);
+    } else {
+      operations = 'MP'; engine = 'ME';
+    }
+    const totalTime = normalizeImportHours(get(row, 'totalTime') || (isSim ? simDurVal : '') || roleInferredTime || opsInferredTime);
+    const totalDec = parseHours(totalTime);
     return {
       id:             Date.now() + Math.random(),
       date,
@@ -1183,8 +1203,8 @@ function buildImportEntries() {
       totalTime,
       aircraftType:   get(row, 'aircraftType'),
       registration:   get(row, 'registration').toUpperCase(),
-      operations:     ['SP','MP'].includes(ops) ? ops : 'MP',
-      engine:         ['SE','ME'].includes(eng) ? eng : 'ME',
+      operations,
+      engine,
       role,
       picName:        get(row, 'picName'),
       instructorName: get(row, 'instructorName'),
