@@ -721,9 +721,8 @@ body {
   .form-row { grid-template-columns: 1fr; }
   .authority-cards { grid-template-columns: 1fr; }
   .entries-section { padding: 14px; }
-  /* Stack entries header: title on top, buttons below */
-  .entries-header { flex-direction: column; align-items: flex-start; gap: 8px; }
-  .entries-header-right { align-self: stretch; }
+  /* Icon-only buttons on mobile so everything fits on one line */
+  .btn-text { display: none; }
   .filter-popup-wrap { position: static; }
   .filter-popup {
     position: fixed;
