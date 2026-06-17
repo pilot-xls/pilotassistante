@@ -875,6 +875,7 @@ function exportCSV() {
 
 const IMPORT_FIELDS = [
   { key: 'date',           label: 'Date *',             aliases: ['date', 'data', 'flight date', 'datum', 'day'] },
+  { key: 'simDate',        label: 'SIM Date',           aliases: ['sim date', 'sim data', 'simulator date', 'fstd date', 'sim day'] },
   { key: 'entryType',      label: 'Type (flight/sim)',   aliases: ['type', 'entry type', 'flight type', 'category'] },
   { key: 'origin',         label: 'From (ICAO)',         aliases: ['from', 'origin', 'dep', 'departure', 'adep', 'origem', 'from (icao)'] },
   { key: 'destination',    label: 'To (ICAO)',           aliases: ['to', 'dest', 'destination', 'arr', 'arrival', 'ades', 'destino', 'to (icao)'] },
@@ -1131,7 +1132,7 @@ function buildImportEntries() {
   const authKey = getAuthorityKey();
   const get = (row, key) => (m[key] ? (row[m[key]] || '') : '').toString().trim();
   return importState.rows.map(row => {
-    const date = normalizeImportDate(get(row, 'date'));
+    const date = normalizeImportDate(get(row, 'date') || get(row, 'simDate'));
     if (!date) return null;
     const entryTypeRaw = get(row, 'entryType').toLowerCase();
     const fstdTypeVal  = get(row, 'fstdType');
