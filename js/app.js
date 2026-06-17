@@ -870,3 +870,320 @@ function exportCSV() {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
+/* ── Import ─────────────────────────────────────────────────── */
+
+const IMPORT_FIELDS = [
+  { key: 'date',           label: 'Date *',             aliases: ['date', 'data', 'flight date', 'datum', 'day'] },
+  { key: 'entryType',      label: 'Type (flight/sim)',   aliases: ['type', 'entry type', 'flight type', 'category'] },
+  { key: 'origin',         label: 'From (ICAO)',         aliases: ['from', 'origin', 'dep', 'departure', 'adep', 'origem', 'from (icao)'] },
+  { key: 'destination',    label: 'To (ICAO)',           aliases: ['to', 'dest', 'destination', 'arr', 'arrival', 'ades', 'destino', 'to (icao)'] },
+  { key: 'offBlock',       label: 'Off-Block UTC',       aliases: ['off block', 'off-block', 'dep time', 'block off', 'out', 'btd', 'off-block (utc)', 'off-block utc'] },
+  { key: 'onBlock',        label: 'On-Block UTC',        aliases: ['on block', 'on-block', 'arr time', 'block on', 'in', 'bta', 'on-block (utc)', 'on-block utc'] },
+  { key: 'totalTime',      label: 'Total HRS',           aliases: ['total', 'total hrs', 'total time', 'block time', 'duration', 'flight time', 'total flight time'] },
+  { key: 'aircraftType',   label: 'Aircraft Type',       aliases: ['aircraft type', 'ac type', 'aircraft', 'actype', 'a/c type', 'type'] },
+  { key: 'registration',   label: 'Registration',        aliases: ['registration', 'reg', 'tail', 'tail number', 'regn', 'a/c reg'] },
+  { key: 'operations',     label: 'Operations (SP/MP)',  aliases: ['operations', 'ops', 'sp/mp', 'spmp'] },
+  { key: 'engine',         label: 'Engine (SE/ME)',      aliases: ['engine', 'se/me', 'seme', 'eng'] },
+  { key: 'role',           label: 'Role',                aliases: ['role', 'function', 'capacity', 'duty', 'crew function'] },
+  { key: 'picName',        label: 'PIC Name',            aliases: ['pic name', 'captain', 'captain name', 'commander', 'pilot in command'] },
+  { key: 'instructorName', label: 'Instructor / Student', aliases: ['instructor', 'instructor name', 'student', 'student name', 'student/instructor'] },
+  { key: 'nightHours',     label: 'Night HRS',           aliases: ['night', 'night hrs', 'night time', 'night hours'] },
+  { key: 'ifrTime',        label: 'IFR HRS',             aliases: ['ifr', 'instrument', 'inst hrs', 'instrument time', 'ifr hrs'] },
+  { key: 'xcHours',        label: 'Cross-Country HRS',   aliases: ['xc', 'cross country', 'xc hrs', 'cross-country', 'cross-country hrs'] },
+  { key: 'soloHours',      label: 'Solo HRS',            aliases: ['solo', 'solo hrs', 'solo time', 'solo hours'] },
+  { key: 'toDay',          label: 'T/O Day',             aliases: ['to day', 't/o day', 'takeoff day', 'take-off day', 'day t/o', 'day to'] },
+  { key: 'toNight',        label: 'T/O Night',           aliases: ['to night', 't/o night', 'takeoff night', 'night to', 'night t/o'] },
+  { key: 'ldgDay',         label: 'LDG Day',             aliases: ['ldg day', 'landing day', 'landings day', 'day ldg'] },
+  { key: 'ldgNight',       label: 'LDG Night',           aliases: ['ldg night', 'landing night', 'landings night', 'night ldg'] },
+  { key: 'fstdType',       label: 'FSTD Type',           aliases: ['fstd', 'fstd type', 'sim type', 'simulator type', 'ffs', 'ftd'] },
+  { key: 'simDuration',    label: 'Sim Duration',        aliases: ['sim duration', 'sim hrs', 'sim time', 'fstd hrs', 'sim hours'] },
+  { key: 'remarks',        label: 'Remarks',             aliases: ['remarks', 'notes', 'comments', 'remark', 'note'] },
+];
+
+let importState = { headers: [], rows: [], mapping: {}, parsedEntries: [] };
+
+function openImport() {
+  importState = { headers: [], rows: [], mapping: {}, parsedEntries: [] };
+  document.getElementById('import-file-input').value = '';
+  showImportStep(1);
+  document.getElementById('import-overlay').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeImport() {
+  document.getElementById('import-overlay').classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
+function handleImportOverlayClick(e) {
+  if (e.target === document.getElementById('import-overlay')) closeImport();
+}
+
+function showImportStep(n) {
+  [1, 2, 3].forEach(i => {
+    const el = document.getElementById('import-step-' + i);
+    if (i === n) {
+      el.style.display = n === 1 ? 'block' : 'flex';
+      if (n !== 1) { el.style.flexDirection = 'column'; el.style.flex = '1'; el.style.overflow = 'hidden'; el.style.minHeight = '0'; }
+    } else {
+      el.style.display = 'none';
+    }
+  });
+  const titles = { 1: 'Import Flights', 2: 'Map Columns', 3: 'Preview' };
+  document.getElementById('import-title').textContent = titles[n];
+}
+
+function resetImportFile() {
+  importState.headers = []; importState.rows = []; importState.mapping = {};
+  document.getElementById('import-file-input').value = '';
+  showImportStep(1);
+}
+
+function handleImportDrop(e) {
+  e.preventDefault();
+  document.getElementById('import-drop-zone').classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (!file) return;
+  processImportFile(file);
+}
+
+function handleImportFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  processImportFile(file);
+}
+
+function processImportFile(file) {
+  const ext = file.name.split('.').pop().toLowerCase();
+  const reader = new FileReader();
+  if (ext === 'csv') {
+    reader.onload = e => parseCSVImport(e.target.result, file.name);
+    reader.readAsText(file, 'UTF-8');
+  } else if (ext === 'xlsx' || ext === 'xls') {
+    reader.onload = e => parseExcelImport(e.target.result, file.name);
+    reader.readAsArrayBuffer(file);
+  } else {
+    alert('Please upload a .csv, .xlsx, or .xls file.');
+  }
+}
+
+function parseCSVImport(text, filename) {
+  if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+  const lines = text.split(/\r?\n/).filter(l => l.trim());
+  if (lines.length < 2) { alert('The file appears to be empty.'); return; }
+  const delim = detectCSVDelimiter(lines[0]);
+  const headers = parseCSVRow(lines[0], delim);
+  const rows = lines.slice(1).map(l => {
+    const cells = parseCSVRow(l, delim);
+    const obj = {};
+    headers.forEach((h, i) => { obj[h] = (cells[i] || '').trim(); });
+    return obj;
+  }).filter(r => Object.values(r).some(v => v !== ''));
+  importState.headers = headers;
+  importState.rows = rows;
+  showMappingUI(filename, rows.length);
+}
+
+function parseExcelImport(buffer, filename) {
+  try {
+    const wb = XLSX.read(buffer, { type: 'array', cellDates: true });
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const data = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+    if (data.length < 2) { alert('The sheet appears to be empty.'); return; }
+    const headers = data[0].map(String);
+    const rows = data.slice(1)
+      .filter(r => r.some(c => c !== ''))
+      .map(r => {
+        const obj = {};
+        headers.forEach((h, i) => {
+          let v = r[i];
+          if (v instanceof Date) v = v.toISOString().slice(0, 10);
+          else v = String(v == null ? '' : v).trim();
+          obj[h] = v;
+        });
+        return obj;
+      });
+    importState.headers = headers;
+    importState.rows = rows;
+    showMappingUI(filename, rows.length);
+  } catch (err) {
+    alert('Could not read the file: ' + err.message);
+  }
+}
+
+function detectCSVDelimiter(line) {
+  const counts = { ',': 0, ';': 0, '\t': 0 };
+  for (const d of Object.keys(counts)) counts[d] = line.split(d).length - 1;
+  return Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
+}
+
+function parseCSVRow(line, delim) {
+  const result = []; let cur = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (inQ && line[i + 1] === '"') { cur += '"'; i++; }
+      else inQ = !inQ;
+    } else if (ch === delim && !inQ) {
+      result.push(cur.trim()); cur = '';
+    } else cur += ch;
+  }
+  result.push(cur.trim());
+  return result;
+}
+
+function autoDetectMapping(headers) {
+  const lc = headers.map(h => h.toLowerCase().trim());
+  const mapping = {};
+  for (const field of IMPORT_FIELDS) {
+    for (const alias of field.aliases) {
+      const idx = lc.findIndex(h => h === alias || h.includes(alias));
+      if (idx !== -1 && !Object.values(mapping).includes(headers[idx])) {
+        mapping[field.key] = headers[idx]; break;
+      }
+    }
+  }
+  return mapping;
+}
+
+function showMappingUI(filename, rowCount) {
+  importState.mapping = autoDetectMapping(importState.headers);
+  document.getElementById('import-file-info').textContent = `${filename} · ${rowCount} rows`;
+  const body = document.getElementById('import-map-body');
+  body.innerHTML = '';
+  for (const field of IMPORT_FIELDS) {
+    const row = document.createElement('div');
+    row.className = 'import-map-row';
+    const lbl = document.createElement('span');
+    lbl.className = 'import-map-label';
+    lbl.textContent = field.label;
+    const sel = document.createElement('select');
+    sel.className = 'import-map-select';
+    sel.innerHTML = '<option value="">(skip)</option>' +
+      importState.headers.map(h =>
+        `<option value="${h}"${importState.mapping[field.key] === h ? ' selected' : ''}>${h}</option>`
+      ).join('');
+    sel.addEventListener('change', () => { importState.mapping[field.key] = sel.value || null; });
+    row.appendChild(lbl);
+    row.appendChild(sel);
+    body.appendChild(row);
+  }
+  showImportStep(2);
+}
+
+function showImportPreview() {
+  if (!importState.mapping.date) {
+    alert('Please map the Date column — it is required.');
+    return;
+  }
+  const built = buildImportEntries();
+  if (!built.length) {
+    alert('No valid rows found. Make sure the Date column is mapped correctly.');
+    return;
+  }
+  importState.parsedEntries = built;
+  const n = built.length;
+  document.getElementById('import-preview-info').textContent =
+    `${n} entr${n === 1 ? 'y' : 'ies'} ready to import (showing first ${Math.min(n, 5)})`;
+  document.getElementById('import-confirm-btn').textContent =
+    `Import ${n} entr${n === 1 ? 'y' : 'ies'}`;
+  const cols  = ['date','origin','destination','offBlock','onBlock','totalTime','aircraftType','registration','role'];
+  const heads = ['Date','From','To','Off','On','Total','A/C','Reg','Role'];
+  const preview = built.slice(0, 5);
+  document.getElementById('import-preview-table').innerHTML =
+    `<thead><tr>${heads.map(h => `<th>${h}</th>`).join('')}</tr></thead>` +
+    `<tbody>${preview.map(e =>
+      `<tr>${cols.map(c => `<td>${e[c] || ''}</td>`).join('')}</tr>`
+    ).join('')}</tbody>`;
+  showImportStep(3);
+}
+
+function buildImportEntries() {
+  const m = importState.mapping;
+  const authKey = getAuthorityKey();
+  const get = (row, key) => (m[key] ? (row[m[key]] || '') : '').toString().trim();
+  return importState.rows.map(row => {
+    const date = normalizeImportDate(get(row, 'date'));
+    if (!date) return null;
+    const entryTypeRaw = get(row, 'entryType').toLowerCase();
+    const fstdTypeVal  = get(row, 'fstdType');
+    const simDurVal    = get(row, 'simDuration');
+    const isSim = entryTypeRaw.includes('sim') ||
+                  (fstdTypeVal !== '' && !entryTypeRaw.includes('flight'));
+    const totalTime = normalizeImportHours(get(row, 'totalTime') || (isSim ? simDurVal : ''));
+    const nightHours = normalizeImportHours(get(row, 'nightHours'));
+    const ifrTime    = normalizeImportHours(get(row, 'ifrTime'));
+    const totalDec = parseHours(totalTime);
+    const nightDec = parseHours(nightHours);
+    const ifrDec   = parseHours(ifrTime);
+    const ops = get(row, 'operations').toUpperCase();
+    const eng = get(row, 'engine').toUpperCase();
+    return {
+      id:             Date.now() + Math.random(),
+      date,
+      isSim,
+      authority:      authKey,
+      origin:         get(row, 'origin').toUpperCase(),
+      destination:    get(row, 'destination').toUpperCase(),
+      offBlock:       normalizeImportTime(get(row, 'offBlock')),
+      onBlock:        normalizeImportTime(get(row, 'onBlock')),
+      totalTime,
+      aircraftType:   get(row, 'aircraftType'),
+      registration:   get(row, 'registration').toUpperCase(),
+      operations:     ['SP','MP'].includes(ops) ? ops : 'MP',
+      engine:         ['SE','ME'].includes(eng) ? eng : 'ME',
+      role:           get(row, 'role'),
+      picName:        get(row, 'picName'),
+      instructorName: get(row, 'instructorName'),
+      nightHours,
+      ifrTime,
+      xcHours:        normalizeImportHours(get(row, 'xcHours')),
+      soloHours:      normalizeImportHours(get(row, 'soloHours')),
+      dayHours:       formatHours(Math.max(0, totalDec - nightDec)),
+      vfrTime:        formatHours(Math.max(0, totalDec - ifrDec)),
+      toDay:          parseInt(get(row, 'toDay'))    || (isSim ? 0 : 1),
+      toNight:        parseInt(get(row, 'toNight'))  || 0,
+      ldgDay:         parseInt(get(row, 'ldgDay'))   || (isSim ? 0 : 1),
+      ldgNight:       parseInt(get(row, 'ldgNight')) || 0,
+      fstdType:       fstdTypeVal,
+      simDuration:    normalizeImportHours(simDurVal),
+      remarks:        get(row, 'remarks'),
+    };
+  }).filter(Boolean);
+}
+
+function normalizeImportDate(v) {
+  if (!v) return '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+  const m1 = v.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})$/);
+  if (m1) return `${m1[3]}-${m1[2].padStart(2,'0')}-${m1[1].padStart(2,'0')}`;
+  const d = new Date(v);
+  if (!isNaN(d.getTime())) return d.toISOString().slice(0, 10);
+  return '';
+}
+
+function normalizeImportTime(v) {
+  if (!v) return '';
+  if (/^\d{1,2}:\d{2}$/.test(v)) return v.padStart(5, '0');
+  if (/^\d{4}$/.test(v)) return v.slice(0, 2) + ':' + v.slice(2);
+  return '';
+}
+
+function normalizeImportHours(v) {
+  if (!v) return '';
+  return formatHours(parseHours(v));
+}
+
+function backToMapping() { showImportStep(2); }
+
+function confirmImport() {
+  const imported = importState.parsedEntries;
+  entries.push(...imported);
+  entries.sort((a, b) => b.date.localeCompare(a.date));
+  localStorage.setItem('pa_entries', JSON.stringify(entries));
+  closeImport();
+  renderEntries();
+  renderStats();
+  alert(`✓ ${imported.length} entr${imported.length === 1 ? 'y' : 'ies'} imported.`);
+}
