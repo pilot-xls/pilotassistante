@@ -9,9 +9,9 @@
 | | |
 |---|---|
 | **Versão actual** | v0.13 |
-| **Última sessão** | Sessão 13 — 17 Junho 2026 |
-| **Módulo em construção** | Módulo 2 — Logbook Inteligente |
-| **Próxima tarefa** | Agenda FTL básica (Módulo 1) |
+| **Última sessão** | Sessão 14 — 19 Junho 2026 |
+| **Módulo em construção** | Dashboard / Home Menu (UI shell) — conceito aprovado, por integrar |
+| **Próxima tarefa** | Integrar Dashboard Menu na PWA + Agenda FTL básica (Módulo 1) |
 | **Deploy activo** | GitHub Pages ✅ |
 | **Linguagem da app** | Inglês |
 
@@ -104,6 +104,8 @@ pilotassistante/
     └── icon-512.png       ← PWA icon (cor #2825A0)
 ```
 
+> **Nota Sessão 14:** o ficheiro `dashboard_minimal.html` (Dashboard/Home Menu) foi desenvolvido como protótipo standalone fora do repo. Ainda não integrado na estrutura acima — ver secção "Dashboard / Home Menu" abaixo para o que falta fazer antes de entrar no `index.html`.
+
 **O que está implementado em cada ficheiro:**
 
 `index.html` — formulário de voo/simulador, drawer lateral, painel de estatísticas, lista de entradas, authority overlay (primeiro uso), barra de filtros (search + popup avançado), estrutura de navegação bottom bar
@@ -147,6 +149,64 @@ pilotassistante/
 | App nativa | Capacitor (Ionic) | Grátis | Fase 3 — mesmo código PWA |
 | Icons | Tabler Icons 3.11.0 | Grátis | CDN jsdelivr |
 | Controlo de versão | GitHub | Grátis | Repo: pilotassistante (Private) |
+
+---
+
+## 🧭 Dashboard / Home Menu (UI Shell) — NOVO Sessão 14
+
+> Não é um dos 15 módulos numerados — é o ecrã de navegação/entrada da app, o ponto de partida para todos os módulos.
+
+### O que foi explorado e rejeitado
+
+- **Engine fan menu (motor a jacto rotativo)** — três iterações (SVG → Canvas 2D com lighting/OGVs/inlet lip 3D → tentativa Three.js/WebGL). Visualmente ambicioso mas:
+  - Three.js sem HDRI real fica pior do que Canvas 2D
+  - Canvas 2D fotorrealista tem tecto de qualidade sem assets externos (foto IA ou HDRI)
+  - **Decisão:** abandonado por agora. Pode voltar-se a explorar na Fase 2/3 com uma foto gerada por IA como base.
+- **Navigation Display (compass rose EFIS), MCDU/FMS, Glass Cockpit Cards, PFD Tape** — 4 conceitos "cockpit-themed" mostrados lado a lado. **Rejeitados** — utilizador não queria estética de instrumentos de cockpit.
+- **Dashboard minimalista em fundo preto** — **Rejeitado**, utilizador não gosta de fundo preto.
+
+### O que foi aprovado ✅
+
+**Dashboard minimalista moderno, paleta do projecto (Índigo Profundo, fundo claro)** — ficheiro de protótipo: `dashboard_minimal.html`
+
+**Layout:**
+- Top bar: logo + versão
+- **Painel de detalhe** (topo) — mostra o módulo seleccionado: status pill, nome grande, subtítulo, **zona de manómetros**, posição (X/15) + botão "Open module"
+- **Grid 5×3** — todos os 15 módulos visíveis sem scroll, cada card com número + código de 3 letras
+- Barra de progresso fina (posição no conjunto de módulos)
+- ~~Dica de atalhos de teclado~~ — **removida** (Sessão 14, pedido explícito do utilizador). Navegação por teclado (setas + Enter) continua activa, só a dica visual desapareceu.
+
+**Interacção:**
+- Toca num card → painel de detalhe actualiza (fade transition)
+- Setas do teclado + Enter → navegação completa sem rato
+- "Open module" → navega para a página real do módulo (ver `MODULE_LINKS` abaixo)
+
+**Sistema de Manómetros (gauges) — núcleo da Sessão 14:**
+- Gauge semicircular SVG (arco 180°), cores por threshold: índigo normal → âmbar ≥75% → vermelho ≥92%
+- `GAUGE_DATA` no script define que módulos têm métricas e quais:
+  - **Logbook (LOG):** Total Hours, PIC Hours, Night Hours, IFR Hours
+  - **FTL Schedule (FTL):** 7 Dias (/60h), 28 Dias (/110h), 12 Meses (/1000h), FDP Hoje (/13h) — limites EASA Part-FCL reais
+  - **Todos os outros módulos:** estado "Métricas em breve" em vez de inventar dados — nunca mostra gauges falsos para módulos sem lógica implementada
+- Tag visual no canto do painel: "dados reais" vs "dados de exemplo" — para nunca confundir mock data com dados a sério depois de ligar ao localStorage real
+- **Os valores actuais dos gauges são dados de EXEMPLO** (hardcoded no JS) — ainda não lêem o `localStorage` real do Logbook
+
+**Sistema de Links (`MODULE_LINKS`):**
+```js
+const MODULE_LINKS={
+  LOG:'logbook.html',   // ← placeholder, ajustar ao path real
+  FTL:'#', DOC:'#', ... // '#' = sem página própria ainda
+};
+```
+- Se houver link real definido → `doOpen()` navega via `window.location.href`
+- Se não houver (`'#'`) → fallback dispara `sendPrompt()` (placeholder de desenvolvimento)
+
+### O que falta ⬜
+
+1. **Confirmar o path real da página do Logbook** — utilizador mencionou que já a tem feita e "lavamos" (testada). Falta o nome/path exacto do ficheiro para preencher `MODULE_LINKS.LOG` correctamente.
+2. **Ligar os gauges do Logbook a dados reais** — substituir os valores de exemplo por leitura real do `localStorage` (precisa do `js/app.js` actual para saber a estrutura exacta das entries gravadas).
+3. **Decidir se o Dashboard substitui ou complementa a bottom nav bar** já existente no `index.html`.
+4. **Integrar `dashboard_minimal.html` na estrutura do repo** (`pilotassistante/`) — está como protótipo standalone fora do projecto.
+5. Eventualmente, gauges definidos para mais módulos à medida que forem sendo implementados (Documents, Fatigue Log, etc.).
 
 ---
 
@@ -195,6 +255,7 @@ pilotassistante/
 - Integração API apps externas: LEON, Aims, Crewlink (Fase 2)
 - Foto → 1 voo: tirar foto à caderneta do avião, preenche uma entrada (Claude API, Fase 2+)
 - Consulta em linguagem natural (Claude API)
+- **Ligação ao Dashboard:** expor as 4 métricas-chave (Total/PIC/Night/IFR Hours) de forma fácil de ler a partir de fora do módulo, para os gauges do Dashboard usarem dados reais
 
 ### Formato Universal Interno (campos)
 
@@ -261,6 +322,7 @@ Apenas autoridades com formato de logbook distinto são relevantes.
 | 1-2 | Logbook básico | ✅ Concluído (v0.6) |
 | 3 | Filtros + pesquisa (mês, rota, aeronave) | ✅ Concluído (v0.7) |
 | 4 | Exportação CSV + Importação CSV/Excel | ✅ Concluído (v0.13) |
+| 4.5 | Dashboard / Home Menu (UI shell) | 🟡 Conceito aprovado, por integrar |
 | 5 | Agenda FTL básica (Módulo 1) | ⬜ Por fazer |
 | 6-7 | Integrar Claude API (consulta linguagem natural + foto→1 voo) | ⬜ Por fazer |
 | 8-9 | Meteorologia + NOTAMs | ⬜ Por fazer |
@@ -275,6 +337,7 @@ Apenas autoridades com formato de logbook distinto são relevantes.
 - Interface de Voz + Wellbeing (módulos críticos)
 - Integração API apps externas: LEON, Aims, Crewlink (sync automático de rosters/logbook)
 - Foto → 1 voo via Claude API (caderneta do avião)
+- Possível revisita ao Engine Fan Menu com foto IA de alta resolução como fundo (se fizer sentido nessa altura)
 
 ### FASE 3 — Produto Comercial (Mês 7-12)
 
@@ -370,7 +433,7 @@ Minimal Elegant + Índigo Profundo (#2825A0) definitivo · Space Grotesk + Space
 Nunca gerar ficheiros completos do zero — editar apenas blocos específicos · Sempre pedir ficheiro actual antes de editar
 
 ### Sessão 5
-`type="time"` para todos os campos de horas · Day HRS e VFR HRS auto-calculados (não inseridos) · Night HRS e IFR HRS obrigatórios (00:00 se nenhum) · Validações: Night≤Total, IFR≤Total, LDG=T/O · Badge UTC no Off-Block/On-Block · EASA roles: PICUS + SPIC + FE adicionados · PWA icons criados
+`type="time"` para todos os campos de horas · Day HRS e VFR HRS auto-calculados (não inseridos) · Night HRS e IFR HRS tornaram-se obrigatórios (00:00 se nenhum) · Validações: Night≤Total, IFR≤Total, LDG=T/O · Badge UTC no Off-Block/On-Block · EASA roles: PICUS + SPIC + FE adicionados · PWA icons criados
 
 ### Sessão 6
 Estratégia de importação redefinida: importação CSV/Excel em JS puro (sem IA) vem logo a seguir à exportação CSV · Importação via foto REJEITADA para logbook completo · Foto via Claude API aceite apenas para 1 voo (caderneta do avião) · Integração API apps externas (LEON, Aims, Crewlink) planeada para Fase 2 · Lista de autoridades de aviação estratificada em 3 prioridades: P1 (EASA, FAA, UK CAA), P2 (TCCA, CASA, CAA-NZ, DGCA, GCAA, ANAC), P3 (CAAC, JCAB, SACAA, DGAC, GACA)
@@ -383,6 +446,9 @@ iOS Safari fixes: drawer flush às laterais (left/right/width 100%, 100dvh, body
 
 ### Sessão 13
 Import EASA físico: roles como colunas de horas (não campo de texto) · SP SE / SP ME / MP como colunas de horas · SIM Date separada da Date dos voos · `normalizeImportRole()` para texto livre · coluna "Instructor - Time" (com traço) NÃO auto-detecta — mapear manualmente · totalTime fallback: roleInferredTime → opsInferredTime → simDurVal (por ordem de prioridade)
+
+### Sessão 14
+Engine fan menu (motor a jacto rotativo) explorado em 3 iterações (SVG, Canvas 2D fotorrealista, Three.js/WebGL) — **abandonado**: Three.js sem HDRI fica pior que Canvas 2D; tecto de qualidade atingido sem assets externos · 4 conceitos cockpit-themed (Navigation Display, MCDU/FMS, Glass Cockpit Cards, PFD Tape) mostrados lado a lado — **rejeitados**, utilizador não quer estética de instrumentos · Dashboard minimalista em preto — **rejeitado**, sem fundo preto · **Dashboard aprovado:** minimalista moderno, paleta do projecto (fundo claro + índigo), grid 5×3 + painel de detalhe com manómetros (gauges) por módulo · Sistema de gauges: só mostra métricas para módulos com lógica definida (Logbook, FTL), restantes mostram "em breve" honesto em vez de dados falsos · Sistema `MODULE_LINKS` para navegação real para páginas de módulo já desenvolvidas · Dica de atalhos de teclado removida do rodapé do dashboard (mantém-se funcional, só a UI visual saiu)
 
 ---
 
@@ -431,15 +497,29 @@ Logbook v0.12→v0.13: Import melhorado para cobrir formato EASA físico (logboo
 - **PR #31** — 3 campos de operações-por-horas (spseHours, spmeHours, mpHours): `operations` + `engine` inferidos da coluna com valor; horas como `totalTime` fallback. SP ME/SP SE sem distinção SE/ME em MP (correcto EASA)
 Total: 36 campos no IMPORT_FIELDS (era 25 na v0.12)
 
+### Sessão 14 — 19 Junho 2026
+Exploração extensa de conceitos de Dashboard/Home Menu para a PWA:
+- **Engine fan menu** (motor a jacto rotativo como navegação): 3 iterações — SVG simples → Canvas 2D fotorrealista (lighting por blade, motion blur via offscreen compositing, OGVs, inlet lip 3D, fan disc effect a alta rotação) → tentativa Three.js/WebGL com PBR materials, env map procedural, sombras reais. Three.js ficou pior sem HDRI de qualidade. **Conceito abandonado por agora** — tecto de qualidade do código puro atingido; precisaria de foto/HDRI gerado por IA para ir mais longe.
+- **4 conceitos cockpit-themed** mostrados em showcase comparável: Navigation Display (compass rose EFIS), MCDU/FMS (interface FMC autêntica), Glass Cockpit Cards (grid com cores EFIS), PFD Tape (fita de velocidade/altitude). **Todos rejeitados** — utilizador não queria estética de instrumentos de cockpit.
+- **Dashboard minimalista** (sem tema aviação) — primeira versão em fundo preto, **rejeitada**.
+- **Dashboard final aprovado** — minimalista moderno, paleta oficial do projecto (fundo claro `#F6F5FC`, índigo `#2825A0`, Space Grotesk + Space Mono). Layout: top bar → painel de detalhe (status pill + nome + subtítulo + manómetros + botão Open) → grid 5×3 de todos os módulos → barra de progresso.
+- **Sistema de manómetros (gauges):** arco semicircular SVG, cor por threshold (índigo/âmbar≥75%/vermelho≥92%). `GAUGE_DATA` define métricas reais só para Logbook (Total/PIC/Night/IFR Hours) e FTL (7 Dias/60h, 28 Dias/110h, 12 Meses/1000h, FDP Hoje/13h — limites EASA Part-FCL). Módulos sem lógica implementada mostram honestamente "métricas em breve" em vez de dados inventados. Tag "dados reais" vs "dados de exemplo" visível no painel.
+- **Sistema `MODULE_LINKS`:** objecto de configuração para ligar "Open module" às páginas reais já desenvolvidas (ex.: Logbook). Navega via `window.location.href` quando definido, fallback `sendPrompt()` quando não.
+- Removida a dica de atalhos de teclado (`.kbd-row`) do rodapé do dashboard a pedido do utilizador — navegação por teclado mantém-se funcional.
+- Ficheiro de protótipo: `dashboard_minimal.html` (standalone, ainda fora da estrutura do repo).
+
+**Pendente para a próxima sessão:** confirmar path real da página do Logbook para `MODULE_LINKS.LOG`; ligar gauges do Logbook ao `localStorage` real (precisa do `js/app.js` actual); decidir integração do dashboard no `index.html` / bottom nav existente.
+
 ---
 
 ## 🚀 Próximos Passos
 
-1. **Agora** → Agenda FTL básica (Módulo 1)
-2. **A seguir** → Agenda FTL básica (Módulo 1)
-3. **Semana 5** → Agenda FTL básica (Módulo 1)
-4. **Semana 6-7** → Claude API: consulta em linguagem natural + foto → 1 voo
-5. **Fase 2** → Supabase + beta com pilotos + integrações LEON/Aims/Crewlink
+1. **Agora** → Confirmar path real da página do Logbook e actualizar `MODULE_LINKS.LOG` no Dashboard
+2. **A seguir** → Ligar gauges do Logbook a dados reais do `localStorage` (partilhar `js/app.js` actual)
+3. **Depois** → Decidir e implementar integração do Dashboard no `index.html` (substituir ou complementar bottom nav)
+4. **Semana 5** → Agenda FTL básica (Módulo 1)
+5. **Semana 6-7** → Claude API: consulta em linguagem natural + foto → 1 voo
+6. **Fase 2** → Supabase + beta com pilotos + integrações LEON/Aims/Crewlink
 
 ---
 
@@ -452,4 +532,4 @@ Total: 36 campos no IMPORT_FIELDS (era 25 na v0.12)
 
 ---
 
-*Última actualização: Sessão 13 — 17 Junho 2026 (v0.13)*
+*Última actualização: Sessão 14 — 19 Junho 2026 (v0.13)*
