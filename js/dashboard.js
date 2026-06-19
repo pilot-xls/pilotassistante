@@ -25,15 +25,35 @@ const MODULE_LINKS={
   SAL:'#', INT:'#', FAT:'#', WGT:'#', ANN:'#', VOC:'#', WEL:'#',
 };
 
+function parseH(val){
+  if(!val||val==='')return 0;
+  val=String(val).trim();
+  if(val.includes(':')){const[h,m]=val.split(':').map(Number);return(h||0)+(m||0)/60;}
+  return parseFloat(val)||0;
+}
+
+function logbookGaugeItems(){
+  const raw=localStorage.getItem('pa_entries');
+  if(!raw)return null;
+  const entries=JSON.parse(raw).filter(e=>!e.isSim);
+  if(!entries.length)return null;
+  const total=entries.reduce((s,e)=>s+parseH(e.totalTime),0);
+  const pic  =entries.filter(e=>e.role==='PIC').reduce((s,e)=>s+parseH(e.totalTime),0);
+  const night=entries.reduce((s,e)=>s+parseH(e.nightHours),0);
+  const ifr  =entries.reduce((s,e)=>s+parseH(e.ifrTime),0);
+  const maxV =Math.max(total,1);
+  return[
+    {label:'Total Hours', value:total, max:Math.max(total*1.5,100), unit:'h'},
+    {label:'PIC Hours',   value:pic,   max:maxV,                    unit:'h'},
+    {label:'Night Hours', value:night, max:maxV,                    unit:'h'},
+    {label:'IFR Hours',   value:ifr,   max:maxV,                    unit:'h'},
+  ];
+}
+
 const GAUGE_DATA={
   LOG:{
     label:'Estatísticas', live:true,
-    items:[
-      {label:'Total Hours',  value:842.5,  max:1500, unit:'h', dec:1},
-      {label:'PIC Hours',    value:312.3,  max:842.5,unit:'h', dec:1},
-      {label:'Night Hours',  value:96.7,   max:842.5,unit:'h', dec:1},
-      {label:'IFR Hours',    value:201.4,  max:842.5,unit:'h', dec:1},
-    ]
+    items:logbookGaugeItems(),
   },
   FTL:{
     label:'Limites Part-FCL', live:false,
@@ -117,6 +137,15 @@ function buildGaugeZone(code){
         <div class="gauge-empty-ic">◌</div>
         <div class="gauge-empty-txt">Métricas deste módulo aparecerão aqui<br>quando estiver implementado</div>
         <div class="gauge-empty-sub">Módulo ainda não desenvolvido</div>
+      </div>`;
+    return;
+  }
+  if(!data.items){
+    gZone.innerHTML=`
+      <div class="gauge-empty">
+        <div class="gauge-empty-ic">✈</div>
+        <div class="gauge-empty-txt">Ainda não tens voos registados no Logbook</div>
+        <div class="gauge-empty-sub">As métricas aparecerão aqui após o primeiro voo</div>
       </div>`;
     return;
   }
