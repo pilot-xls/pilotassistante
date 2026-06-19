@@ -1,5 +1,6 @@
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:#EEEDF8;display:flex;justify-content:center;min-height:100%}
+html{background:#EEEDF8;min-height:100%}
+body{background:#EEEDF8;min-height:100vh;display:flex;justify-content:center}
 :root{
   --bg:    #F6F5FC;
   --white: #FFFFFF;
