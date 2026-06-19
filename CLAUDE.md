@@ -8,10 +8,10 @@
 
 | | |
 |---|---|
-| **Versão actual** | v0.13 |
-| **Última sessão** | Sessão 14 — 19 Junho 2026 |
-| **Módulo em construção** | Dashboard / Home Menu (UI shell) — conceito aprovado, por integrar |
-| **Próxima tarefa** | Integrar Dashboard Menu na PWA + Agenda FTL básica (Módulo 1) |
+| **Versão actual** | v0.15 |
+| **Última sessão** | Sessão 15 — 19 Junho 2026 |
+| **Módulo em construção** | Agenda & Legalidades EASA (Módulo 1) |
+| **Próxima tarefa** | Agenda FTL básica (Módulo 1) |
 | **Deploy activo** | GitHub Pages ✅ |
 | **Linguagem da app** | Inglês |
 
@@ -20,7 +20,7 @@
 | # | Módulo | Estado |
 |---|---|---|
 | 1 | Agenda & Legalidades EASA | ⬜ Por fazer |
-| 2 | Logbook Inteligente | 🟡 Em progresso (v0.13) |
+| 2 | Logbook Inteligente | ✅ Completo (v0.15) |
 | 3 | Documentos & Validades | ⬜ Por fazer |
 | 4 | Centro de Treino | ⬜ Por fazer |
 | 5 | Memórias & Diário | ⬜ Por fazer |
@@ -92,29 +92,45 @@
 ```
 pilotassistante/
 ├── CLAUDE.md              ← este ficheiro (memória do projecto)
-├── index.html             ← estrutura HTML + authority overlay
-├── manifest.json          ← PWA manifest (theme-color: #2825A0)
+├── index.html             ← Dashboard (ecrã de entrada da PWA)
+├── logbook.html           ← Logbook completo (renomeado de index.html)
+├── dashboard_minimal.html ← protótipo histórico (pode ser apagado)
+├── manifest.json          ← PWA manifest (theme-color: #2825A0, start_url: "/")
 ├── css/
-│   └── style.css          ← design Índigo Profundo + ícones + mobile + .badge-utc
+│   ├── style.css          ← design Índigo Profundo + ícones + mobile (Logbook)
+│   ├── dashboard.css      ← estilos do Dashboard
+│   └── nav.css            ← bottom navigation bar + settings modal
 ├── js/
-│   ├── app.js             ← lógica completa: authority-aware, edit, validação, block time
-│   └── authorities.js     ← perfis EASA e FAA (escalável para novas autoridades)
+│   ├── app.js             ← lógica completa do Logbook: CRUD, validação, import/export
+│   ├── authorities.js     ← perfis EASA e FAA (escalável para novas autoridades)
+│   ├── dashboard.js       ← lógica do Dashboard: grid, gauges, MODULE_LINKS
+│   └── nav.js             ← bottom nav injectada em todas as páginas
 └── icons/
     ├── icon-192.png       ← PWA icon (cor #2825A0)
     └── icon-512.png       ← PWA icon (cor #2825A0)
 ```
 
-> **Nota Sessão 14:** o ficheiro `dashboard_minimal.html` (Dashboard/Home Menu) foi desenvolvido como protótipo standalone fora do repo. Ainda não integrado na estrutura acima — ver secção "Dashboard / Home Menu" abaixo para o que falta fazer antes de entrar no `index.html`.
+> **Nota Sessão 15:** `dashboard_minimal.html` permanece no repo como referência histórica (pode ser apagado). O Dashboard está integrado e em produção.
 
 **O que está implementado em cada ficheiro:**
 
-`index.html` — formulário de voo/simulador, drawer lateral, painel de estatísticas, lista de entradas, authority overlay (primeiro uso), barra de filtros (search + popup avançado), estrutura de navegação bottom bar
+`index.html` — Dashboard: top bar, painel de detalhe (status pill + nome + subtítulo + manómetros + botão Open), grid 5×3 de módulos, barra de progresso, navegação por teclado
+
+`logbook.html` — formulário de voo/simulador, drawer lateral, painel de estatísticas, lista de entradas, authority overlay (primeiro uso), barra de filtros (search + popup avançado), import/export CSV
 
 `css/style.css` — paleta Índigo Profundo, tipografia Space Grotesk + Space Mono, drawer, cards, badges de autoridade, filter bar + popup, responsive mobile (empilha abaixo 500px), `.hidden { display: none !important }`
 
-`js/app.js` — CRUD completo de entradas, toggle Flight/Simulator, auto-cálculo block times (overnight incluído), validação Off-Block/On-Block + rota + aeronave + matrícula + role obrigatórios, Night HRS e IFR HRS opcionais (vazio = 00:00), Day HRS e VFR HRS auto-calculados (Day=Total−Night, VFR=Total−IFR), validações: Night≤Total, IFR≤Total, LDG=T/O, edição via drawer, eliminação com confirmação, localStorage, lógica SP/MP→SE/ME, campos contextuais PIC Name/Instructor/PICUS/SPIC/FE, filtros: texto (rota/AC/reg/role), popup avançado (date range, role dropdown, Flight/Sim toggle)
+`css/dashboard.css` — estilos do Dashboard: shell, top bar, detail panel, gauge zone (min-height fixo), module grid, progress bar
 
-`js/authorities.js` — perfis EASA e FAA completos, EASA roles: PIC, PICUS, Co-Pilot (F/O), SPIC, Dual, Instructor, FE; template UK CAA comentado, sistema de activação por localStorage
+`css/nav.css` — bottom navigation bar (3 itens: Logbook · Home · Settings) + settings sheet modal
+
+`js/app.js` — CRUD completo de entradas, toggle Flight/Simulator, auto-cálculo block times (overnight incluído), validação Off-Block/On-Block + rota + aeronave + matrícula + role obrigatórios, Night HRS e IFR HRS opcionais (vazio = 00:00), Day HRS e VFR HRS auto-calculados, validações: Night≤Total, IFR≤Total, LDG=T/O, edição via drawer, eliminação com confirmação, localStorage, lógica SP/MP→SE/ME, campos contextuais, filtros, import/export CSV
+
+`js/authorities.js` — perfis EASA e FAA completos; template UK CAA comentado; sistema de activação por localStorage
+
+`js/dashboard.js` — grid de módulos, gauges (lê dados reais do `pa_entries` no localStorage para Logbook), MODULE_LINKS, navegação por teclado, GAUGE_DATA
+
+`js/nav.js` — injeta bottom nav em qualquer página, detecta item activo por URL, settings modal standalone (EASA/FAA sem depender do app.js)
 
 ---
 
@@ -497,6 +513,14 @@ Logbook v0.12→v0.13: Import melhorado para cobrir formato EASA físico (logboo
 - **PR #31** — 3 campos de operações-por-horas (spseHours, spmeHours, mpHours): `operations` + `engine` inferidos da coluna com valor; horas como `totalTime` fallback. SP ME/SP SE sem distinção SE/ME em MP (correcto EASA)
 Total: 36 campos no IMPORT_FIELDS (era 25 na v0.12)
 
+### Sessão 15 — 19 Junho 2026
+Dashboard integrado na estrutura do projecto como ecrã de entrada da PWA (v0.13→v0.15). PRs #33–#37:
+- **PR #33** — `index.html` passa a ser o Dashboard; `logbook.html` é o Logbook renomeado; `css/dashboard.css` e `js/dashboard.js` extraídos do protótipo `dashboard_minimal.html`; `MODULE_LINKS.LOG = 'logbook.html'` correcto; botão "← Home" adicionado ao header do Logbook (depois substituído pela bottom nav)
+- **PR #34** — Gauges do Logbook lêem dados reais do `localStorage` (`pa_entries`): Total, PIC, Night, IFR Hours calculados em tempo real; mensagem honesta quando logbook vazio; tag "dados reais" correcta
+- **PR #35** — Bottom navigation bar (Logbook · Home · Settings): `css/nav.css` + `js/nav.js` injectado em todas as páginas; Settings modal standalone com selector EASA/FAA; btn-home removido do header do Logbook
+- **PR #36** — Fix: ícone Logbook na bottom nav passa de lápis para livro; Dashboard full-width no mobile (separação `html`/`body` no flex)
+- **PR #37** — Fix: `min-height: 210px` no `.gauge-zone` — painel de detalhe mantém altura fixa ao navegar entre módulos
+
 ### Sessão 14 — 19 Junho 2026
 Exploração extensa de conceitos de Dashboard/Home Menu para a PWA:
 - **Engine fan menu** (motor a jacto rotativo como navegação): 3 iterações — SVG simples → Canvas 2D fotorrealista (lighting por blade, motion blur via offscreen compositing, OGVs, inlet lip 3D, fan disc effect a alta rotação) → tentativa Three.js/WebGL com PBR materials, env map procedural, sombras reais. Three.js ficou pior sem HDRI de qualidade. **Conceito abandonado por agora** — tecto de qualidade do código puro atingido; precisaria de foto/HDRI gerado por IA para ir mais longe.
@@ -508,18 +532,17 @@ Exploração extensa de conceitos de Dashboard/Home Menu para a PWA:
 - Removida a dica de atalhos de teclado (`.kbd-row`) do rodapé do dashboard a pedido do utilizador — navegação por teclado mantém-se funcional.
 - Ficheiro de protótipo: `dashboard_minimal.html` (standalone, ainda fora da estrutura do repo).
 
-**Pendente para a próxima sessão:** confirmar path real da página do Logbook para `MODULE_LINKS.LOG`; ligar gauges do Logbook ao `localStorage` real (precisa do `js/app.js` actual); decidir integração do dashboard no `index.html` / bottom nav existente.
+**Resolvido na Sessão 15:** tudo o que estava pendente foi implementado — ver Sessão 15 no registo.
 
 ---
 
 ## 🚀 Próximos Passos
 
-1. **Agora** → Confirmar path real da página do Logbook e actualizar `MODULE_LINKS.LOG` no Dashboard
-2. **A seguir** → Ligar gauges do Logbook a dados reais do `localStorage` (partilhar `js/app.js` actual)
-3. **Depois** → Decidir e implementar integração do Dashboard no `index.html` (substituir ou complementar bottom nav)
-4. **Semana 5** → Agenda FTL básica (Módulo 1)
-5. **Semana 6-7** → Claude API: consulta em linguagem natural + foto → 1 voo
-6. **Fase 2** → Supabase + beta com pilotos + integrações LEON/Aims/Crewlink
+1. **Agora** → Agenda FTL básica (Módulo 1) — `ftl.html` + `css/ftl.css` + `js/ftl.js`; `MODULE_LINKS.FTL` actualizado
+2. **A seguir** → Ligar gauges FTL a dados reais (depois do Módulo 1 implementado)
+3. **Depois** → Apagar `dashboard_minimal.html` (protótipo histórico, já substituído)
+4. **Semana 6-7** → Claude API: consulta em linguagem natural + foto → 1 voo
+5. **Fase 2** → Supabase + beta com pilotos + integrações LEON/Aims/Crewlink
 
 ---
 
@@ -532,4 +555,4 @@ Exploração extensa de conceitos de Dashboard/Home Menu para a PWA:
 
 ---
 
-*Última actualização: Sessão 14 — 19 Junho 2026 (v0.13)*
+*Última actualização: Sessão 15 — 19 Junho 2026 (v0.15)*
