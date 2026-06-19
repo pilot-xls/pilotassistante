@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#EEEDF8;display:flex;justify-content:center;min-height:100%}
+:root{
+  --bg:    #F6F5FC;
+  --white: #FFFFFF;
+  --acc:   #2825A0;
+  --acc-l: #EEEDF8;
+  --acc-b: #B8B6E0;
+  --acc-m: #5552C0;
+  --txt:   #0B0929;
+  --mut:   #8A88B0;
+  --bdr:   #DDDAF2;
+  --bdr-s: #ECEBF8;
+  --crit:  #D03030;
+  --crit-l:#FFF0F0;
+  --amb:   #C98A1E;
+  --amb-l: #FBF1DE;
+  --grn:   #1E9E5A;
+  --f:     'Space Grotesk',system-ui,sans-serif;
+  --fm:    'Space Mono',monospace;
+}
+
+.shell{width:100%;max-width:460px;background:var(--bg);font-family:var(--f);display:flex;flex-direction:column;min-height:600px}
+
+/* ── TOP BAR ── */
+.bar{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:var(--white);border-bottom:1px solid var(--bdr-s)}
+.bar-logo{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--acc);letter-spacing:-.01em}
+.bar-logo-dot{width:7px;height:7px;border-radius:50%;background:var(--acc)}
+.bar-ver{font-family:var(--fm);font-size:8px;color:var(--mut);letter-spacing:.1em;background:var(--acc-l);padding:3px 7px;border-radius:20px}
+
+/* ── DETAIL PANEL ── */
+.detail{position:relative;overflow:hidden;padding:26px 24px 22px;background:var(--white);border-bottom:1px solid var(--bdr);flex-shrink:0}
+.detail-bg-num{position:absolute;right:-4px;top:-14px;font-family:var(--fm);font-weight:700;font-size:108px;line-height:1;color:rgba(40,37,160,.04);pointer-events:none;user-select:none;letter-spacing:-.02em}
+.detail-inner{position:relative;z-index:1}
+
+.status-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px 3px 7px;background:var(--acc-l);border-radius:20px;margin-bottom:13px;transition:opacity .1s}
+.status-pill-dot{width:5px;height:5px;border-radius:50%;background:var(--acc);flex-shrink:0}
+.status-pill-dot.critical{background:var(--crit)}
+.status-pill-dot.soon{background:var(--acc-b)}
+.status-pill-txt{font-family:var(--fm);font-size:8px;letter-spacing:.14em;color:var(--acc);text-transform:uppercase}
+.status-pill.critical{background:var(--crit-l)}
+.status-pill.critical .status-pill-txt{color:var(--crit)}
+
+.detail-name{font-size:26px;font-weight:700;color:var(--txt);letter-spacing:-.025em;line-height:1.05;margin-bottom:5px;transition:opacity .1s}
+.detail-sub{font-size:11px;color:var(--mut);letter-spacing:.01em;margin-bottom:18px;line-height:1.5;transition:opacity .1s}
+.detail-name.fade,.detail-sub.fade,.status-pill.fade,.gauge-zone.fade{opacity:0}
+
+/* ── GAUGE ZONE ── */
+.gauge-zone{margin-bottom:18px;transition:opacity .1s}
+.gauge-zone-label{font-family:var(--fm);font-size:7.5px;letter-spacing:.14em;color:var(--mut);text-transform:uppercase;margin-bottom:9px;display:flex;justify-content:space-between;align-items:center}
+.gauge-zone-tag{font-size:6.5px;color:var(--acc-b);letter-spacing:.08em}
+
+.gauge-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.gauge-box{background:var(--bg);border:1px solid var(--bdr-s);border-radius:10px;padding:9px 6px 8px;display:flex;flex-direction:column;align-items:center}
+.gauge-svg{width:84px;height:50px;display:block}
+.gauge-val{font-family:var(--fm);font-weight:700;font-size:13px;color:var(--txt);margin-top:-14px;line-height:1}
+.gauge-val .unit{font-size:8px;font-weight:400;color:var(--mut);margin-left:1px}
+.gauge-lbl{font-size:8.5px;color:var(--mut);margin-top:3px;font-weight:600;letter-spacing:.01em;text-align:center}
+.gauge-pct{font-family:var(--fm);font-size:7px;margin-top:1px;letter-spacing:.04em}
+
+/* empty / soon state */
+.gauge-empty{
+  border:1px dashed var(--bdr);border-radius:10px;
+  padding:22px 16px;text-align:center;background:var(--bg);
+}
+.gauge-empty-ic{font-size:18px;margin-bottom:6px;opacity:.4}
+.gauge-empty-txt{font-size:10.5px;color:var(--mut);font-weight:500;line-height:1.4}
+.gauge-empty-sub{font-family:var(--fm);font-size:7.5px;color:var(--acc-b);margin-top:4px;letter-spacing:.04em}
+
+.detail-foot{display:flex;justify-content:space-between;align-items:center}
+.detail-pos{font-family:var(--fm);font-size:8px;color:var(--mut);letter-spacing:.1em}
+.open-btn{display:flex;align-items:center;gap:7px;padding:8px 16px;background:var(--acc);border:none;border-radius:8px;font-family:var(--f);font-size:12px;font-weight:600;color:#fff;cursor:pointer;letter-spacing:.01em;transition:background .15s}
+.open-btn:hover{background:var(--acc-m)}
+.open-btn svg{transition:transform .15s}
+.open-btn:hover svg{transform:translateX(2px)}
+.open-btn:disabled{background:var(--acc-b);cursor:not-allowed}
+
+/* ── GRID HEADER ── */
+.grid-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px 10px}
+.grid-label{font-family:var(--fm);font-size:8px;letter-spacing:.16em;color:var(--mut);text-transform:uppercase}
+.grid-hint{font-family:var(--fm);font-size:8px;color:var(--acc-b);letter-spacing:.06em}
+
+/* ── MODULE GRID ── */
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:0 14px 18px}
+.card{position:relative;background:var(--white);border:1px solid var(--bdr);border-radius:9px;padding:10px 6px 9px;cursor:pointer;transition:background .13s,border-color .13s,box-shadow .13s;display:flex;flex-direction:column;align-items:center;justify-content:space-between;min-height:58px;overflow:hidden}
+.card:hover{background:var(--acc-l);border-color:var(--acc-b)}
+.card.active{background:var(--acc);border-color:var(--acc);box-shadow:0 2px 12px rgba(40,37,160,.22)}
+.card.critical::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;background:var(--crit);border-radius:9px 9px 0 0}
+.card.active::before{display:none}
+.card-num{font-family:var(--fm);font-size:7px;color:var(--mut);line-height:1;transition:color .13s}
+.card.active .card-num{color:rgba(255,255,255,.55)}
+.card-code{font-size:9.5px;font-weight:600;color:var(--txt);text-align:center;letter-spacing:.02em;line-height:1;transition:color .13s}
+.card:hover .card-code{color:var(--acc)}
+.card.active .card-code{color:#fff}
+.card.critical .card-code{color:var(--crit)}
+.card.active.critical .card-code{color:#fff}
+
+/* ── PROGRESS ── */
+.prog-wrap{padding:0 14px 16px}
+.prog-track{height:2px;background:var(--bdr);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:var(--acc);border-radius:2px;transition:width .3s ease}
+
+/* ── BOTTOM HINT ── */
+.kbd-row{padding:10px 20px 14px;display:flex;justify-content:center;gap:12px;border-top:1px solid var(--bdr-s);background:var(--white)}
+.kbd{display:flex;align-items:center;gap:4px;font-family:var(--fm);font-size:7.5px;color:var(--mut);letter-spacing:.06em}
+.kbd kbd{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;background:var(--bg);border:1px solid var(--bdr);border-radius:3px;font-size:7px;color:var(--txt)}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <div class="bar">
+    <div class="bar-logo"><div class="bar-logo-dot"></div>PilotAssistante</div>
+    <span class="bar-ver">v0.13</span>
+  </div>
+
+  <div class="detail">
+    <div class="detail-bg-num" id="d-bg">02</div>
+    <div class="detail-inner">
+      <div class="status-pill" id="d-pill">
+        <span class="status-pill-dot" id="d-dot"></span>
+        <span class="status-pill-txt" id="d-pill-txt">Module Activo</span>
+      </div>
+      <div class="detail-name" id="d-name">Logbook</div>
+      <div class="detail-sub" id="d-sub">Smart logbook · EASA &amp; FAA</div>
+
+      <div class="gauge-zone" id="gauge-zone"></div>
+
+      <div class="detail-foot">
+        <span class="detail-pos" id="d-pos">02 / 15</span>
+        <button class="open-btn" id="open-btn" onclick="doOpen()">
+          Open module
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2.5 6h7M6.5 3l3 3-3 3" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-header">
+    <span class="grid-label">All modules</span>
+    <span class="grid-hint">tap to select</span>
+  </div>
+  <div class="grid" id="grid"></div>
+
+  <div class="prog-wrap"><div class="prog-track"><div class="prog-fill" id="prog" style="width:13.3%"></div></div></div>
+
+</div>
+<script>
+const M=[
+  {name:'FTL Schedule',  code:'FTL', sub:'Flight time limitations · EASA Part-FCL',          st:'soon'},
+  {name:'Logbook',       code:'LOG', sub:'Smart logbook · EASA & FAA',                        st:'active'},
+  {name:'Documents',     code:'DOC', sub:'Licenças · Certificados · Validades',               st:'soon'},
+  {name:'Training',      code:'TRN', sub:'Simuladores · Type ratings · Formação',             st:'soon'},
+  {name:'Memories',      code:'MEM', sub:'Diário de voo pessoal',                             st:'soon'},
+  {name:'Jobs',          code:'JOB', sub:'Mercado de emprego · Airlines',                     st:'soon'},
+  {name:'Aviation News', code:'AVN', sub:'Notícias da aviação',                                st:'soon'},
+  {name:'Briefing',      code:'BRF', sub:'Pré-voo · Meteorologia · NOTAMs',                   st:'soon'},
+  {name:'Salary Calc',   code:'SAL', sub:'Calculadora salarial · Per diem',                   st:'soon'},
+  {name:'Interview Prep',code:'INT', sub:'Preparação de entrevistas',                          st:'soon'},
+  {name:'Fatigue Log',   code:'FAT', sub:'Registo de fadiga · FRMS',                          st:'critical'},
+  {name:'Home Widget',   code:'WGT', sub:'Widget de ecrã principal',                           st:'soon'},
+  {name:'Annual Report', code:'ANN', sub:'Relatório anual automático',                         st:'soon'},
+  {name:'Voice AI',      code:'VOC', sub:'Assistente de voz IA',                               st:'critical'},
+  {name:'Wellbeing',     code:'WEL', sub:'Bem-estar · Sono · Jet lag',                        st:'critical'},
+];
+const N=15;
+let sel=1;
+
+/* ════════════════════════════════════════════════
+   LINKS — substituir pelos URLs reais das páginas
+   já desenvolvidas. '#' = ainda não tem página própria.
+═══════════════════════════════════════════════════ */
+const MODULE_LINKS={
+  LOG:'logbook.html',   // ← já tens esta página feita, ajusta o path real
+  FTL:'#',
+  DOC:'#', TRN:'#', MEM:'#', JOB:'#', AVN:'#', BRF:'#',
+  SAL:'#', INT:'#', FAT:'#', WGT:'#', ANN:'#', VOC:'#', WEL:'#',
+};
+
+/* ════════════════════════════════════════════════
+   GAUGE DATA — métricas reais por módulo.
+   Só os módulos com lógica implementada/definida têm
+   gauges; os restantes mostram estado "em breve".
+═══════════════════════════════════════════════════ */
+const GAUGE_DATA={
+  LOG:{
+    label:'Estatísticas', live:true,
+    items:[
+      {label:'Total Hours',  value:842.5,  max:1500, unit:'h', dec:1},
+      {label:'PIC Hours',    value:312.3,  max:842.5,unit:'h', dec:1},
+      {label:'Night Hours',  value:96.7,   max:842.5,unit:'h', dec:1},
+      {label:'IFR Hours',    value:201.4,  max:842.5,unit:'h', dec:1},
+    ]
+  },
+  FTL:{
+    label:'Limites Part-FCL', live:false,
+    items:[
+      {label:'7 Dias',    value:38.3, max:60,   unit:'h', dec:1},
+      {label:'28 Dias',   value:89.8, max:110,  unit:'h', dec:1},
+      {label:'12 Meses',  value:612.5,max:1000, unit:'h', dec:1},
+      {label:'FDP Hoje',  value:7.25, max:13,   unit:'h', dec:2},
+    ]
+  },
+};
+
+/* ── Build module grid ── */
+const grid=document.getElementById('grid');
+M.forEach((m,i)=>{
+  const c=document.createElement('div');
+  c.className='card'+(i===sel?' active':'')+(m.st==='critical'?' critical':'');
+  c.id='c'+i;
+  c.innerHTML=`<span class="card-num">${String(i+1).padStart(2,'0')}</span><span class="card-code">${m.code}</span>`;
+  c.addEventListener('click',()=>select(i));
+  grid.appendChild(c);
+});
+
+/* ── Refs ── */
+const dBg=document.getElementById('d-bg');
+const dPill=document.getElementById('d-pill');
+const dDot=document.getElementById('d-dot');
+const dPillTxt=document.getElementById('d-pill-txt');
+const dName=document.getElementById('d-name');
+const dSub=document.getElementById('d-sub');
+const dPos=document.getElementById('d-pos');
+const prog=document.getElementById('prog');
+const gZone=document.getElementById('gauge-zone');
+const openBtn=document.getElementById('open-btn');
+
+const ST={active:'Module Activo',soon:'Em Breve',critical:'Crítico'};
+
+/* ── Gauge SVG builder (semicircle meter) ── */
+function polar(cx,cy,r,deg){
+  const a=(deg-90)*Math.PI/180;
+  return {x:cx+r*Math.cos(a), y:cy+r*Math.sin(a)};
+}
+function arcPath(cx,cy,r,startDeg,endDeg){
+  const s=polar(cx,cy,r,endDeg), e=polar(cx,cy,r,startDeg);
+  const large=(endDeg-startDeg)<=180?'0':'1';
+  return `M ${s.x} ${s.y} A ${r} ${r} 0 ${large} 0 ${e.x} ${e.y}`;
+}
+function fmtHM(v){
+  const h=Math.floor(v), m=Math.round((v-h)*60);
+  return h+':'+String(m).padStart(2,'0');
+}
+
+function buildGauge(g){
+  const pct=Math.max(0,Math.min(1,g.value/g.max));
+  const endDeg=-90+pct*180;
+  const cx=42,cy=46,r=34;
+  let color='var(--acc)', pctColor='var(--acc-m)';
+  if(pct>=0.92){color='var(--crit)';pctColor='var(--crit)';}
+  else if(pct>=0.75){color='var(--amb)';pctColor='var(--amb)';}
+
+  const track=arcPath(cx,cy,r,-90,90);
+  const fill=arcPath(cx,cy,r,-90,endDeg);
+
+  return `
+    <div class="gauge-box">
+      <svg class="gauge-svg" viewBox="0 0 84 50">
+        <path d="${track}" fill="none" stroke="var(--bdr)" stroke-width="6" stroke-linecap="round"/>
+        <path d="${fill}" fill="none" stroke="${color}" stroke-width="6" stroke-linecap="round"/>
+      </svg>
+      <div class="gauge-val">${fmtHM(g.value)}<span class="unit">${g.unit}</span></div>
+      <div class="gauge-lbl">${g.label}</div>
+      <div class="gauge-pct" style="color:${pctColor}">${Math.round(pct*100)}% of ${fmtHM(g.max)}${g.unit}</div>
+    </div>`;
+}
+
+function buildGaugeZone(code){
+  const data=GAUGE_DATA[code];
+  if(!data){
+    gZone.innerHTML=`
+      <div class="gauge-empty">
+        <div class="gauge-empty-ic">◌</div>
+        <div class="gauge-empty-txt">Métricas deste módulo aparecerão aqui<br>quando estiver implementado</div>
+        <div class="gauge-empty-sub">Módulo ainda não desenvolvido</div>
+      </div>`;
+    return;
+  }
+  const tag=data.live?'dados reais':'dados de exemplo';
+  gZone.innerHTML=`
+    <div class="gauge-zone-label">
+      <span>${data.label}</span>
+      <span class="gauge-zone-tag">${tag}</span>
+    </div>
+    <div class="gauge-grid">${data.items.map(buildGauge).join('')}</div>`;
+}
+
+function updateDetail(i,instant){
+  const m=M[i];
+  dBg.textContent=String(i+1).padStart(2,'0');
+  dPos.textContent=String(i+1).padStart(2,'0')+' / 15';
+  prog.style.width=((i+1)/N*100)+'%';
+
+  const hasLink=MODULE_LINKS[m.code] && MODULE_LINKS[m.code]!=='#';
+  openBtn.disabled=false; // keep enabled; doOpen() handles fallback messaging
+
+  if(instant){ apply(m); return; }
+
+  [dPill,dName,dSub,gZone].forEach(el=>el.classList.add('fade'));
+  setTimeout(()=>{
+    apply(m);
+    [dPill,dName,dSub,gZone].forEach(el=>el.classList.remove('fade'));
+  },100);
+}
+
+function apply(m){
+  dName.textContent=m.name;
+  dSub.textContent=m.sub;
+  dPillTxt.textContent=ST[m.st];
+  dPill.className='status-pill'+(m.st==='critical'?' critical':'');
+  dDot.className='status-pill-dot'+(m.st==='critical'?' critical':m.st==='soon'?' soon':'');
+  buildGaugeZone(m.code);
+}
+
+function select(i){
+  if(i===sel)return;
+  document.getElementById('c'+sel)?.classList.remove('active');
+  sel=i;
+  document.getElementById('c'+sel)?.classList.add('active');
+  updateDetail(sel,false);
+}
+
+function doOpen(){
+  const m=M[sel];
+  const link=MODULE_LINKS[m.code];
+  if(link && link!=='#'){
+    window.location.href=link;
+  } else if(typeof sendPrompt==='function'){
+    sendPrompt('Navigate to: '+m.name);
+  }
+}
+
+document.addEventListener('keydown',e=>{
+  let n=sel;
+  if(e.key==='ArrowRight') n=(sel+1)%N;
+  else if(e.key==='ArrowLeft') n=(sel-1+N)%N;
+  else if(e.key==='ArrowDown') n=Math.min(N-1,sel+5);
+  else if(e.key==='ArrowUp') n=Math.max(0,sel-5);
+  else if(e.key==='Enter'||e.key===' '){doOpen();e.preventDefault();return;}
+  else return;
+  e.preventDefault(); select(n);
+});
+
+updateDetail(sel,true);
+</script>
+</body>
+</html>
