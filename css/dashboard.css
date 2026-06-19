@@ -47,7 +47,7 @@ body{background:#EEEDF8;min-height:100vh;display:flex;justify-content:center}
 .detail-name.fade,.detail-sub.fade,.status-pill.fade,.gauge-zone.fade{opacity:0}
 
 /* ── GAUGE ZONE ── */
-.gauge-zone{margin-bottom:18px;transition:opacity .1s}
+.gauge-zone{margin-bottom:18px;transition:opacity .1s;min-height:210px}
 .gauge-zone-label{font-family:var(--fm);font-size:7.5px;letter-spacing:.14em;color:var(--mut);text-transform:uppercase;margin-bottom:9px;display:flex;justify-content:space-between;align-items:center}
 .gauge-zone-tag{font-size:6.5px;color:var(--acc-b);letter-spacing:.08em}
 
