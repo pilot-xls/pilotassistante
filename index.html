@@ -3,458 +3,54 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PilotAssistante — Logbook</title>
+  <title>PilotAssistante</title>
   <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.11.0/dist/tabler-icons.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.mini.min.js"></script>
-  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body>
+<div class="shell">
 
-  <!-- Authority Selection Overlay (first use) -->
-  <div id="authority-overlay" class="overlay hidden">
-    <div class="overlay-card">
-      <div class="overlay-logo">
-        <i class="ti ti-plane"></i>
-        <span>PilotAssistante</span>
+  <div class="bar">
+    <div class="bar-logo"><div class="bar-logo-dot"></div>PilotAssistante</div>
+    <span class="bar-ver">v0.13</span>
+  </div>
+
+  <div class="detail">
+    <div class="detail-bg-num" id="d-bg">02</div>
+    <div class="detail-inner">
+      <div class="status-pill" id="d-pill">
+        <span class="status-pill-dot" id="d-dot"></span>
+        <span class="status-pill-txt" id="d-pill-txt">Module Activo</span>
       </div>
-      <h2>Select your aviation authority</h2>
-      <p>This personalises your logbook fields and export formats.</p>
-      <div class="authority-cards">
-        <button class="authority-card" onclick="selectAuthority('EASA')">
-          <span class="authority-flag">🇪🇺</span>
-          <span class="authority-name">EASA</span>
-          <span class="authority-desc">European Union Aviation Safety Agency</span>
-        </button>
-        <button class="authority-card" onclick="selectAuthority('FAA')">
-          <span class="authority-flag">🇺🇸</span>
-          <span class="authority-name">FAA</span>
-          <span class="authority-desc">Federal Aviation Administration</span>
+      <div class="detail-name" id="d-name">Logbook</div>
+      <div class="detail-sub" id="d-sub">Smart logbook · EASA &amp; FAA</div>
+
+      <div class="gauge-zone" id="gauge-zone"></div>
+
+      <div class="detail-foot">
+        <span class="detail-pos" id="d-pos">02 / 15</span>
+        <button class="open-btn" id="open-btn" onclick="doOpen()">
+          Open module
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2.5 6h7M6.5 3l3 3-3 3" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- App -->
-  <div id="app">
-
-    <!-- Header -->
-    <header class="header">
-      <div class="header-brand">
-        <i class="ti ti-plane"></i>
-        <span>PilotAssistante</span>
-      </div>
-      <div class="header-actions">
-        <button id="authority-badge" class="badge-btn" onclick="showAuthorityOverlay()">
-          <span id="authority-label">EASA</span>
-        </button>
-        <button class="btn-icon" onclick="openDrawer()">
-          <i class="ti ti-plus"></i>
-        </button>
-      </div>
-    </header>
-
-    <!-- Stats -->
-    <section class="stats-grid">
-      <div class="stat-card">
-        <span class="stat-label">Total HRS</span>
-        <span class="stat-value" id="stat-total">0:00</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-label">PIC HRS</span>
-        <span class="stat-value" id="stat-pic">0:00</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-label">IFR HRS</span>
-        <span class="stat-value" id="stat-ifr">0:00</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-label">Night HRS</span>
-        <span class="stat-value" id="stat-night">0:00</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-label">Simulator</span>
-        <span class="stat-value" id="stat-sim">0:00</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-label">This Month</span>
-        <span class="stat-value" id="stat-month">0:00</span>
-      </div>
-    </section>
-
-    <!-- Entry List -->
-    <section class="entries-section">
-      <div class="entries-header">
-        <h2>Flight Log</h2>
-        <div class="entries-header-right">
-          <span id="entries-count" class="entries-count">0 entries</span>
-          <button class="btn-export" onclick="openImport()" title="Import from CSV or Excel">
-            <i class="ti ti-upload"></i><span class="btn-text"> Import</span>
-          </button>
-          <button class="btn-export" onclick="exportCSV()" title="Export visible entries to CSV">
-            <i class="ti ti-download"></i><span class="btn-text"> Export CSV</span>
-          </button>
-        </div>
-      </div>
-      <!-- Filter Bar -->
-      <div class="filter-bar">
-        <div class="filter-search-wrap">
-          <i class="ti ti-search"></i>
-          <input type="text" id="filter-search" placeholder="Route, AC, Reg, Role" oninput="applyFilters()">
-          <button id="filter-clear" class="filter-clear hidden" onclick="clearFilters()"><i class="ti ti-x"></i></button>
-        </div>
-        <div class="filter-popup-wrap">
-          <button id="filter-popup-btn" class="filter-popup-btn" onclick="toggleFilterPopup()" title="Advanced filters">
-            <i class="ti ti-adjustments-horizontal"></i>
-          </button>
-          <!-- Advanced Filter Popup -->
-          <div id="filter-popup" class="filter-popup hidden">
-            <div class="fp-group">
-              <div class="fp-label">Date range</div>
-              <div class="fp-date-row">
-                <input type="date" id="fp-date-from" onchange="applyFilters()" title="From">
-                <input type="date" id="fp-date-to" onchange="applyFilters()" title="To">
-              </div>
-            </div>
-            <div class="fp-group">
-              <div class="fp-label">Airport (ICAO)</div>
-              <input type="text" id="fp-airport" placeholder="e.g. LPCS" maxlength="4" class="fp-text-input mono" oninput="applyFilters()" style="text-transform:uppercase">
-            </div>
-            <div class="fp-group">
-              <div class="fp-label">Aircraft Type</div>
-              <select id="fp-ac-type" class="fp-select" onchange="applyFilters()">
-                <option value="">All types</option>
-              </select>
-            </div>
-            <div class="fp-group">
-              <div class="fp-label">Registration</div>
-              <select id="fp-reg" class="fp-select" onchange="applyFilters()">
-                <option value="">All registrations</option>
-              </select>
-            </div>
-            <div id="fp-group-ops" class="fp-group hidden">
-              <div class="fp-label">Operations</div>
-              <div class="fp-type-row">
-                <button class="fp-type-btn active" data-ops="all" onclick="setOpsFilter('all')">All</button>
-                <button class="fp-type-btn" data-ops="SP" onclick="setOpsFilter('SP')">SP</button>
-                <button class="fp-type-btn" data-ops="MP" onclick="setOpsFilter('MP')">MP</button>
-              </div>
-            </div>
-            <div id="fp-group-eng" class="fp-group">
-              <div class="fp-label">Engine</div>
-              <div class="fp-type-row">
-                <button class="fp-type-btn active" data-eng="all" onclick="setEngineFilter('all')">All</button>
-                <button class="fp-type-btn" data-eng="SE" onclick="setEngineFilter('SE')">SE</button>
-                <button class="fp-type-btn" data-eng="ME" onclick="setEngineFilter('ME')">ME</button>
-              </div>
-            </div>
-            <div class="fp-group">
-              <div class="fp-label">Hours</div>
-              <div class="fp-check-row">
-                <label class="fp-check-label"><input type="checkbox" id="fp-has-night" onchange="applyFilters()"> Night</label>
-                <label class="fp-check-label"><input type="checkbox" id="fp-has-ifr" onchange="applyFilters()"> IFR</label>
-              </div>
-            </div>
-            <div class="fp-group">
-              <div class="fp-label">Role</div>
-              <select id="fp-role" class="fp-select" onchange="applyFilters()">
-                <option value="">All roles</option>
-              </select>
-            </div>
-            <div id="fp-group-type" class="fp-group">
-              <div class="fp-label">Entry type</div>
-              <div class="fp-type-row">
-                <button class="fp-type-btn active" data-type="all" onclick="setTypeFilter('all')">All</button>
-                <button class="fp-type-btn" data-type="flight" onclick="setTypeFilter('flight')"><i class="ti ti-plane"></i> Flight</button>
-                <button class="fp-type-btn" data-type="sim" onclick="setTypeFilter('sim')"><i class="ti ti-device-laptop"></i> Sim</button>
-              </div>
-            </div>
-            <button class="btn-secondary fp-clear-btn" onclick="clearAdvancedFilters()">Clear filters</button>
-          </div>
-        </div>
-      </div>
-
-      <div id="entries-list" class="entries-list">
-        <div class="empty-state">
-          <i class="ti ti-plane-off"></i>
-          <p>No flights logged yet</p>
-          <p class="empty-sub">Tap + to add your first flight</p>
-        </div>
-      </div>
-    </section>
-
+  <div class="grid-header">
+    <span class="grid-label">All modules</span>
+    <span class="grid-hint">tap to select</span>
   </div>
+  <div class="grid" id="grid"></div>
 
-  <!-- Drawer Overlay -->
-  <div id="drawer-overlay" class="drawer-overlay hidden" onclick="closeDrawer()"></div>
+  <div class="prog-wrap"><div class="prog-track"><div class="prog-fill" id="prog" style="width:13.3%"></div></div></div>
 
-  <!-- Drawer -->
-  <div id="drawer" class="drawer hidden">
-    <div class="drawer-header">
-      <h3 id="drawer-title">New Entry</h3>
-      <button class="btn-icon-sm" onclick="closeDrawer()">
-        <i class="ti ti-x"></i>
-      </button>
-    </div>
-
-    <div class="drawer-body">
-
-      <!-- Toggle Flight / Simulator -->
-      <div class="toggle-row">
-        <button id="toggle-flight" class="toggle-btn active" onclick="setMode('flight')">
-          <i class="ti ti-plane"></i> Flight
-        </button>
-        <button id="toggle-sim" class="toggle-btn" onclick="setMode('sim')">
-          <i class="ti ti-device-laptop"></i> Simulator
-        </button>
-      </div>
-
-      <!-- Date (always shown) -->
-      <div class="form-group">
-        <label>Date</label>
-        <input type="date" id="f-date">
-      </div>
-
-      <!-- ── FLIGHT FIELDS ── -->
-      <div id="flight-fields">
-
-        <!-- Route -->
-        <div class="form-row">
-          <div class="form-group">
-            <label>From (ICAO)</label>
-            <input type="text" id="f-origin" placeholder="LPPT" maxlength="4" class="mono" style="text-transform:uppercase">
-          </div>
-          <div class="form-group">
-            <label>To (ICAO)</label>
-            <input type="text" id="f-destination" placeholder="EGLL" maxlength="4" class="mono" style="text-transform:uppercase">
-          </div>
-        </div>
-
-        <!-- Block Times -->
-        <div class="form-row">
-          <div class="form-group">
-            <label>Off-Block UTC</label>
-            <input type="time" id="f-off-block" class="mono">
-          </div>
-          <div class="form-group">
-            <label>On-Block UTC</label>
-            <input type="time" id="f-on-block" class="mono">
-          </div>
-        </div>
-
-        <!-- Total Time -->
-        <div class="form-group">
-          <label>Total Flight Time</label>
-          <input type="text" id="f-total" placeholder="2:30 or 2.5" class="mono" autocomplete="off">
-          <span class="field-hint">Auto-calculated from block times — edit if needed</span>
-        </div>
-
-        <!-- Aircraft -->
-        <div class="form-row">
-          <div class="form-group">
-            <label>Aircraft Type</label>
-            <input type="text" id="f-aircraft-type" placeholder="A320">
-          </div>
-          <div class="form-group">
-            <label>Registration</label>
-            <input type="text" id="f-registration" placeholder="CS-TNV" style="text-transform:uppercase" class="mono">
-          </div>
-        </div>
-
-        <!-- Operations SP/MP (EASA only) -->
-        <div id="field-operations" class="form-group">
-          <label>Operations</label>
-          <div class="radio-row">
-            <label class="radio-label">
-              <input type="radio" name="operations" value="MP" checked onchange="handleOperationsChange()"> MP
-            </label>
-            <label class="radio-label">
-              <input type="radio" name="operations" value="SP" onchange="handleOperationsChange()"> SP
-            </label>
-          </div>
-        </div>
-
-        <!-- SE/ME (depends on authority + operations) -->
-        <div id="field-engine" class="form-group hidden">
-          <label>Engine</label>
-          <div class="radio-row">
-            <label class="radio-label">
-              <input type="radio" name="engine" value="SE"> SE
-            </label>
-            <label class="radio-label">
-              <input type="radio" name="engine" value="ME" checked> ME
-            </label>
-          </div>
-        </div>
-
-        <!-- Role -->
-        <div class="form-group">
-          <label>Role</label>
-          <select id="f-role" onchange="handleRoleChange()">
-            <!-- populated by JS -->
-          </select>
-        </div>
-
-        <!-- PIC Name (when Co-Pilot / SIC / Dual) -->
-        <div id="field-pic-name" class="form-group hidden">
-          <label>PIC Name</label>
-          <input type="text" id="f-pic-name" placeholder="Captain's full name">
-        </div>
-
-        <!-- Student Name (when Instructor) -->
-        <div id="field-instructor-name" class="form-group hidden">
-          <label>Student Name</label>
-          <input type="text" id="f-instructor-name" placeholder="Student's full name">
-        </div>
-
-        <!-- Night / IFR Hours (Day and VFR are auto-calculated: Day=Total-Night, VFR=Total-IFR) -->
-        <div class="form-row">
-          <div class="form-group">
-            <label>Night HRS</label>
-            <input type="time" id="f-night" class="mono">
-          </div>
-          <div class="form-group">
-            <label>IFR HRS</label>
-            <input type="time" id="f-ifr" class="mono">
-          </div>
-        </div>
-
-        <!-- Cross-Country + Solo (FAA only) -->
-        <div id="field-xc" class="form-row hidden">
-          <div class="form-group">
-            <label>Cross-Country HRS</label>
-            <input type="time" id="f-xc" class="mono">
-          </div>
-          <div class="form-group">
-            <label>Solo HRS</label>
-            <input type="time" id="f-solo" class="mono">
-          </div>
-        </div>
-
-        <!-- Takeoffs -->
-        <div class="form-row">
-          <div class="form-group">
-            <label>T/O Day</label>
-            <input type="number" id="f-to-day" value="1" min="0" class="mono">
-          </div>
-          <div class="form-group">
-            <label>T/O Night</label>
-            <input type="number" id="f-to-night" value="0" min="0" class="mono">
-          </div>
-        </div>
-
-        <!-- Landings -->
-        <div class="form-row">
-          <div class="form-group">
-            <label>LDG Day</label>
-            <input type="number" id="f-ldg-day" value="1" min="0" class="mono">
-          </div>
-          <div class="form-group">
-            <label>LDG Night</label>
-            <input type="number" id="f-ldg-night" value="0" min="0" class="mono">
-          </div>
-        </div>
-
-        <!-- Instrument Approaches (FAA only) -->
-        <div id="field-approaches" class="form-row hidden">
-          <div class="form-group">
-            <label>Approaches (#)</label>
-            <input type="number" id="f-approach-count" value="0" min="0" class="mono">
-          </div>
-          <div class="form-group">
-            <label>Type</label>
-            <select id="f-approach-type">
-              <!-- populated by JS -->
-            </select>
-          </div>
-        </div>
-
-      </div>
-      <!-- ── END FLIGHT FIELDS ── -->
-
-      <!-- ── SIMULATOR FIELDS ── -->
-      <div id="sim-fields" class="hidden">
-
-        <div class="form-group">
-          <label>FSTD Type</label>
-          <select id="f-fstd-type">
-            <!-- populated by JS -->
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Session Duration</label>
-          <input type="time" id="f-sim-duration" class="mono">
-        </div>
-
-      </div>
-      <!-- ── END SIMULATOR FIELDS ── -->
-
-      <!-- Remarks (always shown) -->
-      <div class="form-group">
-        <label>Remarks</label>
-        <textarea id="f-remarks" rows="2" placeholder="Optional notes"></textarea>
-      </div>
-
-    </div><!-- /drawer-body -->
-
-    <div class="drawer-footer">
-      <button class="btn-secondary" onclick="closeDrawer()">Cancel</button>
-      <button class="btn-primary" id="submit-btn" onclick="handleSubmit()">Add Entry</button>
-    </div>
-  </div><!-- /drawer -->
-
-  <!-- Import Modal -->
-  <div id="import-overlay" class="overlay hidden" onclick="handleImportOverlayClick(event)">
-    <div class="import-card" onclick="event.stopPropagation()">
-      <div class="import-header">
-        <h3 id="import-title">Import Flights</h3>
-        <button class="btn-icon-sm" onclick="closeImport()"><i class="ti ti-x"></i></button>
-      </div>
-      <!-- Step 1: Upload -->
-      <div id="import-step-1">
-        <div class="import-drop-zone" id="import-drop-zone"
-             onclick="document.getElementById('import-file-input').click()"
-             ondragover="event.preventDefault();this.classList.add('drag-over')"
-             ondragleave="this.classList.remove('drag-over')"
-             ondrop="handleImportDrop(event)">
-          <i class="ti ti-file-upload"></i>
-          <p>Click or drag a file here</p>
-          <span>.csv &middot; .xlsx &middot; .xls</span>
-        </div>
-        <input type="file" id="import-file-input" accept=".csv,.xlsx,.xls"
-               style="display:none" onchange="handleImportFile(this)">
-      </div>
-      <!-- Step 2: Map Columns -->
-      <div id="import-step-2" style="display:none">
-        <div class="import-step-info">
-          <span id="import-file-info"></span>
-          <button class="btn-link" onclick="resetImportFile()">Change file</button>
-        </div>
-        <div id="import-map-body" class="import-map-body"></div>
-        <div class="import-footer">
-          <button class="btn-secondary" onclick="closeImport()">Cancel</button>
-          <button class="btn-primary" onclick="showImportPreview()">Preview →</button>
-        </div>
-      </div>
-      <!-- Step 3: Preview + Confirm -->
-      <div id="import-step-3" style="display:none">
-        <div id="import-preview-info" class="import-preview-info"></div>
-        <div class="import-preview-wrap">
-          <table id="import-preview-table" class="import-preview-table"></table>
-        </div>
-        <div class="import-footer">
-          <button class="btn-secondary" onclick="backToMapping()">← Back</button>
-          <button id="import-confirm-btn" class="btn-primary" onclick="confirmImport()">Import</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script src="js/authorities.js"></script>
-  <script src="js/app.js"></script>
+</div>
+<script src="js/dashboard.js"></script>
 </body>
 </html>

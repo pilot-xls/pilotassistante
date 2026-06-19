@@ -84,6 +84,21 @@ body {
 .badge-btn:hover { background: var(--accent-border); }
 
 /* ── Icon Buttons ──────────────────────────────────────────── */
+.btn-home {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 17px;
+  flex-shrink: 0;
+  transition: color 0.15s, background 0.15s;
+}
+.btn-home:hover { color: var(--accent); background: var(--accent-bg); }
+
 .btn-icon {
   width: 36px;
   height: 36px;
