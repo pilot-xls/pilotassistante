@@ -24,9 +24,9 @@ body{background:#EEEDF8;min-height:100vh;display:flex;justify-content:center}
 .shell{width:100%;max-width:460px;background:var(--bg);font-family:var(--f);display:flex;flex-direction:column;min-height:600px}
 
 /* ── TOP BAR ── */
-.bar{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:var(--white);border-bottom:1px solid var(--bdr-s)}
-.bar-logo{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--acc);letter-spacing:-.01em}
-.bar-logo-dot{width:7px;height:7px;border-radius:50%;background:var(--acc)}
+.bar{position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:13px 20px;background:var(--white);border-bottom:1px solid var(--bdr-s);box-shadow:0 2px 16px rgba(40,37,160,.08)}
+.bar-logo{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;color:var(--acc);letter-spacing:-.03em}
+.bar-logo-plane{flex-shrink:0;display:block}
 .bar-ver{font-family:var(--fm);font-size:8px;color:var(--mut);letter-spacing:.1em;background:var(--acc-l);padding:3px 7px;border-radius:20px}
 
 /* ── DETAIL PANEL ── */
@@ -88,9 +88,12 @@ body{background:#EEEDF8;min-height:100vh;display:flex;justify-content:center}
 .card.active{background:var(--acc);border-color:var(--acc);box-shadow:0 2px 12px rgba(40,37,160,.22)}
 .card.critical::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;background:var(--crit);border-radius:9px 9px 0 0}
 .card.active::before{display:none}
-.card-num{font-family:var(--fm);font-size:7px;color:var(--mut);line-height:1;transition:color .13s}
-.card.active .card-num{color:rgba(255,255,255,.55)}
-.card-code{font-size:9.5px;font-weight:600;color:var(--txt);text-align:center;letter-spacing:.02em;line-height:1;transition:color .13s}
+.card-icon{width:18px;height:18px;display:block;color:var(--mut);transition:color .13s;flex-shrink:0}
+.card:hover .card-icon{color:var(--acc)}
+.card.active .card-icon{color:rgba(255,255,255,.9)}
+.card.critical .card-icon{color:var(--crit)}
+.card.active.critical .card-icon{color:#fff}
+.card-code{font-size:9px;font-weight:600;color:var(--txt);text-align:center;letter-spacing:.02em;line-height:1;transition:color .13s}
 .card:hover .card-code{color:var(--acc)}
 .card.active .card-code{color:#fff}
 .card.critical .card-code{color:var(--crit)}
