@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Mockup — PilotAssistante</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{background:#EEEDF8;min-height:100%}
+    body{background:#EEEDF8;min-height:100vh;display:flex;justify-content:center;font-family:'Space Grotesk',system-ui,sans-serif}
+    :root{
+      --bg:#F6F5FC;--white:#FFFFFF;--acc:#2825A0;--acc-l:#EEEDF8;--acc-b:#B8B6E0;--acc-m:#5552C0;
+      --txt:#0B0929;--mut:#8A88B0;--bdr:#DDDAF2;--bdr-s:#ECEBF8;
+      --crit:#D03030;--crit-l:#FFF0F0;--amb:#C98A1E;--amb-l:#FBF1DE;--grn:#1E9E5A;--grn-l:#E8F7EF;
+      --fm:'Space Mono',monospace;
+    }
+
+    .shell{width:100%;max-width:460px;background:var(--bg);display:flex;flex-direction:column;min-height:100vh}
+
+    /* ── BAR ── */
+    .bar{position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:13px 20px;background:var(--white);border-bottom:1px solid var(--bdr-s);box-shadow:0 2px 16px rgba(40,37,160,.08)}
+    .bar-logo{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;color:var(--acc);letter-spacing:-.03em}
+    .bar-ver{font-family:var(--fm);font-size:8px;color:var(--mut);letter-spacing:.1em;background:var(--acc-l);padding:3px 7px;border-radius:20px}
+
+    /* ── HERO ── */
+    .hero{background:var(--acc);padding:24px 22px 20px;position:relative;overflow:hidden}
+    .hero-bg{position:absolute;right:-20px;top:-20px;font-family:var(--fm);font-weight:700;font-size:130px;line-height:1;color:rgba(255,255,255,.06);pointer-events:none;user-select:none;letter-spacing:-.02em}
+    .hero-greeting{font-family:var(--fm);font-size:9px;letter-spacing:.16em;color:rgba(255,255,255,.55);text-transform:uppercase;margin-bottom:6px}
+    .hero-hours{font-family:var(--fm);font-weight:700;font-size:52px;color:#fff;line-height:1;letter-spacing:-.03em}
+    .hero-hours span{font-size:16px;font-weight:400;color:rgba(255,255,255,.55);margin-left:4px;letter-spacing:0}
+    .hero-sub{font-size:12px;color:rgba(255,255,255,.6);margin-top:5px;margin-bottom:18px}
+
+    .hero-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+    .hero-card{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:10px 10px 9px;display:flex;flex-direction:column;gap:3px}
+    .hero-card-val{font-family:var(--fm);font-weight:700;font-size:15px;color:#fff;letter-spacing:-.01em;line-height:1}
+    .hero-card-lbl{font-family:var(--fm);font-size:7px;letter-spacing:.12em;color:rgba(255,255,255,.5);text-transform:uppercase}
+
+    /* ── CURRENCY ── */
+    .curr-section{padding:14px 16px 6px}
+    .section-hdr{font-family:var(--fm);font-size:7.5px;letter-spacing:.16em;color:var(--mut);text-transform:uppercase;margin-bottom:9px;display:flex;justify-content:space-between;align-items:center}
+    .section-hdr-tag{font-size:6.5px;color:var(--acc-b);letter-spacing:.08em}
+
+    .curr-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+    .curr-card{border-radius:10px;padding:10px 10px 9px;display:flex;flex-direction:column;gap:3px}
+    .curr-card.ok{background:var(--grn-l);border:1px solid #B8E8CE}
+    .curr-card.warn{background:var(--amb-l);border:1px solid #F0D59A}
+    .curr-card.crit{background:var(--crit-l);border:1px solid #F0B8B8}
+    .curr-dot{width:5px;height:5px;border-radius:50%;margin-bottom:2px;flex-shrink:0}
+    .curr-card.ok .curr-dot{background:var(--grn)}
+    .curr-card.warn .curr-dot{background:var(--amb)}
+    .curr-card.crit .curr-dot{background:var(--crit)}
+    .curr-val{font-family:var(--fm);font-weight:700;font-size:14px;line-height:1}
+    .curr-card.ok .curr-val{color:var(--grn)}
+    .curr-card.warn .curr-val{color:var(--amb)}
+    .curr-card.crit .curr-val{color:var(--crit)}
+    .curr-lbl{font-family:var(--fm);font-size:6.5px;letter-spacing:.1em;color:var(--mut);text-transform:uppercase}
+    .curr-sub{font-size:8.5px;color:var(--mut)}
+    .curr-card.ok .curr-sub{color:#2E7D55}
+    .curr-card.warn .curr-sub{color:#8A6010}
+    .curr-card.crit .curr-sub{color:#A02020}
+
+    /* ── QUICK ACTIONS ── */
+    .qa-section{padding:4px 16px 14px}
+    .qa-row{display:grid;grid-template-columns:2fr 1fr;gap:8px}
+    .qa-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 16px;border:none;border-radius:10px;font-family:'Space Grotesk',system-ui,sans-serif;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:.01em}
+    .qa-btn.primary{background:var(--acc);color:#fff}
+    .qa-btn.secondary{background:var(--white);color:var(--txt);border:1px solid var(--bdr)}
+
+    /* ── MODULE GRID ── */
+    .grid-header{display:flex;justify-content:space-between;align-items:center;padding:8px 20px 10px}
+    .grid-label{font-family:var(--fm);font-size:8px;letter-spacing:.16em;color:var(--mut);text-transform:uppercase}
+    .grid-hint{font-family:var(--fm);font-size:8px;color:var(--acc-b);letter-spacing:.06em}
+
+    .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:0 14px 20px}
+    .card{position:relative;background:var(--white);border:1px solid var(--bdr);border-radius:9px;padding:10px 6px 9px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:space-between;min-height:58px;overflow:hidden}
+    .card.active{background:var(--acc);border-color:var(--acc);box-shadow:0 2px 12px rgba(40,37,160,.22)}
+    .card.critical::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;background:var(--crit);border-radius:9px 9px 0 0}
+    .card-icon{width:18px;height:18px;display:block;color:var(--mut)}
+    .card.active .card-icon{color:rgba(255,255,255,.9)}
+    .card.critical .card-icon{color:var(--crit)}
+    .card-code{font-size:9px;font-weight:600;color:var(--txt);text-align:center;letter-spacing:.02em;line-height:1}
+    .card.active .card-code{color:#fff}
+    .card.critical .card-code{color:var(--crit)}
+
+    /* ── NOTE ── */
+    .mockup-note{text-align:center;padding:10px 20px 30px;font-family:var(--fm);font-size:8px;color:var(--acc-b);letter-spacing:.08em}
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- BAR -->
+  <div class="bar">
+    <div class="bar-logo">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+      PilotAssistante
+    </div>
+    <span class="bar-ver">v0.14</span>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-bg">✈</div>
+    <div class="hero-greeting">Total de horas de voo</div>
+    <div class="hero-hours">1 247<span>h</span></div>
+    <div class="hero-sub">Última actualização · 21 Jun 2026</div>
+    <div class="hero-row">
+      <div class="hero-card">
+        <div class="hero-card-val">47h</div>
+        <div class="hero-card-lbl">Junho</div>
+      </div>
+      <div class="hero-card">
+        <div class="hero-card-val">3d</div>
+        <div class="hero-card-lbl">Último voo</div>
+      </div>
+      <div class="hero-card">
+        <div class="hero-card-val">89</div>
+        <div class="hero-card-lbl">Voos totais</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CURRENCY -->
+  <div class="curr-section">
+    <div class="section-hdr">
+      EASA Currency
+      <span class="section-hdr-tag">90 DIAS</span>
+    </div>
+    <div class="curr-grid">
+      <div class="curr-card ok">
+        <div class="curr-dot"></div>
+        <div class="curr-val">9</div>
+        <div class="curr-lbl">Day ldgs</div>
+        <div class="curr-sub">OK · min 3</div>
+      </div>
+      <div class="curr-card warn">
+        <div class="curr-dot"></div>
+        <div class="curr-val">2</div>
+        <div class="curr-lbl">Night ldgs</div>
+        <div class="curr-sub">Falta 1</div>
+      </div>
+      <div class="curr-card crit">
+        <div class="curr-dot"></div>
+        <div class="curr-val">2d</div>
+        <div class="curr-lbl">Night exp</div>
+        <div class="curr-sub">Expira 26 Jun</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUICK ACTIONS -->
+  <div class="qa-section">
+    <div class="qa-row">
+      <button class="qa-btn primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        Registar voo
+      </button>
+      <button class="qa-btn secondary">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        Agenda
+      </button>
+    </div>
+  </div>
+
+  <!-- MODULE GRID -->
+  <div class="grid-header">
+    <span class="grid-label">All modules</span>
+    <span class="grid-hint">tap to open</span>
+  </div>
+  <div class="grid">
+
+    <!-- 1 FTL -->
+    <div class="card">
+      <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      <span class="card-code">FTL</span>
+    </div>
+    <!-- 2 LOG -->
+    <div class="card active">
+      <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      <span class="card-code">LOG</span>
+    </div>
+    <!-- 3 DOC -->
+    <div class="card critical">
+      <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+      <span class="card-code">DOC</span>
+    </div>
+    <!-- 4 TRN -->
+    <div class="card">
+      <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+      <span class="card-code">TRN</span>
+    </div>
+    <!-- 5 MEM -->
+    <div class="card">
+      <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <span class="card-code">MEM</span>
+    </div>
+    <!-- 6 JOB -->
+    <div class="card">
+      <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+      <span class="card-code">JOB</span>
+    </div>
+    <!-- 7 AVN -->
+    <div class="card">
+      <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1" fill="currentColor"/></svg>
+      <span class="card-code">AVN</span>
+    </div>
+    <!-- 8 BRF -->
+    <div class="card">
+      <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"/></svg>
+      <span class="card-code">BRF</span>
+    </div>
+    <!-- 9 SAL -->
+    <div class="card">
+      <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <span class="card-code">SAL</span>
+    </div>
+    <!-- 10 INT -->
+    <div class="card">
+      <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span class="card-code">INT</span>
+    </div>
+    <!-- 11 FAT -->
+    <div class="card">
+      <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+      <span class="card-code">FAT</span>
+    </div>
+    <!-- 12 WGT -->
+    <div class="card">
+      <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      <span class="card-code">WGT</span>
+    </div>
+    <!-- 13 ANN -->
+    <div class="card">
+      <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <span class="card-code">ANN</span>
+    </div>
+    <!-- 14 VOC -->
+    <div class="card">
+      <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      <span class="card-code">VOC</span>
+    </div>
+    <!-- 15 WEL -->
+    <div class="card">
+      <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+      <span class="card-code">WEL</span>
+    </div>
+
+  </div>
+
+  <div class="mockup-note">MOCKUP — dados fictícios · conceito visual apenas</div>
+
+</div>
+</body>
+</html>
