@@ -16,40 +16,20 @@
 
   <div class="bar">
     <div class="bar-logo"><svg class="bar-logo-plane" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>PilotAssistante</div>
-    <span class="bar-ver">v0.13</span>
+    <span class="bar-ver">v0.14</span>
   </div>
 
-  <div class="detail">
-    <div class="detail-bg-num" id="d-bg">02</div>
-    <div class="detail-inner">
-      <div class="status-pill" id="d-pill">
-        <span class="status-pill-dot" id="d-dot"></span>
-        <span class="status-pill-txt" id="d-pill-txt">Module Activo</span>
-      </div>
-      <div class="detail-name" id="d-name">Logbook</div>
-      <div class="detail-sub" id="d-sub">Smart logbook · EASA &amp; FAA</div>
-
-      <div class="gauge-zone" id="gauge-zone"></div>
-
-      <div class="detail-foot">
-        <span class="detail-pos" id="d-pos">02 / 15</span>
-        <button class="open-btn" id="open-btn" onclick="doOpen()">
-          Open module
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <path d="M2.5 6h7M6.5 3l3 3-3 3" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-      </div>
+  <div class="home-scroll">
+    <div id="hero"></div>
+    <div id="currency-section"></div>
+    <div id="recent-section"></div>
+    <div id="qa-section"></div>
+    <div class="grid-header">
+      <span class="grid-label">All modules</span>
+      <span class="grid-hint">tap to open</span>
     </div>
+    <div class="grid" id="grid"></div>
   </div>
-
-  <div class="grid-header">
-    <span class="grid-label">All modules</span>
-    <span class="grid-hint">tap to select</span>
-  </div>
-  <div class="grid" id="grid"></div>
-
-  <div class="prog-wrap"><div class="prog-track"><div class="prog-fill" id="prog" style="width:13.3%"></div></div></div>
 
 </div>
 <script src="js/dashboard.js"></script>
