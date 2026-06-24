@@ -9,7 +9,7 @@
 | | |
 |---|---|
 | **Versão actual** | v0.13 |
-| **Última sessão** | Sessão 15 — 24 Junho 2026 |
+| **Última sessão** | Sessão 16 — 24 Junho 2026 |
 | **Módulo em construção** | Agenda FTL básica (Módulo 1) — a iniciar |
 | **Próxima tarefa** | Construir Módulo 1: Agenda & Legalidades EASA (FTL/DP/RP limits, calendário de turnos) |
 | **Deploy activo** | GitHub Pages ✅ |
@@ -20,7 +20,7 @@
 | # | Módulo | Estado |
 |---|---|---|
 | 1 | Agenda & Legalidades EASA | 🔜 A iniciar |
-| 2 | Logbook Inteligente | 🟡 Em progresso (v0.13) |
+| 2 | Logbook Inteligente | 🟡 Em progresso (v0.13 + Statistics tab) |
 | 3 | Documentos & Validades | ⬜ Por fazer |
 | 4 | Centro de Treino | ⬜ Por fazer |
 | 5 | Memórias & Diário | ⬜ Por fazer |
@@ -41,6 +41,7 @@
 
 | Sessão | Data | O que foi feito |
 |---|---|---|
+| 16 | 24 Jun 2026 | Logbook: tab Statistics com totais de horas, gráfico SVG mensal, currency EASA 90 dias, breakdown por tipo/role e insights (PR #40 merged) |
 | 15 | 24 Jun 2026 | Dashboard Menu: ícones SVG de aviação em cada card de módulo (substituem número), header sticky com avião no logo, fonte maior |
 | 14 | 19 Jun 2026 | Dashboard / Home Menu UI shell — conceito e estrutura aprovados |
 | 1–13 | anteriores | Logbook v0.13, PWA base, navegação, estilos globais |
@@ -52,10 +53,12 @@
 | Ficheiro | Função |
 |---|---|
 | `index.html` | Dashboard principal (home menu dos 15 módulos) |
-| `logbook.html` | Módulo 2 — Logbook |
+| `logbook.html` | Módulo 2 — Logbook (tabs: Log + Statistics) |
 | `js/dashboard.js` | Lógica do dashboard: grid de módulos, gauges, ICONS SVG |
+| `js/app.js` | Lógica do logbook: entradas, filtros, tab Statistics (showTab, renderStatsView, renderStatsContent) |
 | `js/nav.js` | Barra de navegação inferior (bottom nav) |
 | `css/dashboard.css` | Estilos do dashboard (inclui header sticky, card icons) |
+| `css/style.css` | Estilos do logbook (inclui tab-bar, period-bar, sv-nums, gauges, currency, breakdown, insights) |
 | `css/nav.css` | Estilos da nav bar |
 | `manifest.json` | PWA manifest |
 
