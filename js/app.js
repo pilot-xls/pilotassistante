@@ -21,6 +21,7 @@ let filterEngine       = ''; // '' | 'SE' | 'ME'
 let filterHasNight     = false;
 let filterHasIFR       = false;
 let filterType         = 'all'; // 'all' | 'flight' | 'sim'
+let statsPeriod        = 'ytd'; // 'ytd' | '12m' | 'all'
 
 // ── Init ────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
@@ -769,6 +770,185 @@ function renderStats() {
   document.getElementById('stat-night').textContent = formatHours(night);
   document.getElementById('stat-sim').textContent   = formatHours(sim);
   document.getElementById('stat-month').textContent = formatHours(month);
+}
+
+// ── Tab System ───────────────────────────────────────────────
+function showTab(tab) {
+  document.getElementById('tab-log').classList.toggle('active', tab === 'log');
+  document.getElementById('tab-stats').classList.toggle('active', tab === 'stats');
+  document.getElementById('log-view').classList.toggle('hidden', tab !== 'log');
+  document.getElementById('stats-view').classList.toggle('hidden', tab !== 'stats');
+  if (tab === 'stats') renderStatsView();
+}
+
+function setStatsPeriod(p) {
+  statsPeriod = p;
+  document.querySelectorAll('.period-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.period === p)
+  );
+  renderStatsContent();
+}
+
+function getPeriodFlights() {
+  const fl = entries.filter(e => !e.isSim);
+  const now = new Date();
+  if (statsPeriod === 'ytd') return fl.filter(e => e.date >= `${now.getFullYear()}-01-01`);
+  if (statsPeriod === '12m') {
+    const d = new Date(now); d.setFullYear(d.getFullYear() - 1);
+    return fl.filter(e => e.date >= d.toISOString().slice(0, 10));
+  }
+  return fl;
+}
+
+function renderStatsView() {
+  const sv = document.getElementById('stats-view');
+  sv.innerHTML = `
+    <div class="period-bar">
+      <button class="period-btn${statsPeriod==='ytd'?' active':''}" data-period="ytd" onclick="setStatsPeriod('ytd')">This Year</button>
+      <button class="period-btn${statsPeriod==='12m'?' active':''}" data-period="12m" onclick="setStatsPeriod('12m')">12 Months</button>
+      <button class="period-btn${statsPeriod==='all'?' active':''}" data-period="all" onclick="setStatsPeriod('all')">All Time</button>
+    </div>
+    <div id="sv-content"></div>`;
+  renderStatsContent();
+}
+
+function renderStatsContent() {
+  const fl    = getPeriodFlights();
+  const allFl = entries.filter(e => !e.isSim);
+  const allSm = entries.filter(e => e.isSim);
+
+  // ── Period summary ──
+  const total = fl.reduce((s,e) => s + parseHours(e.totalTime), 0);
+  const pic   = fl.filter(e => e.role==='PIC').reduce((s,e) => s + parseHours(e.totalTime), 0);
+  const night = fl.reduce((s,e) => s + parseHours(e.nightHours), 0);
+  const ifr   = fl.reduce((s,e) => s + parseHours(e.ifrTime), 0);
+  const sim   = allSm.reduce((s,e) => s + parseHours(e.simDuration), 0);
+  const cnt   = fl.length;
+  const ldgs  = fl.reduce((s,e) => s + (e.ldgDay||0) + (e.ldgNight||0), 0);
+  const avg   = cnt > 0 ? total / cnt : 0;
+
+  // ── Monthly chart (last 12 months, always all-time) ──
+  const now = new Date();
+  const monthly = [];
+  for (let i = 11; i >= 0; i--) {
+    const d   = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    const lbl = d.toLocaleDateString('en-GB', {month:'short'});
+    const hrs = allFl.filter(e => e.date.startsWith(key)).reduce((s,e) => s + parseHours(e.totalTime), 0);
+    monthly.push({key, lbl, hrs});
+  }
+  const maxH  = Math.max(...monthly.map(m => m.hrs), 0.1);
+  const BH=70, BW=14, GAP=6;
+  const SVW   = monthly.length * (BW + GAP) - GAP;
+  const thisMo= `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const bars  = monthly.map((m,i) => {
+    const h    = m.hrs > 0 ? Math.max(m.hrs / maxH * BH, 3) : 1;
+    const x    = i * (BW + GAP);
+    const y    = BH - h;
+    const fill = m.hrs > 0 ? (m.key === thisMo ? '#5552C0' : '#2825A0') : '#ECEBF8';
+    return `<g><rect x="${x}" y="${y.toFixed(1)}" width="${BW}" height="${h.toFixed(1)}" rx="3" fill="${fill}"/>` +
+           `<text x="${x+BW/2}" y="${BH+15}" text-anchor="middle" font-size="7" fill="#8A88B0" font-family="Space Mono,monospace">${m.lbl}</text></g>`;
+  }).join('');
+  const chartSvg = `<svg class="monthly-svg" viewBox="0 0 ${SVW} ${BH+20}" width="100%">${bars}</svg>`;
+
+  // ── 90-day currency (always all-time) ──
+  const cut  = new Date(now); cut.setDate(cut.getDate() - 90);
+  const cutS = cut.toISOString().slice(0, 10);
+  const r90  = allFl.filter(e => e.date >= cutS);
+  const ldgD90 = r90.reduce((s,e) => s + (e.ldgDay||0),  0);
+  const ldgN90 = r90.reduce((s,e) => s + (e.ldgNight||0), 0);
+  const nightFl = allFl.filter(e => (e.ldgNight||0)>0).sort((a,b) => b.date.localeCompare(a.date));
+  let nightRow = '';
+  if (nightFl.length >= 3) {
+    const exp = new Date(nightFl[2].date + 'T12:00:00');
+    exp.setDate(exp.getDate() + 90);
+    const expired = exp < now;
+    const soon    = !expired && (exp - now) < 30 * 24 * 3600 * 1000;
+    const ds  = exp.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
+    const cls = expired ? 'curr-exp' : soon ? 'curr-warn' : 'curr-ok';
+    nightRow = `<div class="curr-row ${cls}"><i class="ti ti-certificate"></i><span>Night currency</span><span class="curr-val">${expired ? 'Expired' : `Until ${ds}`}</span></div>`;
+  } else {
+    nightRow = `<div class="curr-row curr-exp"><i class="ti ti-certificate"></i><span>Night currency</span><span class="curr-val">Insufficient data</span></div>`;
+  }
+
+  // ── Breakdown (period-filtered) ──
+  const byType = {}, byRole = {};
+  fl.forEach(e => {
+    if (e.aircraftType) byType[e.aircraftType] = (byType[e.aircraftType]||0) + parseHours(e.totalTime);
+    if (e.role)         byRole[e.role]         = (byRole[e.role]||0)         + parseHours(e.totalTime);
+  });
+  const auth = getAuthority();
+  const rLbl = code => (auth.roles.find(r => r.value === code) || {label: code}).label;
+  const mkBars = (obj, ref) => Object.entries(obj).sort((a,b) => b[1]-a[1]).slice(0,5).map(([k,h]) => {
+    const pct = ref > 0 ? Math.round(h / ref * 100) : 0;
+    return `<div class="bk-row"><span class="bk-name">${k}</span><div class="bk-track"><div class="bk-fill" style="width:${pct}%"></div></div><span class="bk-val">${formatHours(h)}</span></div>`;
+  }).join('');
+
+  // ── Insights (all-time) ──
+  const aType = {}, aPort = {}, aRoute = {};
+  allFl.forEach(e => {
+    if (e.aircraftType)             aType[e.aircraftType] = (aType[e.aircraftType]||0) + parseHours(e.totalTime);
+    if (e.origin)                   aPort[e.origin]       = (aPort[e.origin]||0)       + 1;
+    if (e.destination)              aPort[e.destination]  = (aPort[e.destination]||0)  + 1;
+    if (e.origin && e.destination)  { const k=`${e.origin}→${e.destination}`; aRoute[k]=(aRoute[k]||0)+1; }
+  });
+  const longest  = allFl.reduce((mx,e) => parseHours(e.totalTime) > parseHours(mx?.totalTime||'0') ? e : mx, null);
+  const busiest  = monthly.reduce((mx,m) => m.hrs > (mx?.hrs||0) ? m : mx, null);
+  const topType  = Object.entries(aType).sort((a,b) => b[1]-a[1])[0];
+  const topPort  = Object.entries(aPort).sort((a,b) => b[1]-a[1])[0];
+  const topRoute = Object.entries(aRoute).sort((a,b) => b[1]-a[1])[0];
+  const insList  = [
+    topType  && {ic:'ti-plane-tilt',       lbl:'Most Flown Aircraft', val: topType[0]},
+    topPort  && {ic:'ti-building-airport', lbl:'Top Airport',         val: `${topPort[0]} (${topPort[1]} movements)`},
+    topRoute && {ic:'ti-route',            lbl:'Top Route',           val: `${topRoute[0]}  ×${topRoute[1]}`},
+    longest  && parseHours(longest.totalTime) > 0 && {ic:'ti-trophy', lbl:'Longest Flight', val:`${formatHours(parseHours(longest.totalTime))} · ${longest.origin}–${longest.destination}`},
+    busiest  && busiest.hrs > 0 && {ic:'ti-star', lbl:'Busiest Month', val:`${busiest.lbl} (${formatHours(busiest.hrs)})`},
+  ].filter(Boolean);
+
+  const noData = '<div class="sv-empty">No data for this period</div>';
+
+  document.getElementById('sv-content').innerHTML = `
+    <div class="sv-nums">
+      ${[
+        {lbl:'Total Hours',  val:formatHours(total), ic:'ti-clock'},
+        {lbl:'PIC Hours',    val:formatHours(pic),   ic:'ti-user-check'},
+        {lbl:'Night Hours',  val:formatHours(night), ic:'ti-moon'},
+        {lbl:'IFR Hours',    val:formatHours(ifr),   ic:'ti-cloud'},
+        {lbl:'Flights',      val:cnt,                ic:'ti-plane'},
+        {lbl:'Landings',     val:ldgs,               ic:'ti-plane-arrival'},
+        {lbl:'Sim Hours',    val:formatHours(sim),   ic:'ti-device-laptop'},
+        {lbl:'Avg / Flight', val:formatHours(avg),   ic:'ti-chart-line'},
+      ].map(n => `<div class="sv-num-card"><i class="ti ${n.ic} sv-num-ic"></i><div class="sv-num-val">${n.val}</div><div class="sv-num-lbl">${n.lbl}</div></div>`).join('')}
+    </div>
+
+    <div class="sv-card">
+      <div class="sv-card-hdr">Hours per Month <span class="sv-card-tag">last 12 months · all time</span></div>
+      ${chartSvg}
+    </div>
+
+    <div class="sv-card">
+      <div class="sv-card-hdr">EASA Currency <span class="sv-card-tag">90-day window</span></div>
+      <div class="curr-row ${ldgD90>=3?'curr-ok':'curr-exp'}"><i class="ti ti-sun"></i><span>Day landings</span><span class="curr-val">${ldgD90} ${ldgD90>=3?'/ 3 ✓':'/ 3 needed'}</span></div>
+      <div class="curr-row ${ldgN90>=3?'curr-ok':'curr-exp'}"><i class="ti ti-moon"></i><span>Night landings</span><span class="curr-val">${ldgN90} ${ldgN90>=3?'/ 3 ✓':'/ 3 needed'}</span></div>
+      ${nightRow}
+    </div>
+
+    <div class="sv-card">
+      <div class="sv-card-hdr">By Aircraft</div>
+      ${mkBars(byType, total) || noData}
+      <div class="sv-card-hdr sv-card-hdr--mt">By Role</div>
+      ${Object.entries(byRole).sort((a,b)=>b[1]-a[1]).map(([r,h]) => {
+        const pct = total>0 ? Math.round(h/total*100) : 0;
+        return `<div class="bk-row"><span class="bk-name">${rLbl(r)}</span><div class="bk-track"><div class="bk-fill" style="width:${pct}%"></div></div><span class="bk-val">${formatHours(h)}</span></div>`;
+      }).join('') || noData}
+    </div>
+
+    <div class="sv-card">
+      <div class="sv-card-hdr">Insights <span class="sv-card-tag">all time</span></div>
+      ${insList.length > 0 ? insList.map(i =>
+        `<div class="ins-row"><i class="ti ${i.ic} ins-ic"></i><div><div class="ins-lbl">${i.lbl}</div><div class="ins-val">${i.val}</div></div></div>`
+      ).join('') : noData}
+    </div>`;
 }
 
 // ── Date Formatting ──────────────────────────────────────────
