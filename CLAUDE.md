@@ -9,9 +9,9 @@
 | | |
 |---|---|
 | **Versão actual** | v0.13 |
-| **Última sessão** | Sessão 14 — 19 Junho 2026 |
-| **Módulo em construção** | Dashboard / Home Menu (UI shell) — conceito aprovado, por integrar |
-| **Próxima tarefa** | Integrar Dashboard Menu na PWA + Agenda FTL básica (Módulo 1) |
+| **Última sessão** | Sessão 15 — 24 Junho 2026 |
+| **Módulo em construção** | Agenda FTL básica (Módulo 1) — a iniciar |
+| **Próxima tarefa** | Construir Módulo 1: Agenda & Legalidades EASA (FTL/DP/RP limits, calendário de turnos) |
 | **Deploy activo** | GitHub Pages ✅ |
 | **Linguagem da app** | Inglês |
 
@@ -19,7 +19,7 @@
 
 | # | Módulo | Estado |
 |---|---|---|
-| 1 | Agenda & Legalidades EASA | ⬜ Por fazer |
+| 1 | Agenda & Legalidades EASA | 🔜 A iniciar |
 | 2 | Logbook Inteligente | 🟡 Em progresso (v0.13) |
 | 3 | Documentos & Validades | ⬜ Por fazer |
 | 4 | Centro de Treino | ⬜ Por fazer |
@@ -28,3 +28,41 @@
 | 7 | Notícias de Aviação | ⬜ Por fazer |
 | 8 | Briefing Inteligente | ⬜ Por fazer |
 | 9 | Calculadora Salário & Per Diem | ⬜ Por fazer |
+| 10 | Preparação de Entrevistas | ⬜ Por fazer |
+| 11 | Registo de Fadiga (FRMS) | ⬜ Por fazer |
+| 12 | Home Widget | ⬜ Por fazer |
+| 13 | Relatório Anual | ⬜ Por fazer |
+| 14 | Assistente de Voz IA | ⬜ Por fazer |
+| 15 | Wellbeing & Sono | ⬜ Por fazer |
+
+---
+
+## 🗂️ Historial de Sessões
+
+| Sessão | Data | O que foi feito |
+|---|---|---|
+| 15 | 24 Jun 2026 | Dashboard Menu: ícones SVG de aviação em cada card de módulo (substituem número), header sticky com avião no logo, fonte maior |
+| 14 | 19 Jun 2026 | Dashboard / Home Menu UI shell — conceito e estrutura aprovados |
+| 1–13 | anteriores | Logbook v0.13, PWA base, navegação, estilos globais |
+
+---
+
+## 🏗️ Arquitectura Actual
+
+| Ficheiro | Função |
+|---|---|
+| `index.html` | Dashboard principal (home menu dos 15 módulos) |
+| `logbook.html` | Módulo 2 — Logbook |
+| `js/dashboard.js` | Lógica do dashboard: grid de módulos, gauges, ICONS SVG |
+| `js/nav.js` | Barra de navegação inferior (bottom nav) |
+| `css/dashboard.css` | Estilos do dashboard (inclui header sticky, card icons) |
+| `css/nav.css` | Estilos da nav bar |
+| `manifest.json` | PWA manifest |
+
+## 🎨 Tema Visual
+
+- **Fonte principal:** Space Grotesk
+- **Fonte mono:** Space Mono
+- **Cor accent:** `#2825A0` (índigo)
+- **Cor crítico:** `#D03030`
+- **Cor fundo:** `#F6F5FC`
