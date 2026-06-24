@@ -58,6 +58,15 @@
       </div>
     </header>
 
+    <!-- Tab Bar -->
+    <div class="tab-bar">
+      <button class="tab-btn active" id="tab-log" onclick="showTab('log')"><i class="ti ti-list"></i> Log</button>
+      <button class="tab-btn" id="tab-stats" onclick="showTab('stats')"><i class="ti ti-chart-bar"></i> Statistics</button>
+    </div>
+
+    <!-- Log View -->
+    <div id="log-view">
+
     <!-- Stats -->
     <section class="stats-grid">
       <div class="stat-card">
@@ -186,6 +195,11 @@
         </div>
       </div>
     </section>
+
+    </div><!-- /log-view -->
+
+    <!-- Stats View -->
+    <div id="stats-view" class="hidden"></div>
 
   </div>
 
