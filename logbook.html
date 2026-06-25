@@ -44,24 +44,29 @@
 
     <!-- Header -->
     <header class="header">
-      <div class="header-brand">
-        <i class="ti ti-plane"></i>
-        <span>PilotAssistante</span>
-      </div>
+      <h1 class="header-title" id="header-title">My flights</h1>
       <div class="header-actions">
+        <button class="btn-header-icon" id="btn-header-search" onclick="focusSearch()" title="Search">
+          <i class="ti ti-search"></i>
+        </button>
+        <button class="btn-export-header hidden" id="btn-header-export" onclick="exportCSV()" title="Export CSV">
+          <i class="ti ti-share"></i> Export
+        </button>
         <button id="authority-badge" class="badge-btn" onclick="showAuthorityOverlay()">
           <span id="authority-label">EASA</span>
-        </button>
-        <button class="btn-icon" onclick="openDrawer()">
-          <i class="ti ti-plus"></i>
         </button>
       </div>
     </header>
 
+    <!-- FAB -->
+    <button class="fab" id="fab-add" onclick="openDrawer()" aria-label="Add flight">
+      <i class="ti ti-plus"></i>
+    </button>
+
     <!-- Tab Bar -->
     <div class="tab-bar">
-      <button class="tab-btn active" id="tab-log" onclick="showTab('log')"><i class="ti ti-list"></i> Log</button>
-      <button class="tab-btn" id="tab-stats" onclick="showTab('stats')"><i class="ti ti-chart-bar"></i> Statistics</button>
+      <button class="tab-btn active" id="tab-log"   onclick="showTab('log')"><i class="ti ti-plane"></i> Flights</button>
+      <button class="tab-btn"        id="tab-stats" onclick="showTab('stats')"><i class="ti ti-chart-pie"></i> Stats</button>
     </div>
 
     <!-- Log View -->
