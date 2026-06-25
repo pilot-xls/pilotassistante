@@ -2,107 +2,72 @@
 .bottom-nav {
   position: fixed;
   bottom: 0; left: 0; right: 0;
-  height: 56px;
-  background: #FFFFFF;
-  border-top: 1px solid #DDDAF2;
+  height: 58px;
+  background: #111D2F;
+  border-top: 1px solid #1C2D42;
   display: flex;
   z-index: 1000;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 .nav-item {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  cursor: pointer;
-  text-decoration: none;
-  color: #8A88B0;
-  font-size: 10px;
-  font-weight: 500;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 3px; cursor: pointer; text-decoration: none;
+  color: #4A5A72;
+  font-size: 10px; font-weight: 500;
   font-family: 'Space Grotesk', system-ui, sans-serif;
   letter-spacing: .01em;
-  border: none;
-  background: none;
-  padding: 0;
+  border: none; background: none; padding: 0;
   transition: color .15s;
   -webkit-tap-highlight-color: transparent;
 }
-.nav-item:hover { color: #5552C0; }
-.nav-item.active { color: #2825A0; }
+.nav-item:hover { color: #8A9FC0; }
+.nav-item.active { color: #FFFFFF; }
 .nav-item svg { width: 22px; height: 22px; flex-shrink: 0; }
 
 /* ── Settings Modal ── */
 .nav-settings-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(11, 9, 41, 0.45);
-  z-index: 2000;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.65); z-index: 2000;
+  display: flex; align-items: flex-end; justify-content: center;
 }
 .nav-settings-overlay.hidden { display: none; }
 .nav-settings-sheet {
-  width: 100%;
-  max-width: 460px;
-  background: #FFFFFF;
+  width: 100%; max-width: 460px;
+  background: #111D2F;
   border-radius: 16px 16px 0 0;
   padding: 20px 20px calc(20px + env(safe-area-inset-bottom));
 }
 .nav-settings-handle {
   width: 36px; height: 4px;
-  background: #DDDAF2;
-  border-radius: 2px;
+  background: #1C2D42; border-radius: 2px;
   margin: 0 auto 20px;
 }
 .nav-settings-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: #0B0929;
-  letter-spacing: -.01em;
-  margin-bottom: 4px;
+  font-size: 13px; font-weight: 600;
+  color: #FFFFFF; letter-spacing: -.01em; margin-bottom: 4px;
 }
-.nav-settings-sub {
-  font-size: 11px;
-  color: #8A88B0;
-  margin-bottom: 16px;
-}
-.nav-auth-cards {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
+.nav-settings-sub { font-size: 11px; color: #4A5A72; margin-bottom: 16px; }
+.nav-auth-cards { display: flex; gap: 10px; margin-bottom: 20px; }
 .nav-auth-card {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: 14px 8px;
-  border: 1.5px solid #DDDAF2;
-  border-radius: 10px;
-  cursor: pointer;
-  background: #F7F6FC;
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; gap: 6px; padding: 14px 8px;
+  border: 1.5px solid #1C2D42; border-radius: 10px;
+  cursor: pointer; background: #131F33;
   transition: border-color .15s, background .15s;
   font-family: 'Space Grotesk', system-ui, sans-serif;
 }
-.nav-auth-card:hover { border-color: #B8B6E0; background: #EEEDF8; }
-.nav-auth-card.selected { border-color: #2825A0; background: #EEEDF8; }
+.nav-auth-card:hover  { border-color: #2A3F5A; background: #1a2840; }
+.nav-auth-card.selected { border-color: #E8900A; background: rgba(232,144,10,.1); }
 .nav-auth-flag { font-size: 24px; }
-.nav-auth-name { font-size: 12px; font-weight: 700; color: #0B0929; letter-spacing: .02em; }
-.nav-auth-desc { font-size: 9px; color: #8A88B0; text-align: center; line-height: 1.4; }
+.nav-auth-name { font-size: 12px; font-weight: 700; color: #FFFFFF; letter-spacing: .02em; }
+.nav-auth-desc { font-size: 9px; color: #4A5A72; text-align: center; line-height: 1.4; }
 .nav-settings-close {
-  width: 100%;
-  padding: 11px;
-  border: 1.5px solid #DDDAF2;
-  border-radius: 8px;
-  background: none;
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  color: #8A88B0;
-  cursor: pointer;
-  transition: border-color .15s, color .15s;
+  width: 100%; padding: 11px;
+  border: 1.5px solid #1C2D42; border-radius: 8px;
+  background: none; font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 13px; font-weight: 500; color: #4A5A72;
+  cursor: pointer; transition: border-color .15s, color .15s;
 }
-.nav-settings-close:hover { border-color: #B8B6E0; color: #0B0929; }
+.nav-settings-close:hover { border-color: #2A3F5A; color: #FFFFFF; }

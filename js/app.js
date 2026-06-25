@@ -690,58 +690,72 @@ function renderFlightCard(e) {
   const roleObj   = auth.roles.find(r => r.value === e.role);
   const roleLabel = roleObj ? roleObj.label : (e.role || '');
 
+  const d     = new Date(e.date + 'T12:00:00');
+  const day   = d.getDate();
+  const month = d.toLocaleDateString('en-GB', {month: 'short'}).toUpperCase();
+
   const hasNight = parseHours(e.nightHours) > 0;
   const hasIFR   = parseHours(e.ifrTime)    > 0;
 
-  const tags = [
-    e.aircraftType ? `<span class="entry-tag"><i class="ti ti-plane-tilt"></i> ${e.aircraftType}${e.registration ? ' ' + e.registration : ''}</span>` : '',
-    roleLabel       ? `<span class="entry-tag">${roleLabel}</span>` : '',
-    hasNight        ? `<span class="entry-tag"><i class="ti ti-moon"></i> ${e.nightHours}</span>` : '',
-    hasIFR          ? `<span class="entry-tag"><i class="ti ti-cloud"></i> IFR ${e.ifrTime}</span>` : '',
+  const pills = [
+    roleLabel      ? `<span class="entry-pill role-pill">${roleLabel}</span>` : '',
+    e.totalTime    ? `<span class="entry-pill dur-pill">${e.totalTime} h</span>` : '',
+    e.aircraftType ? `<span class="entry-pill type-pill">${e.aircraftType}</span>` : '',
+    hasNight       ? `<span class="entry-pill night-pill"><i class="ti ti-moon"></i> ${e.nightHours}</span>` : '',
+    hasIFR         ? `<span class="entry-pill ifr-pill">IFR</span>` : '',
   ].filter(Boolean).join('');
+
+  const depTime = e.offBlock || '';
+  const arrTime = e.onBlock  || '';
 
   return `
     <div class="entry-card" onclick="openDrawer(${e.id})">
-      <div class="entry-top">
-        <div class="entry-route">
-          ${e.origin || '???'}
-          <i class="ti ti-arrow-narrow-right"></i>
-          ${e.destination || '???'}
-        </div>
-        <div class="entry-right">
-          <span class="entry-time">${e.totalTime || '–'}</span>
-          <button class="entry-delete" onclick="deleteEntry(${e.id}, event)" title="Delete">
-            <i class="ti ti-trash"></i>
-          </button>
-        </div>
+      <div class="entry-date-col">
+        <span class="entry-day">${day}</span>
+        <span class="entry-month-lbl">${month}</span>
       </div>
-      <div class="entry-meta">
-        <span class="entry-date">${formatDate(e.date)}</span>
-        ${tags}
+      <div class="entry-body">
+        <div class="entry-block-times">
+          <span>${depTime}</span>
+          <span>${arrTime}</span>
+        </div>
+        <div class="entry-airports">
+          <span>${e.origin || '???'}</span>
+          <span>${e.destination || '???'}</span>
+        </div>
+        <div class="entry-pills">${pills}</div>
       </div>
+      <button class="entry-delete" onclick="deleteEntry(${e.id}, event)" title="Delete">
+        <i class="ti ti-trash"></i>
+      </button>
     </div>`;
 }
 
 function renderSimCard(e) {
+  const d     = new Date(e.date + 'T12:00:00');
+  const day   = d.getDate();
+  const month = d.toLocaleDateString('en-GB', {month: 'short'}).toUpperCase();
+
   return `
     <div class="entry-card" onclick="openDrawer(${e.id})">
-      <div class="entry-top">
-        <div class="entry-route">
-          <i class="ti ti-device-laptop"></i>
-          ${e.fstdType || 'Simulator'}
+      <div class="entry-date-col">
+        <span class="entry-day">${day}</span>
+        <span class="entry-month-lbl">${month}</span>
+      </div>
+      <div class="entry-body">
+        <div class="entry-block-times"><span></span><span></span></div>
+        <div class="entry-airports">
+          <span>${e.fstdType || 'Simulator'}</span>
+          <span></span>
         </div>
-        <div class="entry-right">
-          <span class="entry-time">${e.simDuration || '–'}</span>
-          <button class="entry-delete" onclick="deleteEntry(${e.id}, event)" title="Delete">
-            <i class="ti ti-trash"></i>
-          </button>
+        <div class="entry-pills">
+          <span class="entry-pill sim-pill">SIM</span>
+          ${e.simDuration ? `<span class="entry-pill dur-pill">${e.simDuration} h</span>` : ''}
         </div>
       </div>
-      <div class="entry-meta">
-        <span class="entry-date">${formatDate(e.date)}</span>
-        <span class="entry-tag sim"><i class="ti ti-device-laptop"></i> SIM</span>
-        ${e.remarks ? `<span class="entry-date">${e.remarks}</span>` : ''}
-      </div>
+      <button class="entry-delete" onclick="deleteEntry(${e.id}, event)" title="Delete">
+        <i class="ti ti-trash"></i>
+      </button>
     </div>`;
 }
 
@@ -778,7 +792,19 @@ function showTab(tab) {
   document.getElementById('tab-stats').classList.toggle('active', tab === 'stats');
   document.getElementById('log-view').classList.toggle('hidden', tab !== 'log');
   document.getElementById('stats-view').classList.toggle('hidden', tab !== 'stats');
+
+  // Update header
+  document.getElementById('header-title').textContent = tab === 'stats' ? 'My stats' : 'My flights';
+  document.getElementById('btn-header-search').classList.toggle('hidden', tab === 'stats');
+  document.getElementById('btn-header-export').classList.toggle('hidden', tab !== 'stats');
+  document.getElementById('fab-add').style.display = tab === 'stats' ? 'none' : '';
+
   if (tab === 'stats') renderStatsView();
+}
+
+function focusSearch() {
+  const el = document.getElementById('filter-search');
+  if (el) { el.focus(); el.select(); }
 }
 
 function setStatsPeriod(p) {
@@ -803,7 +829,7 @@ function getPeriodFlights() {
 function renderStatsView() {
   const sv = document.getElementById('stats-view');
   sv.innerHTML = `
-    <div class="period-bar">
+    <div class="period-bar hidden">
       <button class="period-btn${statsPeriod==='ytd'?' active':''}" data-period="ytd" onclick="setStatsPeriod('ytd')">This Year</button>
       <button class="period-btn${statsPeriod==='12m'?' active':''}" data-period="12m" onclick="setStatsPeriod('12m')">12 Months</button>
       <button class="period-btn${statsPeriod==='all'?' active':''}" data-period="all" onclick="setStatsPeriod('all')">All Time</button>
@@ -907,30 +933,123 @@ function renderStatsContent() {
 
   const noData = '<div class="sv-empty">No data for this period</div>';
 
+  // ── EASA FTL gauges (fixed periods) ──
+  const now2  = new Date();
+  const cut28 = new Date(now2); cut28.setDate(cut28.getDate() - 28);
+  const cut28S= cut28.toISOString().slice(0,10);
+  const hrs28 = allFl.filter(e => e.date >= cut28S).reduce((s,e) => s + parseHours(e.totalTime), 0);
+
+  const cutYr = `${now2.getFullYear()}-01-01`;
+  const hrsYr = allFl.filter(e => e.date >= cutYr).reduce((s,e) => s + parseHours(e.totalTime), 0);
+
+  const cut12m = new Date(now2); cut12m.setFullYear(cut12m.getFullYear() - 1);
+  const cut12S = cut12m.toISOString().slice(0,10);
+  const hrs12m = allFl.filter(e => e.date >= cut12S).reduce((s,e) => s + parseHours(e.totalTime), 0);
+
+  function makeGauge(value, maxVal, label, maxLabel) {
+    const R = 38, CX = 50, CY = 50;
+    const FULL_ANGLE = 270; // degrees of arc
+    const CIRC = 2 * Math.PI * R;
+    const arcLen = CIRC * FULL_ANGLE / 360;
+    const gap    = CIRC - arcLen;
+    const pct    = Math.min(value / maxVal, 1);
+    const filled = pct * arcLen;
+    const startAngle = 135; // degrees from positive x-axis
+
+    const bgDash  = `${arcLen.toFixed(2)} ${gap.toFixed(2)}`;
+    const fgDash  = `${filled.toFixed(2)} ${(CIRC - filled).toFixed(2)}`;
+    const rotate  = `rotate(${startAngle}, ${CX}, ${CY})`;
+    const valStr  = formatHours(value);
+
+    return `
+      <div class="sv-gauge-cell">
+        <svg class="sv-gauge-svg" viewBox="0 0 100 100" width="100" height="100">
+          <circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="7"
+            stroke-dasharray="${bgDash}" stroke-dashoffset="0" transform="${rotate}" stroke-linecap="round"/>
+          <circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="#E8900A" stroke-width="7"
+            stroke-dasharray="${fgDash}" stroke-dashoffset="0" transform="${rotate}" stroke-linecap="round"/>
+          <text x="${CX}" y="47" text-anchor="middle" font-family="Space Grotesk,sans-serif"
+            font-size="13" font-weight="700" fill="#FFFFFF">${valStr}</text>
+          <text x="${CX}" y="60" text-anchor="middle" font-family="Space Grotesk,sans-serif"
+            font-size="7" fill="#7A8FA6">h</text>
+        </svg>
+        <div class="sv-gauge-val">${label}</div>
+        <div class="sv-gauge-max">max ${maxLabel}</div>
+      </div>`;
+  }
+
+  // ── Duration breakdown (all-time) ──
+  const durBrackets = [
+    {label:'12 h – 18 h', min:12, max:18},
+    {label:'7 h – 12 h',  min:7,  max:12},
+    {label:'4 h – 7 h',   min:4,  max:7},
+    {label:'2 h – 4 h',   min:2,  max:4},
+    {label:'0 h – 2 h',   min:0,  max:2},
+  ];
+  const durTotals = durBrackets.map(b => {
+    const hrs = allFl.filter(e => {
+      const h = parseHours(e.totalTime);
+      return h >= b.min && h < b.max;
+    }).reduce((s,e) => s + parseHours(e.totalTime), 0);
+    return {...b, hrs};
+  });
+  const durGrandTotal = durTotals.reduce((s,b) => s + b.hrs, 0);
+  const durRows = durTotals.map(b => {
+    const pct = durGrandTotal > 0 ? Math.round(b.hrs / durGrandTotal * 100) : 0;
+    return `<div class="dur-bk-row">
+      <div class="dur-bk-left">
+        <div class="dur-bk-range">${b.label}</div>
+        <div class="dur-bk-hrs">${formatHours(b.hrs)}</div>
+      </div>
+      <div class="dur-bk-bar"><div class="dur-bk-fill" style="width:${pct}%"></div></div>
+      <div class="dur-bk-pct">${pct} %</div>
+    </div>`;
+  }).join('');
+
+  // ── Recency ──
+  const ldgDayPct  = Math.min(ldgD90 / 3 * 100, 100);
+  const ldgNightPct= Math.min(ldgN90 / 3 * 100, 100);
+  const ldgDayCls  = ldgD90 >= 3 ? 'sv-recency-ok' : ldgD90 >= 1 ? 'sv-recency-warn' : 'sv-recency-exp';
+  const ldgNightCls= ldgN90 >= 3 ? 'sv-recency-ok' : ldgN90 >= 1 ? 'sv-recency-warn' : 'sv-recency-exp';
+
   document.getElementById('sv-content').innerHTML = `
-    <div class="sv-nums">
-      ${[
-        {lbl:'Total Hours',  val:formatHours(total), ic:'ti-clock'},
-        {lbl:'PIC Hours',    val:formatHours(pic),   ic:'ti-user-check'},
-        {lbl:'Night Hours',  val:formatHours(night), ic:'ti-moon'},
-        {lbl:'IFR Hours',    val:formatHours(ifr),   ic:'ti-cloud'},
-        {lbl:'Flights',      val:cnt,                ic:'ti-plane'},
-        {lbl:'Landings',     val:ldgs,               ic:'ti-plane-arrival'},
-        {lbl:'Sim Hours',    val:formatHours(sim),   ic:'ti-device-laptop'},
-        {lbl:'Avg / Flight', val:formatHours(avg),   ic:'ti-chart-line'},
-      ].map(n => `<div class="sv-num-card"><i class="ti ${n.ic} sv-num-ic"></i><div class="sv-num-val">${n.val}</div><div class="sv-num-lbl">${n.lbl}</div></div>`).join('')}
+    <div class="sv-section-title">Flight time</div>
+    <div class="sv-gauges">
+      ${makeGauge(hrs28,  100,  'Last 28 days', '100 h')}
+      ${makeGauge(hrs12m, 1000, 'Last 12 months', '1000 h')}
+      ${makeGauge(hrsYr,  900,  'Year ${now2.getFullYear()}', '900 h')}
+    </div>
+
+    <div class="sv-section-title">Recency</div>
+    <div class="sv-recency">
+      <div class="sv-recency-row ${ldgDayCls}">
+        <div class="sv-recency-top">
+          <span>LDG recency</span>
+          <span class="sv-recency-sub">${ldgD90} landing${ldgD90!==1?'s':''} in 90 days</span>
+        </div>
+        <div class="sv-recency-track"><div class="sv-recency-fill" style="width:${ldgDayPct}%"></div></div>
+      </div>
+      <div class="sv-recency-row ${ldgNightCls}">
+        <div class="sv-recency-top">
+          <span>Night time</span>
+          <span class="sv-recency-sub">${ldgN90} night landing${ldgN90!==1?'s':''} in 90 days</span>
+        </div>
+        <div class="sv-recency-track"><div class="sv-recency-fill" style="width:${ldgNightPct}%"></div></div>
+      </div>
     </div>
 
     <div class="sv-card">
-      <div class="sv-card-hdr">Hours per Month <span class="sv-card-tag">last 12 months · all time</span></div>
+      <div class="sv-card-hdr">Hours per Month <span class="sv-card-sub">last 12 months</span></div>
       ${chartSvg}
     </div>
 
     <div class="sv-card">
-      <div class="sv-card-hdr">EASA Currency <span class="sv-card-tag">90-day window</span></div>
-      <div class="curr-row ${ldgD90>=3?'curr-ok':'curr-exp'}"><i class="ti ti-sun"></i><span>Day landings</span><span class="curr-val">${ldgD90} ${ldgD90>=3?'/ 3 ✓':'/ 3 needed'}</span></div>
-      <div class="curr-row ${ldgN90>=3?'curr-ok':'curr-exp'}"><i class="ti ti-moon"></i><span>Night landings</span><span class="curr-val">${ldgN90} ${ldgN90>=3?'/ 3 ✓':'/ 3 needed'}</span></div>
-      ${nightRow}
+      <div class="sv-card-hdr">Insights</div>
+      <div class="sv-card-hdr sv-card-hdr--mt" style="margin-bottom:8px;font-size:12px;color:var(--text-muted);font-weight:500;">Average flight duration</div>
+      ${durRows || noData}
+      ${insList.length > 0 ? `<div class="sv-card-hdr sv-card-hdr--mt" style="font-size:12px;color:var(--text-muted);font-weight:500;margin-bottom:8px;">Top stats</div>` + insList.map(i =>
+        `<div class="ins-row"><i class="ti ${i.ic} ins-ic"></i><div><div class="ins-lbl">${i.lbl}</div><div class="ins-val">${i.val}</div></div></div>`
+      ).join('') : ''}
     </div>
 
     <div class="sv-card">
@@ -941,13 +1060,6 @@ function renderStatsContent() {
         const pct = total>0 ? Math.round(h/total*100) : 0;
         return `<div class="bk-row"><span class="bk-name">${rLbl(r)}</span><div class="bk-track"><div class="bk-fill" style="width:${pct}%"></div></div><span class="bk-val">${formatHours(h)}</span></div>`;
       }).join('') || noData}
-    </div>
-
-    <div class="sv-card">
-      <div class="sv-card-hdr">Insights <span class="sv-card-tag">all time</span></div>
-      ${insList.length > 0 ? insList.map(i =>
-        `<div class="ins-row"><i class="ti ${i.ic} ins-ic"></i><div><div class="ins-lbl">${i.lbl}</div><div class="ins-val">${i.val}</div></div></div>`
-      ).join('') : noData}
     </div>`;
 }
 
