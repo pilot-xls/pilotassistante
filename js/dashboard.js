@@ -1,69 +1,25 @@
 const M=[
-  {name:'FTL Schedule',  code:'FTL', sub:'Flight time limitations · EASA Part-FCL',          st:'soon'},
-  {name:'Logbook',       code:'LOG', sub:'Smart logbook · EASA & FAA',                        st:'active'},
-  {name:'Documents',     code:'DOC', sub:'Licenças · Certificados · Validades',               st:'soon'},
-  {name:'Training',      code:'TRN', sub:'Simuladores · Type ratings · Formação',             st:'soon'},
-  {name:'Memories',      code:'MEM', sub:'Diário de voo pessoal',                             st:'soon'},
-  {name:'Jobs',          code:'JOB', sub:'Mercado de emprego · Airlines',                     st:'soon'},
-  {name:'Aviation News', code:'AVN', sub:'Notícias da aviação',                               st:'soon'},
-  {name:'Briefing',      code:'BRF', sub:'Pré-voo · Meteorologia · NOTAMs',                  st:'soon'},
-  {name:'Salary Calc',   code:'SAL', sub:'Calculadora salarial · Per diem',                  st:'soon'},
-  {name:'Interview Prep',code:'INT', sub:'Preparação de entrevistas',                         st:'soon'},
-  {name:'Fatigue Log',   code:'FAT', sub:'Registo de fadiga · FRMS',                         st:'critical'},
-  {name:'Home Widget',   code:'WGT', sub:'Widget de ecrã principal',                          st:'soon'},
-  {name:'Annual Report', code:'ANN', sub:'Relatório anual automático',                        st:'soon'},
-  {name:'Voice AI',      code:'VOC', sub:'Assistente de voz IA',                              st:'critical'},
-  {name:'Wellbeing',     code:'WEL', sub:'Bem-estar · Sono · Jet lag',                       st:'critical'},
+  {name:'FTL Schedule',  code:'FTL', st:'soon'},
+  {name:'Logbook',       code:'LOG', st:'active'},
+  {name:'Documents',     code:'DOC', st:'soon'},
+  {name:'Training',      code:'TRN', st:'soon'},
+  {name:'Memories',      code:'MEM', st:'soon'},
+  {name:'Jobs',          code:'JOB', st:'soon'},
+  {name:'Aviation News', code:'AVN', st:'soon'},
+  {name:'Briefing',      code:'BRF', st:'soon'},
+  {name:'Salary Calc',   code:'SAL', st:'soon'},
+  {name:'Interview Prep',code:'INT', st:'soon'},
+  {name:'Fatigue Log',   code:'FAT', st:'critical'},
+  {name:'Home Widget',   code:'WGT', st:'soon'},
+  {name:'Annual Report', code:'ANN', st:'soon'},
+  {name:'Voice AI',      code:'VOC', st:'critical'},
+  {name:'Wellbeing',     code:'WEL', st:'critical'},
 ];
-const N=15;
-let sel=1;
 
 const MODULE_LINKS={
   LOG:'logbook.html',
-  FTL:'#',
-  DOC:'#', TRN:'#', MEM:'#', JOB:'#', AVN:'#', BRF:'#',
-  SAL:'#', INT:'#', FAT:'#', WGT:'#', ANN:'#', VOC:'#', WEL:'#',
-};
-
-function parseH(val){
-  if(!val||val==='')return 0;
-  val=String(val).trim();
-  if(val.includes(':')){const[h,m]=val.split(':').map(Number);return(h||0)+(m||0)/60;}
-  return parseFloat(val)||0;
-}
-
-function logbookGaugeItems(){
-  const raw=localStorage.getItem('pa_entries');
-  if(!raw)return null;
-  const entries=JSON.parse(raw).filter(e=>!e.isSim);
-  if(!entries.length)return null;
-  const total=entries.reduce((s,e)=>s+parseH(e.totalTime),0);
-  const pic  =entries.filter(e=>e.role==='PIC').reduce((s,e)=>s+parseH(e.totalTime),0);
-  const night=entries.reduce((s,e)=>s+parseH(e.nightHours),0);
-  const ifr  =entries.reduce((s,e)=>s+parseH(e.ifrTime),0);
-  const maxV =Math.max(total,1);
-  return[
-    {label:'Total Hours', value:total, max:Math.max(total*1.5,100), unit:'h'},
-    {label:'PIC Hours',   value:pic,   max:maxV,                    unit:'h'},
-    {label:'Night Hours', value:night, max:maxV,                    unit:'h'},
-    {label:'IFR Hours',   value:ifr,   max:maxV,                    unit:'h'},
-  ];
-}
-
-const GAUGE_DATA={
-  LOG:{
-    label:'Estatísticas', live:true,
-    items:logbookGaugeItems(),
-  },
-  FTL:{
-    label:'Limites Part-FCL', live:false,
-    items:[
-      {label:'7 Dias',    value:38.3, max:60,   unit:'h', dec:1},
-      {label:'28 Dias',   value:89.8, max:110,  unit:'h', dec:1},
-      {label:'12 Meses',  value:612.5,max:1000, unit:'h', dec:1},
-      {label:'FDP Hoje',  value:7.25, max:13,   unit:'h', dec:2},
-    ]
-  },
+  FTL:'#',DOC:'#',TRN:'#',MEM:'#',JOB:'#',AVN:'#',BRF:'#',
+  SAL:'#',INT:'#',FAT:'#',WGT:'#',ANN:'#',VOC:'#',WEL:'#',
 };
 
 const ICONS={
@@ -84,149 +40,169 @@ const ICONS={
   WEL:`<svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>`,
 };
 
-/* ── Build module grid ── */
-const grid=document.getElementById('grid');
-M.forEach((m,i)=>{
-  const c=document.createElement('div');
-  c.className='card'+(i===sel?' active':'')+(m.st==='critical'?' critical':'');
-  c.id='c'+i;
-  c.innerHTML=`${ICONS[m.code]||''}<span class="card-code">${m.code}</span>`;
-  c.addEventListener('click',()=>select(i));
-  grid.appendChild(c);
-});
-
-/* ── Refs ── */
-const dBg=document.getElementById('d-bg');
-const dPill=document.getElementById('d-pill');
-const dDot=document.getElementById('d-dot');
-const dPillTxt=document.getElementById('d-pill-txt');
-const dName=document.getElementById('d-name');
-const dSub=document.getElementById('d-sub');
-const dPos=document.getElementById('d-pos');
-const prog=document.getElementById('prog');
-const gZone=document.getElementById('gauge-zone');
-const openBtn=document.getElementById('open-btn');
-
-const ST={active:'Module Activo',soon:'Em Breve',critical:'Crítico'};
-
-/* ── Gauge SVG builder (semicircle meter) ── */
-function polar(cx,cy,r,deg){
-  const a=(deg-90)*Math.PI/180;
-  return {x:cx+r*Math.cos(a), y:cy+r*Math.sin(a)};
-}
-function arcPath(cx,cy,r,startDeg,endDeg){
-  const s=polar(cx,cy,r,endDeg), e=polar(cx,cy,r,startDeg);
-  const large=(endDeg-startDeg)<=180?'0':'1';
-  return `M ${s.x} ${s.y} A ${r} ${r} 0 ${large} 0 ${e.x} ${e.y}`;
-}
-function fmtHM(v){
-  const h=Math.floor(v), m=Math.round((v-h)*60);
-  return h+':'+String(m).padStart(2,'0');
+function parseH(val){
+  if(!val||val==='')return 0;
+  val=String(val).trim();
+  if(val.includes(':')){const[h,m]=val.split(':').map(Number);return(h||0)+(m||0)/60;}
+  return parseFloat(val)||0;
 }
 
-function buildGauge(g){
-  const pct=Math.max(0,Math.min(1,g.value/g.max));
-  const endDeg=-90+pct*180;
-  const cx=42,cy=46,r=34;
-  let color='var(--acc)', pctColor='var(--acc-m)';
-  if(pct>=0.92){color='var(--crit)';pctColor='var(--crit)';}
-  else if(pct>=0.75){color='var(--amb)';pctColor='var(--amb)';}
+function fmtDate(str){
+  if(!str)return '';
+  const d=new Date(str+'T00:00:00');
+  const mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return d.getDate()+' '+mo[d.getMonth()];
+}
 
-  const track=arcPath(cx,cy,r,-90,90);
-  const fill=arcPath(cx,cy,r,-90,endDeg);
+function daysSince(str){
+  if(!str)return null;
+  const diff=Date.now()-new Date(str+'T00:00:00').getTime();
+  return Math.floor(diff/86400000);
+}
 
-  return `
-    <div class="gauge-box">
-      <svg class="gauge-svg" viewBox="0 0 84 50">
-        <path d="${track}" fill="none" stroke="var(--bdr)" stroke-width="6" stroke-linecap="round"/>
-        <path d="${fill}" fill="none" stroke="${color}" stroke-width="6" stroke-linecap="round"/>
-      </svg>
-      <div class="gauge-val">${fmtHM(g.value)}<span class="unit">${g.unit}</span></div>
-      <div class="gauge-lbl">${g.label}</div>
-      <div class="gauge-pct" style="color:${pctColor}">${Math.round(pct*100)}% of ${fmtHM(g.max)}${g.unit}</div>
+function getEntries(){
+  try{return JSON.parse(localStorage.getItem('pa_entries')||'[]');}catch{return[];}
+}
+
+/* ── HERO ── */
+function renderHero(flights){
+  const total=flights.reduce((s,e)=>s+parseH(e.totalTime),0);
+  const ym=new Date().toISOString().slice(0,7);
+  const monthH=flights.filter(e=>e.date&&e.date.startsWith(ym)).reduce((s,e)=>s+parseH(e.totalTime),0);
+  const sorted=[...flights].sort((a,b)=>((b.date||'')>(a.date||'')?1:-1));
+  const last=sorted[0];
+  const days=last?daysSince(last.date):null;
+  const daysStr=days===null?'–':days===0?'Today':days===1?'1d ago':days+'d ago';
+  const totalRound=Math.round(total);
+  const totalStr=totalRound>=1000
+    ?Math.floor(totalRound/1000)+' '+String(totalRound%1000).padStart(3,'0')
+    :String(totalRound);
+
+  document.getElementById('hero').innerHTML=`
+    <div class="hero">
+      <div class="hero-wm">
+        <svg width="160" height="160" viewBox="0 0 24 24" fill="white"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+      </div>
+      <div class="hero-greeting">Total flight hours</div>
+      <div class="hero-main">
+        <div class="hero-hours">${totalStr||'0'}</div>
+        <div class="hero-unit">h</div>
+      </div>
+      ${last?`<div class="hero-badge"><div class="hero-badge-dot"></div><span class="hero-badge-txt">Last flight · ${fmtDate(last.date)}</span></div>`
+            :`<div class="hero-badge"><span class="hero-badge-txt">No flights logged yet</span></div>`}
+      <div class="hero-stats">
+        <div class="hs"><div class="hs-val">${Math.round(monthH)}h</div><div class="hs-lbl">This month</div></div>
+        <div class="hs"><div class="hs-val">${flights.length}</div><div class="hs-lbl">Total flights</div></div>
+        <div class="hs"><div class="hs-val">${daysStr}</div><div class="hs-lbl">Last flight</div></div>
+      </div>
     </div>`;
 }
 
-function buildGaugeZone(code){
-  const data=GAUGE_DATA[code];
-  if(!data){
-    gZone.innerHTML=`
-      <div class="gauge-empty">
-        <div class="gauge-empty-ic">◌</div>
-        <div class="gauge-empty-txt">Métricas deste módulo aparecerão aqui<br>quando estiver implementado</div>
-        <div class="gauge-empty-sub">Módulo ainda não desenvolvido</div>
-      </div>`;
-    return;
+/* ── EASA CURRENCY ── */
+function renderCurrency(flights){
+  const now=new Date();
+  const cutoff=new Date(now-90*86400000).toISOString().slice(0,10);
+  const recent=flights.filter(e=>e.date>=cutoff);
+  const ldgD=recent.reduce((s,e)=>s+(e.ldgDay||0),0);
+  const ldgN=recent.reduce((s,e)=>s+(e.ldgNight||0),0);
+
+  const nightFl=[...flights].filter(e=>(e.ldgNight||0)>0).sort((a,b)=>((b.date||'')>(a.date||'')?1:-1));
+  let expStr='–', expClass='crit', expSub='No data';
+  if(nightFl.length>=3){
+    const exp=new Date(new Date(nightFl[2].date+'T00:00:00').getTime()+90*86400000);
+    const diff=Math.ceil((exp-now)/86400000);
+    expStr=diff<=0?'Expired':diff+'d';
+    expClass=diff<=0?'crit':diff<=14?'warn':'ok';
+    expSub=diff<=0?'Expired':`Exp ${exp.getDate()} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][exp.getMonth()]}`;
+  } else if(nightFl.length>0){
+    expStr='<3';expClass='warn';expSub=`${nightFl.length}/3 flights`;
   }
-  if(!data.items){
-    gZone.innerHTML=`
-      <div class="gauge-empty">
-        <div class="gauge-empty-ic">✈</div>
-        <div class="gauge-empty-txt">Ainda não tens voos registados no Logbook</div>
-        <div class="gauge-empty-sub">As métricas aparecerão aqui após o primeiro voo</div>
-      </div>`;
-    return;
-  }
-  const tag=data.live?'dados reais':'dados de exemplo';
-  gZone.innerHTML=`
-    <div class="gauge-zone-label">
-      <span>${data.label}</span>
-      <span class="gauge-zone-tag">${tag}</span>
-    </div>
-    <div class="gauge-grid">${data.items.map(buildGauge).join('')}</div>`;
+
+  const dayClass=ldgD>=3?'ok':ldgD>=2?'warn':'crit';
+  const nClass=ldgN>=3?'ok':ldgN>=2?'warn':'crit';
+
+  document.getElementById('currency-section').innerHTML=`
+    <div class="home-section">
+      <div class="sh"><span class="sh-title">EASA Currency</span><span class="sh-tag">90 DAYS</span></div>
+      <div class="curr-grid">
+        <div class="cc ${dayClass}">
+          <div class="cc-dot"></div><div class="cc-val">${ldgD}</div>
+          <div class="cc-lbl">Day ldgs</div>
+          <div class="cc-sub">${ldgD>=3?'OK · min 3':'Need '+(3-ldgD)+' more'}</div>
+        </div>
+        <div class="cc ${nClass}">
+          <div class="cc-dot"></div><div class="cc-val">${ldgN}</div>
+          <div class="cc-lbl">Night ldgs</div>
+          <div class="cc-sub">${ldgN>=3?'OK · min 3':'Need '+(3-ldgN)+' more'}</div>
+        </div>
+        <div class="cc ${expClass}">
+          <div class="cc-dot"></div><div class="cc-val">${expStr}</div>
+          <div class="cc-lbl">Night exp</div>
+          <div class="cc-sub">${expSub}</div>
+        </div>
+      </div>
+    </div>`;
 }
 
-function updateDetail(i,instant){
-  const m=M[i];
-  dBg.textContent=String(i+1).padStart(2,'0');
-  dPos.textContent=String(i+1).padStart(2,'0')+' / 15';
-  prog.style.width=((i+1)/N*100)+'%';
+/* ── RECENT FLIGHTS ── */
+function renderRecent(flights){
+  const recent=[...flights].sort((a,b)=>((b.date||'')>(a.date||'')?1:-1)).slice(0,3);
+  const arrowSvg=`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`;
+  const rows=recent.length
+    ?recent.map(e=>`
+      <a class="fl" href="logbook.html">
+        <div class="fl-route">
+          <span class="fl-apt">${e.origin||'?'}</span>${arrowSvg}<span class="fl-apt">${e.destination||'?'}</span>
+        </div>
+        ${e.aircraftType?`<span class="fl-type">${e.aircraftType}</span>`:''}
+        <div class="fl-meta">
+          <span class="fl-dur">${e.totalTime||'–'}</span>
+          <span class="fl-date">${fmtDate(e.date)}</span>
+        </div>
+      </a>`).join('')
+    :`<div class="recent-empty">No flights in your logbook yet.<br>Tap <strong>Log flight</strong> below to add your first.</div>`;
 
-  openBtn.disabled=false;
-
-  if(instant){ apply(m); return; }
-
-  [dPill,dName,dSub,gZone].forEach(el=>el.classList.add('fade'));
-  setTimeout(()=>{
-    apply(m);
-    [dPill,dName,dSub,gZone].forEach(el=>el.classList.remove('fade'));
-  },100);
+  document.getElementById('recent-section').innerHTML=`
+    <div class="home-section">
+      <div class="sh">
+        <span class="sh-title">Recent flights</span>
+        <a class="sh-tag sh-link" href="logbook.html">See all →</a>
+      </div>
+      <div class="flights-list">${rows}</div>
+    </div>`;
 }
 
-function apply(m){
-  dName.textContent=m.name;
-  dSub.textContent=m.sub;
-  dPillTxt.textContent=ST[m.st];
-  dPill.className='status-pill'+(m.st==='critical'?' critical':'');
-  dDot.className='status-pill-dot'+(m.st==='critical'?' critical':m.st==='soon'?' soon':'');
-  buildGaugeZone(m.code);
+/* ── QUICK ACTION ── */
+function renderQA(){
+  const plusSvg=`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>`;
+  document.getElementById('qa-section').innerHTML=`
+    <div class="qa-wrap">
+      <a class="qa-btn" href="logbook.html">${plusSvg}Log flight</a>
+    </div>`;
 }
 
-function select(i){
-  if(i===sel)return;
-  document.getElementById('c'+sel)?.classList.remove('active');
-  sel=i;
-  document.getElementById('c'+sel)?.classList.add('active');
-  updateDetail(sel,false);
+/* ── MODULE GRID ── */
+function buildGrid(){
+  const grid=document.getElementById('grid');
+  M.forEach(m=>{
+    const c=document.createElement('div');
+    c.className='card'+(m.code==='LOG'?' active':'')+(m.st==='critical'?' critical':'');
+    c.innerHTML=`${ICONS[m.code]||''}<span class="card-code">${m.code}</span>`;
+    c.addEventListener('click',()=>{
+      const link=MODULE_LINKS[m.code];
+      if(link&&link!=='#')window.location.href=link;
+    });
+    grid.appendChild(c);
+  });
 }
 
-function doOpen(){
-  const m=M[sel];
-  const link=MODULE_LINKS[m.code];
-  if(link && link!=='#'){
-    window.location.href=link;
-  }
-}
-
-document.addEventListener('keydown',e=>{
-  let n=sel;
-  if(e.key==='ArrowRight') n=(sel+1)%N;
-  else if(e.key==='ArrowLeft') n=(sel-1+N)%N;
-  else if(e.key==='ArrowDown') n=Math.min(N-1,sel+5);
-  else if(e.key==='ArrowUp') n=Math.max(0,sel-5);
-  else if(e.key==='Enter'||e.key===' '){doOpen();e.preventDefault();return;}
-  else return;
-  e.preventDefault(); select(n);
-});
-
-updateDetail(sel,true);
+/* ── INIT ── */
+(function(){
+  const entries=getEntries();
+  const flights=entries.filter(e=>!e.isSim);
+  renderHero(flights);
+  renderCurrency(flights);
+  renderRecent(flights);
+  renderQA();
+  buildGrid();
+})();

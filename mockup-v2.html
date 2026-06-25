@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PilotAssistante — Mockup v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:#0B0929;display:flex;justify-content:center;align-items:center;font-family:'Space Grotesk',system-ui,sans-serif}
+:root{
+  --bg:#F6F5FC;--white:#FFFFFF;--acc:#2825A0;--acc-l:#EEEDF8;--acc-b:#B8B6E0;--acc-m:#5552C0;
+  --txt:#0B0929;--mut:#8A88B0;--bdr:#DDDAF2;--bdr-s:#ECEBF8;
+  --crit:#D03030;--crit-l:#FFF0F0;--amb:#C98A1E;--amb-l:#FBF1DE;
+  --grn:#1E9E5A;--grn-l:#E8F7EF;--fm:'Space Mono',monospace;
+  --nav-h:68px;
+}
+
+/* ── PHONE SHELL ── */
+.phone{
+  width:390px;height:844px;
+  background:var(--bg);
+  border-radius:44px;
+  overflow:hidden;
+  position:relative;
+  box-shadow:0 0 0 10px #1a1730, 0 0 0 12px #2e2a50, 0 40px 80px rgba(0,0,0,.6);
+  display:flex;flex-direction:column;
+}
+.phone-notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:34px;background:#0B0929;border-radius:0 0 22px 22px;z-index:200}
+
+/* ── SCREENS ── */
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--bg);transform:translateX(100%);transition:transform .32s cubic-bezier(.4,0,.2,1);will-change:transform}
+.screen.active{transform:translateX(0)}
+.screen.exit{transform:translateX(-30%)}
+.screen.from-left{transform:translateX(-100%)}
+.screen.exit-right{transform:translateX(100%)}
+
+/* ── SCROLLABLE CONTENT ── */
+.scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:var(--nav-h)}
+.scroll::-webkit-scrollbar{display:none}
+
+/* ── TOP BAR ── */
+.bar{padding:44px 22px 14px;display:flex;justify-content:space-between;align-items:center;background:var(--white);border-bottom:1px solid var(--bdr-s);flex-shrink:0}
+.bar-logo{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:700;color:var(--acc);letter-spacing:-.03em}
+.bar-ver{font-family:var(--fm);font-size:8px;color:var(--mut);letter-spacing:.1em;background:var(--acc-l);padding:3px 8px;border-radius:20px}
+.bar-action{width:34px;height:34px;border:1px solid var(--bdr);border-radius:50%;background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--txt)}
+
+/* ── HERO ── */
+.hero{
+  background:linear-gradient(155deg, #1a178a 0%, #2825A0 55%, #3d3ab8 100%);
+  padding:22px 22px 20px;position:relative;overflow:hidden;flex-shrink:0;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 80% 20%, rgba(120,116,220,.35) 0%, transparent 60%);
+}
+.hero-watermark{position:absolute;right:-10px;bottom:-24px;opacity:.07;pointer-events:none}
+.hero-greeting{font-family:var(--fm);font-size:9px;letter-spacing:.18em;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:8px;position:relative}
+.hero-main{display:flex;align-items:flex-end;gap:4px;margin-bottom:4px;position:relative}
+.hero-hours{font-family:var(--fm);font-weight:700;font-size:56px;color:#fff;line-height:1;letter-spacing:-.03em}
+.hero-unit{font-size:20px;font-weight:400;color:rgba(255,255,255,.45);margin-bottom:8px;margin-left:2px}
+.hero-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:3px 10px 3px 7px;position:relative}
+.hero-badge-dot{width:5px;height:5px;border-radius:50%;background:#4ade80;flex-shrink:0}
+.hero-badge-txt{font-family:var(--fm);font-size:8px;letter-spacing:.1em;color:rgba(255,255,255,.7)}
+.hero-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:16px;position:relative}
+.hs{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);border-radius:11px;padding:10px 11px 9px}
+.hs-val{font-family:var(--fm);font-weight:700;font-size:16px;color:#fff;line-height:1}
+.hs-lbl{font-family:var(--fm);font-size:7px;letter-spacing:.13em;color:rgba(255,255,255,.45);text-transform:uppercase;margin-top:4px}
+
+/* ── CURRENCY ── */
+.section{padding:16px 18px 0}
+.sh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.sh-title{font-family:var(--fm);font-size:8px;letter-spacing:.16em;color:var(--mut);text-transform:uppercase}
+.sh-tag{font-family:var(--fm);font-size:7px;color:var(--acc-b);letter-spacing:.08em}
+
+.curr-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+.cc{border-radius:12px;padding:11px 11px 10px;display:flex;flex-direction:column;gap:2px}
+.cc.ok{background:var(--grn-l);border:1px solid #B2E4C6}
+.cc.warn{background:var(--amb-l);border:1px solid #EDCF8A}
+.cc.crit{background:var(--crit-l);border:1px solid #EDB4B4}
+.cc-dot{width:5px;height:5px;border-radius:50%;margin-bottom:3px}
+.cc.ok .cc-dot{background:var(--grn)}
+.cc.warn .cc-dot{background:var(--amb)}
+.cc.crit .cc-dot{background:var(--crit)}
+.cc-val{font-family:var(--fm);font-weight:700;font-size:16px;line-height:1}
+.cc.ok .cc-val{color:#177A44}
+.cc.warn .cc-val{color:#9A6510}
+.cc.crit .cc-val{color:#B02020}
+.cc-lbl{font-family:var(--fm);font-size:6.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin-top:2px}
+.cc-sub{font-size:9px;margin-top:3px}
+.cc.ok .cc-sub{color:#1E7A44}
+.cc.warn .cc-sub{color:#8A5E0E}
+.cc.crit .cc-sub{color:#A02020}
+
+/* ── RECENT FLIGHTS ── */
+.flights-list{display:flex;flex-direction:column;gap:6px}
+.fl{background:var(--white);border:1px solid var(--bdr-s);border-radius:12px;padding:11px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:background .12s}
+.fl:active{background:var(--acc-l)}
+.fl-route{display:flex;align-items:center;gap:6px;flex:1}
+.fl-apt{font-family:var(--fm);font-weight:700;font-size:13px;color:var(--txt)}
+.fl-arrow{color:var(--acc-b)}
+.fl-meta{display:flex;flex-direction:column;align-items:flex-end;gap:1px}
+.fl-dur{font-family:var(--fm);font-weight:700;font-size:12px;color:var(--acc)}
+.fl-date{font-family:var(--fm);font-size:8px;color:var(--mut);letter-spacing:.04em}
+.fl-type{font-size:9px;color:var(--mut);background:var(--acc-l);padding:1px 6px;border-radius:20px;font-weight:600}
+
+/* ── QUICK ACTION ── */
+.qa-wrap{padding:16px 18px 18px}
+.qa-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:9px;padding:15px;background:var(--acc);border:none;border-radius:12px;font-family:'Space Grotesk',system-ui,sans-serif;font-size:14px;font-weight:600;color:#fff;cursor:pointer;letter-spacing:.01em;transition:background .15s}
+.qa-btn:active{background:var(--acc-m)}
+
+/* ── MODULE GRID ── */
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding:0 18px 20px}
+.card{background:var(--white);border:1px solid var(--bdr);border-radius:11px;padding:12px 6px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:background .12s,border-color .12s}
+.card:active{background:var(--acc-l);border-color:var(--acc-b)}
+.card.active{background:var(--acc);border-color:var(--acc)}
+.card.crit::before{content:'';position:absolute;inset:0;border-radius:11px;box-shadow:inset 0 2.5px 0 var(--crit);pointer-events:none}
+.card{position:relative}
+.card-icon{width:20px;height:20px;color:var(--mut)}
+.card.active .card-icon{color:rgba(255,255,255,.9)}
+.card-code{font-size:9px;font-weight:700;color:var(--txt);letter-spacing:.04em}
+.card.active .card-code{color:#fff}
+
+/* ── LOG SCREEN ── */
+.log-head{padding:44px 22px 0;background:var(--white);border-bottom:1px solid var(--bdr-s);flex-shrink:0}
+.log-head-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px}
+.log-title{font-size:22px;font-weight:700;color:var(--txt);letter-spacing:-.025em}
+.add-btn{display:flex;align-items:center;gap:6px;background:var(--acc);border:none;border-radius:9px;padding:8px 14px;font-family:'Space Grotesk',system-ui,sans-serif;font-size:12px;font-weight:600;color:#fff;cursor:pointer}
+.tab-bar{display:flex;border-top:1px solid var(--bdr-s)}
+.tab{flex:1;padding:11px;border:none;background:none;font-family:'Space Grotesk',system-ui,sans-serif;font-size:12px;font-weight:500;color:var(--mut);cursor:pointer;border-bottom:2px solid transparent;transition:color .15s,border-color .15s}
+.tab.on{color:var(--acc);border-bottom-color:var(--acc)}
+
+/* ── ENTRY LIST ── */
+.entries{display:flex;flex-direction:column;gap:0}
+.entry{background:var(--white);border-bottom:1px solid var(--bdr-s);padding:13px 18px;display:flex;align-items:center;gap:12px;cursor:pointer}
+.entry:active{background:var(--acc-l)}
+.entry-date{font-family:var(--fm);font-size:9px;color:var(--mut);letter-spacing:.06em;width:38px;flex-shrink:0;text-align:center;line-height:1.4}
+.entry-date b{display:block;font-size:17px;color:var(--txt);font-weight:700;letter-spacing:-.02em}
+.entry-body{flex:1}
+.entry-route{font-size:13px;font-weight:600;color:var(--txt);letter-spacing:-.01em}
+.entry-meta{font-family:var(--fm);font-size:9px;color:var(--mut);margin-top:2px}
+.entry-right{text-align:right}
+.entry-dur{font-family:var(--fm);font-weight:700;font-size:13px;color:var(--acc)}
+.entry-role{font-size:9px;color:var(--mut);margin-top:2px}
+.entry-tag{display:inline-block;background:var(--acc-l);color:var(--acc);font-size:8px;font-weight:600;padding:1px 6px;border-radius:20px;margin-top:2px}
+
+/* ── STATS SCREEN ── */
+.stats-head{padding:44px 22px 14px;background:var(--white);border-bottom:1px solid var(--bdr-s);flex-shrink:0}
+.stats-title{font-size:22px;font-weight:700;color:var(--txt);letter-spacing:-.025em;margin-bottom:12px}
+.period-bar{display:flex;gap:6px}
+.pb{font-family:var(--fm);font-size:9px;letter-spacing:.08em;padding:5px 12px;border-radius:20px;border:1px solid var(--bdr);background:none;color:var(--mut);cursor:pointer;transition:all .15s}
+.pb.on{background:var(--acc-l);border-color:var(--acc-b);color:var(--acc)}
+
+.sv-nums{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:16px 18px 0}
+.sn{background:var(--white);border:1px solid var(--bdr-s);border-radius:12px;padding:13px 14px}
+.sn-val{font-family:var(--fm);font-weight:700;font-size:22px;color:var(--txt);letter-spacing:-.02em;line-height:1}
+.sn-val span{font-size:11px;font-weight:400;color:var(--mut);margin-left:2px}
+.sn-lbl{font-size:9px;color:var(--mut);margin-top:4px;font-weight:500}
+
+.sv-card{background:var(--white);border:1px solid var(--bdr-s);border-radius:12px;margin:12px 18px 0;padding:14px 16px}
+.sv-card-hdr{font-family:var(--fm);font-size:8px;letter-spacing:.16em;color:var(--mut);text-transform:uppercase;margin-bottom:12px}
+.bar-chart{display:flex;align-items:flex-end;gap:4px;height:72px}
+.bc-col{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
+.bc-bar{width:100%;border-radius:4px 4px 0 0;min-height:3px;transition:height .3s}
+.bc-lbl{font-family:var(--fm);font-size:6px;color:var(--mut);letter-spacing:.04em}
+
+.bk-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.bk-row:last-child{margin-bottom:0}
+.bk-name{font-size:11px;font-weight:500;color:var(--txt);width:54px;flex-shrink:0}
+.bk-track{flex:1;height:5px;background:var(--bdr-s);border-radius:3px;overflow:hidden}
+.bk-fill{height:100%;background:var(--acc);border-radius:3px}
+.bk-val{font-family:var(--fm);font-size:9px;color:var(--mut);width:30px;text-align:right;flex-shrink:0}
+
+/* ── FORM SCREEN ── */
+.form-head{padding:44px 22px 14px;background:var(--white);border-bottom:1px solid var(--bdr-s);flex-shrink:0;display:flex;align-items:center;gap:12px}
+.back-btn{width:34px;height:34px;border:1px solid var(--bdr);border-radius:50%;background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--txt);flex-shrink:0}
+.form-title{font-size:18px;font-weight:700;color:var(--txt);letter-spacing:-.025em}
+.form-body{padding:16px 18px;display:flex;flex-direction:column;gap:14px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-family:var(--fm);font-size:8px;letter-spacing:.14em;color:var(--mut);text-transform:uppercase}
+.field input,.field select{background:var(--white);border:1px solid var(--bdr);border-radius:10px;padding:11px 13px;font-family:'Space Grotesk',system-ui,sans-serif;font-size:14px;color:var(--txt);outline:none;width:100%;transition:border-color .15s}
+.field input:focus,.field select:focus{border-color:var(--acc-b)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.time-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.save-btn{width:100%;padding:15px;background:var(--acc);border:none;border-radius:12px;font-family:'Space Grotesk',system-ui,sans-serif;font-size:14px;font-weight:600;color:#fff;cursor:pointer;margin-top:4px}
+
+/* ── BOTTOM NAV ── */
+.nav{
+  position:absolute;bottom:0;left:0;right:0;height:var(--nav-h);
+  background:var(--white);border-top:1px solid var(--bdr-s);
+  display:flex;align-items:stretch;z-index:100;
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+.nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;border:none;background:none;padding:0;transition:color .15s}
+.nav-tab svg{transition:transform .15s}
+.nav-tab.on svg{transform:scale(1.1)}
+.nav-tab-lbl{font-family:var(--fm);font-size:8px;letter-spacing:.08em;color:var(--mut)}
+.nav-tab.on .nav-tab-lbl{color:var(--acc)}
+.nav-tab.on svg{color:var(--acc)}
+.nav-tab svg{color:var(--mut)}
+
+/* ── MOCKUP LABEL ── */
+.phone-label{position:absolute;bottom:-36px;left:50%;transform:translateX(-50%);font-family:'Space Mono',monospace;font-size:10px;color:rgba(255,255,255,.3);letter-spacing:.1em;white-space:nowrap}
+
+/* ── TRANSITIONS ── */
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.anim{animation:fadeIn .25s ease forwards}
+</style>
+</head>
+<body>
+
+<div style="position:relative">
+<div class="phone" id="phone">
+  <div class="phone-notch"></div>
+
+  <!-- ════ SCREEN: HOME ════ -->
+  <div class="screen active" id="s-home">
+    <div class="scroll">
+
+      <!-- bar -->
+      <div class="bar" style="padding-top:44px">
+        <div class="bar-logo">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+          PilotAssistante
+        </div>
+        <span class="bar-ver">v0.14</span>
+      </div>
+
+      <!-- hero -->
+      <div class="hero">
+        <div class="hero-watermark">
+          <svg width="180" height="180" viewBox="0 0 24 24" fill="white"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+        </div>
+        <div class="hero-greeting">Total de horas de voo</div>
+        <div class="hero-main">
+          <div class="hero-hours">1 247</div>
+          <div class="hero-unit">h</div>
+        </div>
+        <div class="hero-badge">
+          <div class="hero-badge-dot"></div>
+          <span class="hero-badge-txt">Último voo · 21 Jun 2026</span>
+        </div>
+        <div class="hero-stats">
+          <div class="hs"><div class="hs-val">47h</div><div class="hs-lbl">Jun 2026</div></div>
+          <div class="hs"><div class="hs-val">312</div><div class="hs-lbl">Voos total</div></div>
+          <div class="hs"><div class="hs-val">62h</div><div class="hs-lbl">PIC total</div></div>
+        </div>
+      </div>
+
+      <!-- currency -->
+      <div class="section" style="padding-top:18px">
+        <div class="sh">
+          <span class="sh-title">EASA Currency</span>
+          <span class="sh-tag">90 DIAS</span>
+        </div>
+        <div class="curr-grid">
+          <div class="cc ok"><div class="cc-dot"></div><div class="cc-val">9</div><div class="cc-lbl">Day ldgs</div><div class="cc-sub">OK · min 3</div></div>
+          <div class="cc warn"><div class="cc-dot"></div><div class="cc-val">2</div><div class="cc-lbl">Night ldgs</div><div class="cc-sub">Falta 1</div></div>
+          <div class="cc crit"><div class="cc-dot"></div><div class="cc-val">2d</div><div class="cc-lbl">Night exp</div><div class="cc-sub">Expira 26 Jun</div></div>
+        </div>
+      </div>
+
+      <!-- recent flights -->
+      <div class="section" style="padding-top:18px;padding-bottom:14px">
+        <div class="sh">
+          <span class="sh-title">Voos recentes</span>
+          <span class="sh-tag" onclick="goTo('s-log')" style="cursor:pointer">Ver todos →</span>
+        </div>
+        <div class="flights-list">
+          <div class="fl" onclick="goTo('s-log')">
+            <div class="fl-route">
+              <span class="fl-apt">LIS</span>
+              <svg class="fl-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              <span class="fl-apt">OPO</span>
+            </div>
+            <span class="fl-type">A320</span>
+            <div class="fl-meta">
+              <span class="fl-dur">0:45</span>
+              <span class="fl-date">21 JUN</span>
+            </div>
+          </div>
+          <div class="fl" onclick="goTo('s-log')">
+            <div class="fl-route">
+              <span class="fl-apt">OPO</span>
+              <svg class="fl-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              <span class="fl-apt">MAD</span>
+            </div>
+            <span class="fl-type">A320</span>
+            <div class="fl-meta">
+              <span class="fl-dur">1:10</span>
+              <span class="fl-date">18 JUN</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- quick action -->
+      <div class="qa-wrap" style="padding-top:0">
+        <button class="qa-btn" onclick="goTo('s-form')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          Registar voo
+        </button>
+      </div>
+
+      <!-- modules -->
+      <div class="sh" style="padding:4px 18px 10px">
+        <span class="sh-title">Módulos</span>
+        <span class="sh-tag">15 disponíveis</span>
+      </div>
+      <div class="grid">
+        <div class="card active" onclick="goTo('s-log')">
+          <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          <span class="card-code">LOG</span>
+        </div>
+        <div class="card crit">
+          <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+          <span class="card-code">DOC</span>
+        </div>
+        <div class="card">
+          <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          <span class="card-code">FTL</span>
+        </div>
+        <div class="card">
+          <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+          <span class="card-code">WEL</span>
+        </div>
+        <div class="card">
+          <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          <span class="card-code">TRN</span>
+        </div>
+        <div class="card">
+          <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+          <span class="card-code">JOB</span>
+        </div>
+        <div class="card">
+          <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+          <span class="card-code">FAT</span>
+        </div>
+        <div class="card">
+          <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <span class="card-code">SAL</span>
+        </div>
+      </div>
+
+    </div><!-- /scroll -->
+  </div><!-- /s-home -->
+
+
+  <!-- ════ SCREEN: LOG ════ -->
+  <div class="screen" id="s-log">
+    <div class="log-head">
+      <div class="log-head-top">
+        <span class="log-title">Logbook</span>
+        <button class="add-btn" onclick="goTo('s-form')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          Novo voo
+        </button>
+      </div>
+      <div class="tab-bar">
+        <button class="tab on" id="tab-log-btn" onclick="switchLogTab('log')">Log</button>
+        <button class="tab" id="tab-stats-btn" onclick="switchLogTab('stats')">Statistics</button>
+      </div>
+    </div>
+    <div class="scroll" id="log-scroll">
+
+      <!-- log tab -->
+      <div id="log-tab">
+        <div class="entries">
+          <div class="entry"><div class="entry-date"><b>21</b>JUN</div><div class="entry-body"><div class="entry-route">LIS → OPO</div><div class="entry-meta">A320-214 · CS-TKU</div></div><div class="entry-right"><div class="entry-dur">0:45</div><div class="entry-role">F/O</div></div></div>
+          <div class="entry"><div class="entry-date"><b>18</b>JUN</div><div class="entry-body"><div class="entry-route">OPO → MAD</div><div class="entry-meta">A320-214 · EC-LVX</div></div><div class="entry-right"><div class="entry-dur">1:10</div><div class="entry-role">F/O</div></div></div>
+          <div class="entry"><div class="entry-date"><b>15</b>JUN</div><div class="entry-body"><div class="entry-route">MAD → LIS</div><div class="entry-meta">A320-214 · CS-TKU</div></div><div class="entry-right"><div class="entry-dur">1:05</div><div class="entry-role">F/O</div><div class="entry-tag">Night</div></div></div>
+          <div class="entry"><div class="entry-date"><b>12</b>JUN</div><div class="entry-body"><div class="entry-route">LIS → AMS</div><div class="entry-meta">A320-214 · PH-XYZ</div></div><div class="entry-right"><div class="entry-dur">2:30</div><div class="entry-role">F/O</div></div></div>
+          <div class="entry"><div class="entry-date"><b>10</b>JUN</div><div class="entry-body"><div class="entry-route">AMS → FCO</div><div class="entry-meta">A320-271N · CS-TRG</div></div><div class="entry-right"><div class="entry-dur">2:55</div><div class="entry-role">F/O</div></div></div>
+          <div class="entry"><div class="entry-date"><b>07</b>JUN</div><div class="entry-body"><div class="entry-route">FCO → LIS</div><div class="entry-meta">A320-271N · CS-TRG</div></div><div class="entry-right"><div class="entry-dur">2:40</div><div class="entry-role">F/O</div><div class="entry-tag">Night</div></div></div>
+          <div class="entry"><div class="entry-date"><b>04</b>JUN</div><div class="entry-body"><div class="entry-route">LIS → LHR</div><div class="entry-meta">A321-251N · CS-TSJ</div></div><div class="entry-right"><div class="entry-dur">2:20</div><div class="entry-role">F/O</div></div></div>
+          <div class="entry"><div class="entry-date"><b>01</b>JUN</div><div class="entry-body"><div class="entry-route">LHR → LIS</div><div class="entry-meta">A321-251N · CS-TSJ</div></div><div class="entry-right"><div class="entry-dur">2:15</div><div class="entry-role">F/O</div></div></div>
+        </div>
+      </div>
+
+      <!-- stats tab -->
+      <div id="stats-tab" style="display:none">
+        <div class="sv-nums">
+          <div class="sn"><div class="sn-val">47<span>h</span></div><div class="sn-lbl">Total (YTD)</div></div>
+          <div class="sn"><div class="sn-val">62<span>h</span></div><div class="sn-lbl">PIC</div></div>
+          <div class="sn"><div class="sn-val">8<span>h</span></div><div class="sn-lbl">Noturno</div></div>
+          <div class="sn"><div class="sn-val">312</div><div class="sn-lbl">Voos totais</div></div>
+        </div>
+        <div class="sv-card">
+          <div class="sv-card-hdr">Horas mensais — 2026</div>
+          <div class="bar-chart" id="bchart"></div>
+        </div>
+        <div class="sv-card" style="margin-bottom:12px">
+          <div class="sv-card-hdr">Por tipo de aeronave</div>
+          <div class="bk-row"><div class="bk-name">A320</div><div class="bk-track"><div class="bk-fill" style="width:72%"></div></div><div class="bk-val">897h</div></div>
+          <div class="bk-row"><div class="bk-name">A321</div><div class="bk-track"><div class="bk-fill" style="width:24%"></div></div><div class="bk-val">298h</div></div>
+          <div class="bk-row"><div class="bk-name">C172</div><div class="bk-track"><div class="bk-fill" style="width:4%"></div></div><div class="bk-val">52h</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /s-log -->
+
+
+  <!-- ════ SCREEN: FORM ════ -->
+  <div class="screen" id="s-form">
+    <div class="form-head">
+      <div class="back-btn" onclick="goBack()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      </div>
+      <span class="form-title">Registar voo</span>
+    </div>
+    <div class="scroll">
+      <div class="form-body">
+        <div class="field">
+          <label>Data</label>
+          <input type="text" value="24 Jun 2026" readonly>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Partida (ICAO)</label><input type="text" placeholder="LPPT" style="text-transform:uppercase"></div>
+          <div class="field"><label>Destino (ICAO)</label><input type="text" placeholder="LPPR" style="text-transform:uppercase"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Off Blocks</label><input type="text" placeholder="09:30"></div>
+          <div class="field"><label>On Blocks</label><input type="text" placeholder="10:15"></div>
+        </div>
+        <div class="field">
+          <label>Aeronave (tipo)</label>
+          <select><option>A320-214</option><option>A320-271N</option><option>A321-251N</option><option>C172</option></select>
+        </div>
+        <div class="field">
+          <label>Matrícula</label>
+          <input type="text" placeholder="CS-TKU" style="text-transform:uppercase">
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Role</label><select><option>F/O</option><option>Captain</option><option>Student</option><option>Instructor</option></select></div>
+          <div class="field"><label>Aterragens day</label><input type="number" placeholder="1" min="0"></div>
+        </div>
+        <div class="field">
+          <label>Aterragens noturnas</label>
+          <input type="number" placeholder="0" min="0">
+        </div>
+        <button class="save-btn" onclick="goBack()">Guardar voo</button>
+      </div>
+    </div>
+  </div><!-- /s-form -->
+
+
+  <!-- ════ BOTTOM NAV ════ -->
+  <div class="nav">
+    <button class="nav-tab on" id="nav-home" onclick="goTo('s-home')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span class="nav-tab-lbl">Home</span>
+    </button>
+    <button class="nav-tab" id="nav-log" onclick="goTo('s-log')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <span class="nav-tab-lbl">Logbook</span>
+    </button>
+    <button class="nav-tab" id="nav-stats" onclick="goTo('s-log'); switchLogTab('stats')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+      <span class="nav-tab-lbl">Stats</span>
+    </button>
+    <button class="nav-tab" id="nav-more">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1" fill="currentColor"/><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="12" cy="19" r="1" fill="currentColor"/></svg>
+      <span class="nav-tab-lbl">Mais</span>
+    </button>
+  </div>
+
+</div><!-- /phone -->
+<div class="phone-label">MOCKUP · dados fictícios · clica para navegar</div>
+</div>
+
+<script>
+// ── Navigation ──
+let history = ['s-home'];
+
+function goTo(id) {
+  const cur = history[history.length - 1];
+  if (cur === id) return;
+  const from = document.getElementById(cur);
+  const to   = document.getElementById(id);
+  from.classList.add('exit');
+  to.classList.remove('from-left');
+  to.classList.add('active');
+  setTimeout(() => { from.classList.remove('active','exit'); }, 320);
+  history.push(id);
+  updateNav(id);
+}
+
+function goBack() {
+  if (history.length < 2) return;
+  const cur  = history.pop();
+  const prev = history[history.length - 1];
+  const from = document.getElementById(cur);
+  const to   = document.getElementById(prev);
+  from.style.transform = 'translateX(100%)';
+  from.style.transition = 'transform .28s cubic-bezier(.4,0,.2,1)';
+  to.classList.add('active');
+  setTimeout(() => {
+    from.classList.remove('active');
+    from.style.transform = '';
+    from.style.transition = '';
+  }, 300);
+  updateNav(prev);
+}
+
+function updateNav(id) {
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('on'));
+  if (id === 's-home') document.getElementById('nav-home').classList.add('on');
+  else if (id === 's-log') document.getElementById('nav-log').classList.add('on');
+}
+
+// ── Log tabs ──
+function switchLogTab(tab) {
+  document.getElementById('log-tab').style.display   = tab==='log'   ? 'block' : 'none';
+  document.getElementById('stats-tab').style.display = tab==='stats' ? 'block' : 'none';
+  document.getElementById('tab-log-btn').classList.toggle('on',   tab==='log');
+  document.getElementById('tab-stats-btn').classList.toggle('on', tab==='stats');
+  if (tab==='stats') document.getElementById('nav-stats').classList.add('on');
+  if (tab==='log')   document.getElementById('nav-log').classList.add('on');
+}
+
+// ── Bar chart ──
+const months = ['J','F','M','A','M','J','J','A','S','O','N','D'];
+const data   = [38,42,35,51,44,47,0,0,0,0,0,0];
+const max    = Math.max(...data.filter(v=>v>0)) || 1;
+const wrap   = document.getElementById('bchart');
+months.forEach((m,i) => {
+  const col = document.createElement('div');
+  col.className = 'bc-col';
+  const h = data[i] ? Math.max(6, Math.round((data[i]/max)*68)) : 3;
+  const bg = data[i] === 0 ? '#ECEBF8' : (i===5 ? '#5552C0' : '#2825A0');
+  col.innerHTML = `<div class="bc-bar" style="height:${h}px;background:${bg}"></div><div class="bc-lbl">${m}</div>`;
+  wrap.appendChild(col);
+});
+</script>
+</body>
+</html>
