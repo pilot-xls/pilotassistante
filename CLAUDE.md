@@ -8,8 +8,8 @@
 
 | | |
 |---|---|
-| **Versão actual** | v0.13 |
-| **Última sessão** | Sessão 16 — 24 Junho 2026 |
+| **Versão actual** | v0.14 |
+| **Última sessão** | Sessão 17 — 25 Junho 2026 |
 | **Módulo em construção** | Agenda FTL básica (Módulo 1) — a iniciar |
 | **Próxima tarefa** | Construir Módulo 1: Agenda & Legalidades EASA (FTL/DP/RP limits, calendário de turnos) |
 | **Deploy activo** | GitHub Pages ✅ |
@@ -41,6 +41,7 @@
 
 | Sessão | Data | O que foi feito |
 |---|---|---|
+| 17 | 25 Jun 2026 | Dashboard redesign v0.14: hero azul com horas reais, EASA currency no home, voos recentes, botão Log flight — dados lidos do localStorage (PR #41 merged) |
 | 16 | 24 Jun 2026 | Logbook: tab Statistics com totais de horas, gráfico SVG mensal, currency EASA 90 dias, breakdown por tipo/role e insights (PR #40 merged) |
 | 15 | 24 Jun 2026 | Dashboard Menu: ícones SVG de aviação em cada card de módulo (substituem número), header sticky com avião no logo, fonte maior |
 | 14 | 19 Jun 2026 | Dashboard / Home Menu UI shell — conceito e estrutura aprovados |
@@ -54,7 +55,7 @@
 |---|---|
 | `index.html` | Dashboard principal (home menu dos 15 módulos) |
 | `logbook.html` | Módulo 2 — Logbook (tabs: Log + Statistics) |
-| `js/dashboard.js` | Lógica do dashboard: grid de módulos, gauges, ICONS SVG |
+| `js/dashboard.js` | Lógica do dashboard: renderHero, renderCurrency, renderRecent, renderQA, buildGrid — lê localStorage |
 | `js/app.js` | Lógica do logbook: entradas, filtros, tab Statistics (showTab, renderStatsView, renderStatsContent) |
 | `js/nav.js` | Barra de navegação inferior (bottom nav) |
 | `css/dashboard.css` | Estilos do dashboard (inclui header sticky, card icons) |
