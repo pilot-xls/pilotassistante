@@ -2,8 +2,9 @@
    PilotAssistante — Logbook  (Dark theme v1.0)
    ============================================================ */
 
-/* ── Variables ─────────────────────────────────────────────── */
-:root {
+/* ── Variables — Dark (default) ─────────────────────────────── */
+:root,
+body[data-theme="dark"] {
   --accent:        #E8900A;
   --accent-blue:   #1B3AA8;
   --accent-bg:     rgba(232,144,10,.13);
@@ -22,6 +23,28 @@
   --radius-sm:     8px;
   --shadow:        0 2px 16px rgba(0,0,0,.35);
   --shadow-lg:     0 8px 40px rgba(0,0,0,.55);
+}
+
+/* ── Variables — Light ──────────────────────────────────────── */
+body[data-theme="light"] {
+  --accent:        #2825A0;
+  --accent-blue:   #2825A0;
+  --accent-bg:     rgba(40,37,160,.08);
+  --accent-border: rgba(40,37,160,.22);
+  --text:          #12113A;
+  --text-muted:    #6B6898;
+  --text-secondary:#6B6898;
+  --border:        #E2E0F0;
+  --border-subtle: #EDECF8;
+  --bg:            #F6F5FC;
+  --surface:       #FFFFFF;
+  --surface-card:  #FFFFFF;
+  --danger:        #D03030;
+  --danger-bg:     rgba(208,48,48,.08);
+  --radius:        14px;
+  --radius-sm:     8px;
+  --shadow:        0 2px 12px rgba(40,37,160,.08);
+  --shadow-lg:     0 8px 32px rgba(40,37,160,.14);
 }
 
 /* ── Reset ─────────────────────────────────────────────────── */

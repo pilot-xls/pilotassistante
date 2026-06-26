@@ -1,7 +1,12 @@
 (function(){
+  // Apply saved theme immediately to avoid flash
+  const savedTheme = localStorage.getItem('pa_theme') || 'dark';
+  document.body.setAttribute('data-theme', savedTheme);
+
   const page = location.pathname.split('/').pop() || 'index.html';
-  const isHome    = page === '' || page === 'index.html';
-  const isLogbook = page === 'logbook.html';
+  const isHome     = page === '' || page === 'index.html';
+  const isLogbook  = page === 'logbook.html';
+  const isSettings = page === 'settings.html';
 
   /* ── Icons (inline SVG, Tabler style) ── */
   const IC = {
@@ -35,9 +40,9 @@
       <a class="nav-item${isHome?' active':''}" href="index.html">
         ${IC.home}<span>Home</span>
       </a>
-      <button class="nav-item" id="nav-settings-btn" onclick="openNavSettings()">
+      <a class="nav-item${isSettings?' active':''}" href="settings.html">
         ${IC.settings}<span>Settings</span>
-      </button>`;
+      </a>`;
   }
   document.body.appendChild(nav);
 
@@ -45,56 +50,6 @@
   const container = document.getElementById('app') || document.querySelector('.shell');
   if (container) container.style.paddingBottom = '56px';
 
-  /* ── Inject settings modal ── */
-  const modal = document.createElement('div');
-  modal.className = 'nav-settings-overlay hidden';
-  modal.id = 'nav-settings-overlay';
-  modal.innerHTML = `
-    <div class="nav-settings-sheet" onclick="event.stopPropagation()">
-      <div class="nav-settings-handle"></div>
-      <div class="nav-settings-title">Settings</div>
-      <div class="nav-settings-sub">Aviation authority · Personalises your logbook fields</div>
-      <div class="nav-auth-cards">
-        <button class="nav-auth-card" id="nav-auth-easa" onclick="setNavAuthority('EASA')">
-          <span class="nav-auth-flag">🇪🇺</span>
-          <span class="nav-auth-name">EASA</span>
-          <span class="nav-auth-desc">European Union Aviation Safety Agency</span>
-        </button>
-        <button class="nav-auth-card" id="nav-auth-faa" onclick="setNavAuthority('FAA')">
-          <span class="nav-auth-flag">🇺🇸</span>
-          <span class="nav-auth-name">FAA</span>
-          <span class="nav-auth-desc">Federal Aviation Administration</span>
-        </button>
-      </div>
-      <button class="nav-settings-close" onclick="closeNavSettings()">Close</button>
-    </div>`;
-  modal.addEventListener('click', closeNavSettings);
-  document.body.appendChild(modal);
-
-  /* ── Settings open/close ── */
-  window.openNavSettings = function(){
-    const current = localStorage.getItem('pa_authority') || 'EASA';
-    document.getElementById('nav-auth-easa').classList.toggle('selected', current === 'EASA');
-    document.getElementById('nav-auth-faa').classList.toggle('selected',  current === 'FAA');
-    document.getElementById('nav-settings-overlay').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-  };
-
-  window.closeNavSettings = function(){
-    document.getElementById('nav-settings-overlay').classList.add('hidden');
-    document.body.style.overflow = '';
-  };
-
-  window.setNavAuthority = function(key){
-    localStorage.setItem('pa_authority', key);
-    /* If logbook's selectAuthority is available, use it (updates UI live) */
-    if (typeof selectAuthority === 'function') {
-      selectAuthority(key);
-      closeNavSettings();
-    } else {
-      closeNavSettings();
-      /* Small delay so the user sees the selection before reload */
-      setTimeout(() => location.reload(), 150);
-    }
-  };
+  /* ── Settings shortcut (fallback for any remaining references) ── */
+  window.openNavSettings = function(){ location.href = 'settings.html'; };
 })();
