@@ -46,13 +46,13 @@
     <header class="header">
       <h1 class="header-title" id="header-title">My flights</h1>
       <div class="header-actions">
-        <button class="btn-header-icon" id="btn-header-search" onclick="focusSearch()" title="Search">
-          <i class="ti ti-search"></i>
-        </button>
         <button class="btn-export-header hidden" id="btn-header-export" onclick="exportCSV()" title="Export CSV">
           <i class="ti ti-share"></i> Export
         </button>
-        <button id="authority-badge" class="badge-btn" onclick="showAuthorityOverlay()">
+        <button class="btn-header-icon" id="btn-header-settings" onclick="openNavSettings()" title="Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <button id="authority-badge" class="badge-btn" title="Aviation Authority">
           <span id="authority-label">EASA</span>
         </button>
       </div>
@@ -63,42 +63,8 @@
       <i class="ti ti-plus"></i>
     </button>
 
-    <!-- Tab Bar -->
-    <div class="tab-bar">
-      <button class="tab-btn active" id="tab-log"   onclick="showTab('log')"><i class="ti ti-plane"></i> Flights</button>
-      <button class="tab-btn"        id="tab-stats" onclick="showTab('stats')"><i class="ti ti-chart-pie"></i> Stats</button>
-    </div>
-
     <!-- Log View -->
     <div id="log-view">
-
-    <!-- Stats -->
-    <section class="stats-grid">
-      <div class="stat-card">
-        <span class="stat-label">Total HRS</span>
-        <span class="stat-value" id="stat-total">0:00</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-label">PIC HRS</span>
-        <span class="stat-value" id="stat-pic">0:00</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-label">IFR HRS</span>
-        <span class="stat-value" id="stat-ifr">0:00</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-label">Night HRS</span>
-        <span class="stat-value" id="stat-night">0:00</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-label">Simulator</span>
-        <span class="stat-value" id="stat-sim">0:00</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-label">This Month</span>
-        <span class="stat-value" id="stat-month">0:00</span>
-      </div>
-    </section>
 
     <!-- Entry List -->
     <section class="entries-section">

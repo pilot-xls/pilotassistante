@@ -761,43 +761,24 @@ function renderSimCard(e) {
 
 // ── Render Stats ─────────────────────────────────────────────
 function renderStats() {
-  const filtered = getFilteredEntries();
-  const flights  = filtered.filter(e => !e.isSim);
-  const sims     = filtered.filter(e => e.isSim);
-
-  const now       = new Date();
-  const thisMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-
-  const total = flights.reduce((s, e) => s + parseHours(e.totalTime),  0);
-  const pic   = flights.filter(e => e.role === 'PIC')
-                        .reduce((s, e) => s + parseHours(e.totalTime), 0);
-  const ifr   = flights.reduce((s, e) => s + parseHours(e.ifrTime),   0);
-  const night = flights.reduce((s, e) => s + parseHours(e.nightHours),0);
-  const sim   = sims.reduce((s, e)    => s + parseHours(e.simDuration),0);
-  const month = flights
-                  .filter(e => e.date && e.date.startsWith(thisMonth))
-                  .reduce((s, e) => s + parseHours(e.totalTime), 0);
-
-  document.getElementById('stat-total').textContent = formatHours(total);
-  document.getElementById('stat-pic').textContent   = formatHours(pic);
-  document.getElementById('stat-ifr').textContent   = formatHours(ifr);
-  document.getElementById('stat-night').textContent = formatHours(night);
-  document.getElementById('stat-sim').textContent   = formatHours(sim);
-  document.getElementById('stat-month').textContent = formatHours(month);
+  // Quick stats removed from flights view; stats are shown in the Stats tab
 }
 
 // ── Tab System ───────────────────────────────────────────────
 function showTab(tab) {
-  document.getElementById('tab-log').classList.toggle('active', tab === 'log');
-  document.getElementById('tab-stats').classList.toggle('active', tab === 'stats');
   document.getElementById('log-view').classList.toggle('hidden', tab !== 'log');
   document.getElementById('stats-view').classList.toggle('hidden', tab !== 'stats');
 
   // Update header
   document.getElementById('header-title').textContent = tab === 'stats' ? 'My stats' : 'My flights';
-  document.getElementById('btn-header-search').classList.toggle('hidden', tab === 'stats');
   document.getElementById('btn-header-export').classList.toggle('hidden', tab !== 'stats');
   document.getElementById('fab-add').style.display = tab === 'stats' ? 'none' : '';
+
+  // Update bottom nav active state
+  const navFlights = document.getElementById('nav-flights');
+  const navStats   = document.getElementById('nav-stats');
+  if (navFlights) navFlights.classList.toggle('active', tab === 'log');
+  if (navStats)   navStats.classList.toggle('active',   tab === 'stats');
 
   if (tab === 'stats') renderStatsView();
 }
