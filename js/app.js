@@ -998,7 +998,7 @@ function renderStatsContent() {
     <div class="sv-gauges">
       ${makeGauge(hrs28,  100,  'Last 28 days', '100 h')}
       ${makeGauge(hrs12m, 1000, 'Last 12 months', '1000 h')}
-      ${makeGauge(hrsYr,  900,  'Year ${now2.getFullYear()}', '900 h')}
+      ${makeGauge(hrsYr,  900,  `Year ${now2.getFullYear()}`, '900 h')}
     </div>
 
     <div class="sv-section-title">Recency</div>
