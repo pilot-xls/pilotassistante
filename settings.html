@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PilotAssistante — Settings</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/nav.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      transition: background .2s, color .2s;
+    }
+
+    /* ── Theme variables ── */
+    body[data-theme="dark"] {
+      --bg:          #0B1525;
+      --surface:     #111D2F;
+      --card:        #131F33;
+      --border:      #1C2D42;
+      --text:        #FFFFFF;
+      --text-muted:  #7A8FA6;
+      --accent:      #E8900A;
+      --accent-blue: #2563EB;
+      --radius:      14px;
+    }
+    body[data-theme="light"] {
+      --bg:          #F6F5FC;
+      --surface:     #FFFFFF;
+      --card:        #FFFFFF;
+      --border:      #E2E0F0;
+      --text:        #12113A;
+      --text-muted:  #6B6898;
+      --accent:      #2825A0;
+      --accent-blue: #2825A0;
+      --radius:      14px;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex; align-items: center;
+      padding: 16px 20px 14px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
+      gap: 12px;
+    }
+    .back-btn {
+      display: flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px; border-radius: 10px;
+      border: none; background: none; cursor: pointer;
+      color: var(--text-muted); flex-shrink: 0;
+      transition: background .15s, color .15s;
+      text-decoration: none;
+    }
+    .back-btn:hover { background: var(--border); color: var(--text); }
+    .header-title {
+      font-size: 20px; font-weight: 700;
+      color: var(--text); letter-spacing: -.02em;
+    }
+
+    /* ── Page content ── */
+    .page { padding: 24px 20px 100px; max-width: 480px; margin: 0 auto; }
+
+    /* ── Section label ── */
+    .section-label {
+      font-size: 11px; font-weight: 600; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--text-muted);
+      margin: 0 0 10px 4px;
+    }
+    .section { margin-bottom: 28px; }
+
+    /* ── Card ── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    /* ── Authority cards ── */
+    .auth-grid { display: flex; gap: 10px; padding: 14px; }
+    .auth-card {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; gap: 6px; padding: 16px 8px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      cursor: pointer; background: var(--bg);
+      font-family: 'Space Grotesk', sans-serif;
+      transition: border-color .15s, background .15s;
+    }
+    .auth-card:hover  { border-color: var(--accent-blue); }
+    .auth-card.selected { border-color: var(--accent); background: rgba(232,144,10,.08); }
+    body[data-theme="light"] .auth-card.selected { background: rgba(40,37,160,.07); }
+    .auth-flag { font-size: 28px; }
+    .auth-name { font-size: 13px; font-weight: 700; color: var(--text); }
+    .auth-desc { font-size: 10px; color: var(--text-muted); text-align: center; line-height: 1.4; }
+
+    /* ── Theme toggle row ── */
+    .setting-row {
+      display: flex; align-items: center;
+      padding: 16px 16px;
+      border-bottom: 1px solid var(--border);
+      gap: 14px;
+    }
+    .setting-row:last-child { border-bottom: none; }
+    .setting-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--border); flex-shrink: 0;
+      color: var(--text-muted);
+    }
+    .setting-info { flex: 1; min-width: 0; }
+    .setting-title { font-size: 14px; font-weight: 600; color: var(--text); }
+    .setting-sub   { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── Toggle switch ── */
+    .toggle-wrap { flex-shrink: 0; }
+    .toggle-switch {
+      position: relative; display: inline-block;
+      width: 46px; height: 26px;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-track {
+      position: absolute; inset: 0;
+      background: var(--border); border-radius: 13px;
+      cursor: pointer; transition: background .2s;
+    }
+    .toggle-track::before {
+      content: ''; position: absolute;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: #fff; top: 3px; left: 3px;
+      transition: transform .2s;
+      box-shadow: 0 1px 4px rgba(0,0,0,.3);
+    }
+    input:checked + .toggle-track { background: var(--accent); }
+    input:checked + .toggle-track::before { transform: translateX(20px); }
+
+    /* ── Theme option buttons ── */
+    .theme-btns { display: flex; gap: 8px; padding: 14px; }
+    .theme-btn {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; gap: 8px; padding: 14px 8px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      cursor: pointer; background: var(--bg);
+      font-family: 'Space Grotesk', sans-serif;
+      transition: border-color .15s;
+    }
+    .theme-btn:hover { border-color: var(--accent-blue); }
+    .theme-btn.selected { border-color: var(--accent); }
+    body[data-theme="light"] .theme-btn.selected { border-color: var(--accent-blue); }
+    .theme-preview {
+      width: 60px; height: 40px; border-radius: 8px;
+      overflow: hidden; display: flex; flex-direction: column;
+      border: 1px solid rgba(0,0,0,.1);
+    }
+    .theme-preview-bar { height: 12px; }
+    .theme-preview-body { flex: 1; }
+    .theme-preview.dark .theme-preview-bar  { background: #111D2F; }
+    .theme-preview.dark .theme-preview-body { background: #0B1525; }
+    .theme-preview.light .theme-preview-bar  { background: #FFFFFF; }
+    .theme-preview.light .theme-preview-body { background: #F6F5FC; }
+    .theme-btn-label { font-size: 12px; font-weight: 600; color: var(--text); }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <header class="header">
+    <a class="back-btn" id="back-btn" href="logbook.html" title="Back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    </a>
+    <span class="header-title">Settings</span>
+  </header>
+
+  <div class="page">
+
+    <!-- Aviation Authority -->
+    <div class="section">
+      <div class="section-label">Aviation Authority</div>
+      <div class="card">
+        <div class="auth-grid">
+          <button class="auth-card" id="auth-easa" onclick="setAuthority('EASA')">
+            <span class="auth-flag">🇪🇺</span>
+            <span class="auth-name">EASA</span>
+            <span class="auth-desc">European Union Aviation Safety Agency</span>
+          </button>
+          <button class="auth-card" id="auth-faa" onclick="setAuthority('FAA')">
+            <span class="auth-flag">🇺🇸</span>
+            <span class="auth-name">FAA</span>
+            <span class="auth-desc">Federal Aviation Administration</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Theme -->
+    <div class="section">
+      <div class="section-label">Appearance</div>
+      <div class="card">
+        <div class="theme-btns">
+          <button class="theme-btn" id="theme-dark" onclick="setTheme('dark')">
+            <div class="theme-preview dark">
+              <div class="theme-preview-bar"></div>
+              <div class="theme-preview-body"></div>
+            </div>
+            <span class="theme-btn-label">Dark</span>
+          </button>
+          <button class="theme-btn" id="theme-light" onclick="setTheme('light')">
+            <div class="theme-preview light">
+              <div class="theme-preview-bar"></div>
+              <div class="theme-preview-body"></div>
+            </div>
+            <span class="theme-btn-label">Light</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="js/nav.js"></script>
+  <script>
+    const AUTHORITY_KEY = 'pa_authority';
+    const THEME_KEY     = 'pa_theme';
+
+    function applyTheme(t) {
+      document.body.setAttribute('data-theme', t);
+      document.getElementById('theme-dark').classList.toggle('selected',  t === 'dark');
+      document.getElementById('theme-light').classList.toggle('selected', t === 'light');
+    }
+
+    function setTheme(t) {
+      localStorage.setItem(THEME_KEY, t);
+      applyTheme(t);
+    }
+
+    function applyAuthority(a) {
+      document.getElementById('auth-easa').classList.toggle('selected', a === 'EASA');
+      document.getElementById('auth-faa').classList.toggle('selected',  a === 'FAA');
+    }
+
+    function setAuthority(a) {
+      localStorage.setItem(AUTHORITY_KEY, a);
+      applyAuthority(a);
+    }
+
+    // Init
+    const savedTheme     = localStorage.getItem(THEME_KEY)     || 'dark';
+    const savedAuthority = localStorage.getItem(AUTHORITY_KEY) || 'EASA';
+    applyTheme(savedTheme);
+    applyAuthority(savedAuthority);
+
+    // Back button: return to previous page if possible
+    const ref = document.referrer;
+    if (ref && new URL(ref).origin === location.origin) {
+      document.getElementById('back-btn').href = ref;
+    }
+  </script>
+</body>
+</html>
