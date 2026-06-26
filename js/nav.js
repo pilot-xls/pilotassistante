@@ -13,16 +13,32 @@
   /* ── Inject nav bar ── */
   const nav = document.createElement('nav');
   nav.className = 'bottom-nav';
-  nav.innerHTML = `
-    <a class="nav-item${isLogbook?' active':''}" href="logbook.html">
-      ${IC.logbook}<span>Logbook</span>
-    </a>
-    <a class="nav-item${isHome?' active':''}" href="index.html">
-      ${IC.home}<span>Home</span>
-    </a>
-    <button class="nav-item" id="nav-settings-btn" onclick="openNavSettings()">
-      ${IC.settings}<span>Settings</span>
-    </button>`;
+
+  if (isLogbook) {
+    nav.innerHTML = `
+      <button class="nav-item active" id="nav-flights" onclick="showTab('log')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+        <span>Flights</span>
+      </button>
+      <a class="nav-item" href="index.html">
+        ${IC.home}<span>Home</span>
+      </a>
+      <button class="nav-item" id="nav-stats" onclick="showTab('stats')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+        <span>Stats</span>
+      </button>`;
+  } else {
+    nav.innerHTML = `
+      <a class="nav-item" href="logbook.html">
+        ${IC.logbook}<span>Logbook</span>
+      </a>
+      <a class="nav-item${isHome?' active':''}" href="index.html">
+        ${IC.home}<span>Home</span>
+      </a>
+      <button class="nav-item" id="nav-settings-btn" onclick="openNavSettings()">
+        ${IC.settings}<span>Settings</span>
+      </button>`;
+  }
   document.body.appendChild(nav);
 
   /* ── Add bottom padding so content isn't hidden behind nav ── */
