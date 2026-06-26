@@ -17,12 +17,18 @@ body[data-theme="dark"] {
   --bg:            #0B1525;
   --surface:       #111D2F;
   --surface-card:  #131F33;
+  --surface-hover: #162030;
+  --surface-active:#1a2840;
   --danger:        #E04040;
   --danger-bg:     rgba(224,64,64,.13);
   --radius:        14px;
   --radius-sm:     8px;
   --shadow:        0 2px 16px rgba(0,0,0,.35);
   --shadow-lg:     0 8px 40px rgba(0,0,0,.55);
+  --nav-bg:        #111D2F;
+  --nav-border:    #1C2D42;
+  --nav-text:      #4A5A72;
+  --nav-active:    #FFFFFF;
 }
 
 /* ── Variables — Light ──────────────────────────────────────── */
@@ -39,12 +45,18 @@ body[data-theme="light"] {
   --bg:            #F6F5FC;
   --surface:       #FFFFFF;
   --surface-card:  #FFFFFF;
+  --surface-hover: #EDECF8;
+  --surface-active:#E2E0F0;
   --danger:        #D03030;
   --danger-bg:     rgba(208,48,48,.08);
   --radius:        14px;
   --radius-sm:     8px;
   --shadow:        0 2px 12px rgba(40,37,160,.08);
   --shadow-lg:     0 8px 32px rgba(40,37,160,.14);
+  --nav-bg:        #FFFFFF;
+  --nav-border:    #E2E0F0;
+  --nav-text:      #9090B0;
+  --nav-active:    #2825A0;
 }
 
 /* ── Reset ─────────────────────────────────────────────────── */
@@ -271,8 +283,8 @@ body {
   transition: border-color .15s, background .15s;
   -webkit-tap-highlight-color: transparent;
 }
-.entry-card:hover { border-color: var(--border); background: #162030; }
-.entry-card:active { background: #1a2840; }
+.entry-card:hover { border-color: var(--accent-border); background: var(--surface-hover); color: var(--text); }
+.entry-card:active { background: var(--surface-active); }
 
 /* Date column */
 .entry-date-col {
