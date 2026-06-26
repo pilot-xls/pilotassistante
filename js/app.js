@@ -929,30 +929,36 @@ function renderStatsContent() {
 
   function makeGauge(value, maxVal, label, maxLabel) {
     const R = 38, CX = 50, CY = 50;
-    const FULL_ANGLE = 270; // degrees of arc
+    const FULL_ANGLE = 270;
     const CIRC = 2 * Math.PI * R;
     const arcLen = CIRC * FULL_ANGLE / 360;
     const gap    = CIRC - arcLen;
     const pct    = Math.min(value / maxVal, 1);
     const filled = pct * arcLen;
-    const startAngle = 135; // degrees from positive x-axis
+    const startAngle = 135;
 
     const bgDash  = `${arcLen.toFixed(2)} ${gap.toFixed(2)}`;
     const fgDash  = `${filled.toFixed(2)} ${(CIRC - filled).toFixed(2)}`;
     const rotate  = `rotate(${startAngle}, ${CX}, ${CY})`;
     const valStr  = formatHours(value);
 
+    const cs       = getComputedStyle(document.body);
+    const colText  = cs.getPropertyValue('--text').trim()      || '#FFFFFF';
+    const colMuted = cs.getPropertyValue('--text-muted').trim()|| '#7A8FA6';
+    const colBg    = cs.getPropertyValue('--border').trim()    || '#1C2D42';
+    const colFg    = cs.getPropertyValue('--accent').trim()    || '#E8900A';
+
     return `
       <div class="sv-gauge-cell">
         <svg class="sv-gauge-svg" viewBox="0 0 100 100" width="100" height="100">
-          <circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="7"
+          <circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="${colBg}" stroke-width="7"
             stroke-dasharray="${bgDash}" stroke-dashoffset="0" transform="${rotate}" stroke-linecap="round"/>
-          <circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="#E8900A" stroke-width="7"
+          <circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="${colFg}" stroke-width="7"
             stroke-dasharray="${fgDash}" stroke-dashoffset="0" transform="${rotate}" stroke-linecap="round"/>
           <text x="${CX}" y="47" text-anchor="middle" font-family="Space Grotesk,sans-serif"
-            font-size="13" font-weight="700" fill="#FFFFFF">${valStr}</text>
+            font-size="13" font-weight="700" fill="${colText}">${valStr}</text>
           <text x="${CX}" y="60" text-anchor="middle" font-family="Space Grotesk,sans-serif"
-            font-size="7" fill="#7A8FA6">h</text>
+            font-size="7" fill="${colMuted}">h</text>
         </svg>
         <div class="sv-gauge-val">${label}</div>
         <div class="sv-gauge-max">max ${maxLabel}</div>
