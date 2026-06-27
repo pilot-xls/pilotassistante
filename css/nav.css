@@ -62,25 +62,39 @@ body[data-theme="light"] {
 }
 .nav-item svg { width: 22px; height: 22px; flex-shrink: 0; }
 
-/* ── Logbook variant: pill shrinks + nav-fab docked to right ── */
-.bottom-nav--logbook {
+/* ── Logbook variant: wrapper holds pill + separate FAB circle ── */
+.bottom-nav-logbook-wrapper {
+  position: fixed;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
   width: calc(100% - 40px);
-  max-width: 420px;
-  /* leave room for the nav-fab circle that sits inside the pill */
-  padding-right: 6px;
+  max-width: 460px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 1000;
+}
+
+.bottom-nav--logbook {
+  position: static;
+  transform: none;
+  bottom: auto; left: auto;
+  flex: 1;
+  width: auto;
+  max-width: none;
 }
 
 .nav-fab {
   flex-shrink: 0;
-  width: 46px; height: 46px;
+  width: 62px; height: 62px;
   border-radius: 50%;
   background: #2563EB;
   border: none;
   color: #fff;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
-  margin-left: 4px;
-  box-shadow: 0 2px 12px rgba(37, 99, 235, .5);
+  box-shadow: 0 4px 20px rgba(37, 99, 235, .55);
   transition: transform .15s, box-shadow .15s;
   -webkit-tap-highlight-color: transparent;
 }
