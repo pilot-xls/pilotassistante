@@ -48,7 +48,7 @@
 
   /* ── Add bottom padding so content isn't hidden behind nav ── */
   const container = document.getElementById('app') || document.querySelector('.shell');
-  if (container) container.style.paddingBottom = '56px';
+  if (container) container.style.paddingBottom = '96px';
 
   /* ── Settings shortcut (fallback for any remaining references) ── */
   window.openNavSettings = function(){ location.href = 'settings.html'; };

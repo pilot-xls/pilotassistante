@@ -1,30 +1,46 @@
 /* ── Theme variables for nav (standalone, no style.css dependency) ── */
 :root,
 body[data-theme="dark"] {
-  --nav-bg:     #111D2F;
-  --nav-border: #1C2D42;
-  --nav-text:   #4A5A72;
-  --nav-active: #FFFFFF;
+  --nav-bg:        rgba(13, 22, 40, 0.72);
+  --nav-border:    rgba(255, 255, 255, 0.08);
+  --nav-shadow:    0 8px 32px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.3);
+  --nav-text:      #4A5A72;
+  --nav-active:    #FFFFFF;
+  --nav-active-bg: rgba(255, 255, 255, 0.08);
+  --nav-blur:      blur(20px) saturate(180%);
 }
 body[data-theme="light"] {
-  --nav-bg:     #FFFFFF;
-  --nav-border: #E2E0F0;
-  --nav-text:   #9090B0;
-  --nav-active: #2825A0;
+  --nav-bg:        rgba(255, 255, 255, 0.75);
+  --nav-border:    rgba(40, 37, 160, 0.12);
+  --nav-shadow:    0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+  --nav-text:      #9090B0;
+  --nav-active:    #2825A0;
+  --nav-active-bg: rgba(40, 37, 160, 0.08);
+  --nav-blur:      blur(20px) saturate(180%);
 }
 
-/* ── Bottom Navigation Bar ── */
+/* ── Bottom Navigation Bar — floating pill ── */
 .bottom-nav {
   position: fixed;
-  bottom: 0; left: 0; right: 0;
-  height: 58px;
-  background: var(--nav-bg, #111D2F);
-  border-top: 1px solid var(--nav-border, #1C2D42);
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 40px);
+  max-width: 420px;
+  height: 62px;
+  background: var(--nav-bg);
+  border: 1px solid var(--nav-border);
+  border-radius: 24px;
+  box-shadow: var(--nav-shadow);
+  backdrop-filter: var(--nav-blur);
+  -webkit-backdrop-filter: var(--nav-blur);
   display: flex;
+  align-items: center;
   z-index: 1000;
-  padding-bottom: env(safe-area-inset-bottom);
-  transition: background .2s, border-color .2s;
+  padding: 0 8px;
+  transition: background .2s, border-color .2s, box-shadow .2s;
 }
+
 .nav-item {
   flex: 1;
   display: flex; flex-direction: column;
@@ -34,12 +50,16 @@ body[data-theme="light"] {
   font-size: 10px; font-weight: 500;
   font-family: 'Space Grotesk', system-ui, sans-serif;
   letter-spacing: .01em;
-  border: none; background: none; padding: 0;
-  transition: color .15s;
+  border: none; background: none; padding: 8px 4px;
+  border-radius: 16px;
+  transition: color .15s, background .15s;
   -webkit-tap-highlight-color: transparent;
 }
-.nav-item:hover { opacity: .8; }
-.nav-item.active { color: var(--nav-active, #FFFFFF); }
+.nav-item:hover { background: var(--nav-active-bg); opacity: 1; }
+.nav-item.active {
+  color: var(--nav-active, #FFFFFF);
+  background: var(--nav-active-bg);
+}
 .nav-item svg { width: 22px; height: 22px; flex-shrink: 0; }
 
 /* ── Settings Modal ── */
