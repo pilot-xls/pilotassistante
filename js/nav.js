@@ -32,19 +32,24 @@
       <button class="nav-item" id="nav-stats" onclick="showTab('stats')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
         <span>Stats</span>
-      </button>
-      <button class="nav-fab" onclick="openDrawer()" aria-label="Add flight">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       </button>`;
 
-    // Hide the standalone FAB once DOM is ready — it's replaced by nav-fab
-    document.addEventListener('DOMContentLoaded', function() {
-      const fab = document.getElementById('fab-add');
-      if (fab) fab.style.display = 'none';
-    });
-    // Also handle if DOM already loaded
-    const fab = document.getElementById('fab-add');
-    if (fab) fab.style.display = 'none';
+    const fabBtn = document.createElement('button');
+    fabBtn.className = 'nav-fab';
+    fabBtn.setAttribute('aria-label', 'Add flight');
+    fabBtn.setAttribute('onclick', 'openDrawer()');
+    fabBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="24" height="24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`;
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'bottom-nav-logbook-wrapper';
+    wrapper.appendChild(nav);
+    wrapper.appendChild(fabBtn);
+    document.body.appendChild(wrapper);
+
+    // Hide the standalone FAB — replaced by nav-fab
+    const hideFab = () => { const f = document.getElementById('fab-add'); if (f) f.style.display = 'none'; };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hideFab);
+    else hideFab();
   } else {
     nav.innerHTML = `
       <a class="nav-item" href="logbook.html">
@@ -56,8 +61,9 @@
       <a class="nav-item${isSettings?' active':''}" href="settings.html">
         ${IC.settings}<span>Settings</span>
       </a>`;
+  } else {
+    document.body.appendChild(nav);
   }
-  document.body.appendChild(nav);
 
   /* ── Add bottom padding so content isn't hidden behind nav ── */
   const container = document.getElementById('app') || document.querySelector('.shell');

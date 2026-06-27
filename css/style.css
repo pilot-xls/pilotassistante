@@ -351,13 +351,13 @@ body {
 /* ── Drawer ────────────────────────────────────────────────── */
 .drawer-overlay {
   position: fixed; inset: 0;
-  background: rgba(0,0,0,.6); z-index: 200;
+  background: rgba(0,0,0,.6); z-index: 1100;
 }
 .drawer {
   position: fixed; top: 0; right: 0;
   height: 100%; height: 100dvh;
   width: 420px; max-width: 100%;
-  background: var(--surface); z-index: 201;
+  background: var(--surface); z-index: 1101;
   display: flex; flex-direction: column;
   box-shadow: var(--shadow-lg);
   overscroll-behavior: contain;
