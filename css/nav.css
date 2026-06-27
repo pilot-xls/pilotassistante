@@ -62,6 +62,30 @@ body[data-theme="light"] {
 }
 .nav-item svg { width: 22px; height: 22px; flex-shrink: 0; }
 
+/* ── Logbook variant: pill shrinks + nav-fab docked to right ── */
+.bottom-nav--logbook {
+  width: calc(100% - 40px);
+  max-width: 420px;
+  /* leave room for the nav-fab circle that sits inside the pill */
+  padding-right: 6px;
+}
+
+.nav-fab {
+  flex-shrink: 0;
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  background: #2563EB;
+  border: none;
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  margin-left: 4px;
+  box-shadow: 0 2px 12px rgba(37, 99, 235, .5);
+  transition: transform .15s, box-shadow .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-fab:active { transform: scale(.9); }
+
 /* ── Settings Modal ── */
 .nav-settings-overlay {
   position: fixed; inset: 0;
