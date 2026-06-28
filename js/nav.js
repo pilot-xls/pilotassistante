@@ -1,9 +1,10 @@
 (function(){
-  // Apply saved theme immediately to avoid flash
-  const savedTheme = localStorage.getItem('pa_theme') || 'dark';
-  document.body.setAttribute('data-theme', savedTheme);
-
   const page = location.pathname.split('/').pop() || 'index.html';
+
+  // Dashboard is always light; logbook/other pages follow saved preference
+  const savedTheme = localStorage.getItem('pa_theme') || 'dark';
+  const forcedTheme = (page === '' || page === 'index.html') ? 'light' : savedTheme;
+  document.body.setAttribute('data-theme', forcedTheme);
   const isHome     = page === '' || page === 'index.html';
   const isLogbook  = page === 'logbook.html';
   const isSettings = page === 'settings.html';
